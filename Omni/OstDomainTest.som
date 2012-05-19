@@ -69,7 +69,8 @@ OstDomainTest = TestCase (
         [ obj at: 1 ] enforced: domain.
 
         self assert: #primAt:on: equals: domain primitive.
-        args := domain primitiveArgs
+
+        args := domain primitiveArgs.
         self assert: 1   equals: (args at: 1).
         self assert: obj equals: (args at: 2).
     )
@@ -77,18 +78,20 @@ OstDomainTest = TestCase (
     testPrimAtPut = (
         | domain obj args |
         domain := OstTestDomain new.
-        obj := Object new.
+        obj := Pair new.
         domain adoptObject: obj.
     
-        [ obj at: 1 put: 2 ] enforced: domain.
+        [ obj at: 3 put: #foo ] enforced: domain.
 
         self assert: #primAt:on:put: equals: domain primitive.
-        args := domain primitiveArgs
-        self assert: 1   equals: (args at: 1).
+        args := domain primitiveArgs.
+        self assert: 3   equals: (args at: 1).
         self assert: obj equals: (args at: 2).
-        self assert: 2   equals: (args at: 3).
+        self assert: #foo   equals: (args at: 3).
     )
-
+    
+    "The following primitives are currently not supported by SOM."
+"
     testPrimBasicAt = (
         | domain obj args |
         domain := OstTestDomain new.
@@ -98,7 +101,7 @@ OstDomainTest = TestCase (
         [ obj basicAt: 1 ] enforced: domain.
 
         self assert: #primBasicAt:on: equals: domain primitive.
-        args := domain primitiveArgs
+        args := domain primitiveArgs.
         self assert: 1   equals: (args at: 1).
         self assert: obj equals: (args at: 2).
     )
@@ -112,7 +115,7 @@ OstDomainTest = TestCase (
         [ obj basicAt: 1 put: 2 ] enforced: domain.
 
         self assert: #primBasicAt:on:put: equals: domain primitive.
-        args := domain primitiveArgs
+        args := domain primitiveArgs.
         self assert: 1   equals: (args at: 1).
         self assert: obj equals: (args at: 2).
         self assert: 2   equals: (args at: 3).
@@ -127,7 +130,7 @@ OstDomainTest = TestCase (
         [ obj instVarAt: 1 ] enforced: domain.
 
         self assert: #primInstVarAt:on: equals: domain primitive.
-        args := domain primitiveArgs
+        args := domain primitiveArgs.
         self assert: 1   equals: (args at: 1).
         self assert: obj equals: (args at: 2).    
     )
@@ -142,7 +145,7 @@ OstDomainTest = TestCase (
 
         self assert: #primInstVarAt:on:put: equals: domain primitive.
 
-        args := domain primitiveArgs
+        args := domain primitiveArgs.
         self assert: 1   equals: (args at: 1).
         self assert: obj equals: (args at: 2).
         self assert: 2   equals: (args at: 3).      
@@ -158,5 +161,5 @@ OstDomainTest = TestCase (
 
         self assert: #primShallowCopy: equals: domain primitive.
         self assert: obj equals: domain primitiveArgs.
-    )
+    )"
 )

@@ -1,0 +1,162 @@
+OstDomainTest = TestCase (
+
+
+    testAdoptObject = (
+        | domain hello |
+        domain := OstDomain new.
+    
+        hello := Object new.
+    
+        self assert: nil equals: (OstMirror domainOf: hello).
+    
+        domain adoptObject: hello.
+    
+        self assert: domain equals: (OstMirror domainOf: hello).
+    )
+
+    testDomainForNewObjectsNotUsedWithoutOmnification = (
+        | domain hello |
+        domain := OstDomain new.
+    
+        hello := domain evaluateInContext: [ Object new. ].
+    
+        "This is expected behavior because omnification is not enabled for #evaluateInContext:"
+        self assert: nil equals: (OstMirror domainOf: hello).
+    )
+
+    testDomainForNewObjectsWithOmnification = (
+        | domain hello |
+        domain := OstDomain new.
+    
+        hello := [ Object new. ] enforced: domain.
+    
+        "This should work since we used the #enforced: entry."
+        self assert: domain equals: (OstMirror domainOf: hello).
+    )
+
+    testEvaluateInContext = (
+        | domain result |
+        domain := OstDomain new.
+    
+        "We just use the array to be sure that we got the result of the block and nothing else"
+        result := domain evaluateInContext: [ Array new: 1 withAll: [OstDomain currentDomain ] ].
+    
+        self assert: domain equals: (result at: 1).
+    )
+
+"   testNewProcessFor = (
+        | domain  promise block proc |
+        domain := OstDomain new.
+    
+        promise := OPromise new.
+        block := [ promise deliver: (OstDomain currentDomain) ].
+    
+        proc := domain newProcessFor: block.
+    
+        self assert: (proc isKindOf: Process).
+        self assert: domain equals: (OstMirror domainOf: proc).
+    
+        proc resume.
+        self assert: domain equals: promise read.
+    )"
+
+    testPrimAt = (
+        | domain obj args |
+        domain := OstTestDomain new.
+        obj := Object new.
+        domain adoptObject: obj.
+    
+        [ obj at: 1 ] enforced: domain.
+
+        self assert: #primAt:on: equals: domain primitive.
+        args := domain primitiveArgs
+        self assert: 1   equals: (args at: 1).
+        self assert: obj equals: (args at: 2).
+    )
+
+    testPrimAtPut = (
+        | domain obj args |
+        domain := OstTestDomain new.
+        obj := Object new.
+        domain adoptObject: obj.
+    
+        [ obj at: 1 put: 2 ] enforced: domain.
+
+        self assert: #primAt:on:put: equals: domain primitive.
+        args := domain primitiveArgs
+        self assert: 1   equals: (args at: 1).
+        self assert: obj equals: (args at: 2).
+        self assert: 2   equals: (args at: 3).
+    )
+
+    testPrimBasicAt = (
+        | domain obj args |
+        domain := OstTestDomain new.
+        obj := Object new.
+        domain adoptObject: obj.
+    
+        [ obj basicAt: 1 ] enforced: domain.
+
+        self assert: #primBasicAt:on: equals: domain primitive.
+        args := domain primitiveArgs
+        self assert: 1   equals: (args at: 1).
+        self assert: obj equals: (args at: 2).
+    )
+
+    testPrimBasicAtPut = (
+        | domain obj args |
+        domain := OstTestDomain new.
+        obj := Object new.
+        domain adoptObject: obj.
+    
+        [ obj basicAt: 1 put: 2 ] enforced: domain.
+
+        self assert: #primBasicAt:on:put: equals: domain primitive.
+        args := domain primitiveArgs
+        self assert: 1   equals: (args at: 1).
+        self assert: obj equals: (args at: 2).
+        self assert: 2   equals: (args at: 3).
+    )
+
+    testPrimInstVarAt = (
+        | domain obj args |
+        domain := OstTestDomain new.
+        obj := Object new.
+        domain adoptObject: obj.
+    
+        [ obj instVarAt: 1 ] enforced: domain.
+
+        self assert: #primInstVarAt:on: equals: domain primitive.
+        args := domain primitiveArgs
+        self assert: 1   equals: (args at: 1).
+        self assert: obj equals: (args at: 2).    
+    )
+
+    testPrimInstVarAtPut = (
+        | domain obj args |
+        domain := OstTestDomain new.
+        obj := Object new.
+        domain adoptObject: obj.
+    
+        [ obj instVarAt: 1 put: 2 ] enforced: domain.
+
+        self assert: #primInstVarAt:on:put: equals: domain primitive.
+
+        args := domain primitiveArgs
+        self assert: 1   equals: (args at: 1).
+        self assert: obj equals: (args at: 2).
+        self assert: 2   equals: (args at: 3).      
+    )
+
+    testPrimShallowCopy = (
+        | domain obj |
+        domain := OstTestDomain new.
+        obj := Object new.
+        domain adoptObject: obj.
+    
+        [ obj shallowCopy ] enforced: domain.
+
+        self assert: #primShallowCopy: equals: domain primitive.
+        self assert: obj equals: domain primitiveArgs.
+    )
+)

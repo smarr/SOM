@@ -1,0 +1,15 @@
+OmniTestSuite = (
+	
+	tests = (
+		^ OstDomainTest, OstDomainTest
+	)
+
+	run = (
+		self tests do: [:t |
+			| runner |
+			runner := TestRunner new.
+			runner initializeOn: t.
+			runner run.
+		]
+	)
+)

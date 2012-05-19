@@ -1,0 +1,151 @@
+OstDomain = (
+    "OstDomain is the root class for all Omni Domain definitions."
+    
+    adoptObject: obj = ( "returns obj"
+        ^ OstMirror setDomainOf: obj to: self.
+    )
+    
+    domainForNewObjects = (
+        "#basicNew needs to determine which domain a new object is supposed
+         to belong to.
+         The standard domain is self, the domain of the currently executing
+         process.
+
+         If this method is overriden, make sure that you do not allocate any objects here!!!!!!"
+        ^ self
+    )
+    
+    evaluateInContext: aBlock = unenforced (
+        ^ OstMirror evaluate: aBlock onCurrentLevel: self
+    )
+
+    evaluateInContextOnBaseLevel: aBlock = unenforced (
+        ^ OstMirror evaluate: aBlock onBaseLevel: self
+    )
+
+    newProcessFor: aBlock = (
+        "Answer a Process running the code in aBlock in this domain.
+         The process is not scheduled."
+        "| ctx proc |
+        <primitive: 19>" "Simulation guard"
+        "ctx := [aBlock value.
+                Processor terminateActive] asContext.
+        proc := Process
+            forContext: ctx
+            priority: Processor activePriority.
+
+        OstMirror setDomainOf: ctx to: self.
+        OstMirror setDomainOf: proc to: self.
+        ^ proc."
+    )
+
+    spawnHere: aBlock = (
+        "Spawn the given block as a process in this domain" 
+        ^ (self newProcessFor: aBlock) resume
+    )
+
+    primAt: idx on: anObj = unenforced (
+        ^ anObj at: idx
+    )
+
+    primAt: idx on: anObj put: aVal = unenforced (
+        ^ anObj at: idx put: aVal
+    )
+
+    primBasicAt: idx on: anObj = unenforced (
+        ^ anObj basicAt: idx
+    )
+
+    primBasicAt: idx on: anObj put: aVal = unenforced (
+        ^ anObj basicAt: idx put: aVal
+    )
+
+    primInstVarAt: idx on: anObj = unenforced (
+        ^ anObj instVarAt: idx
+    )
+
+    primInstVarAt: idx on: anObj put: aVal = unenforced (
+        ^ anObj instVarAt: idx put: aVal
+    )
+
+    primShallowCopy: anObj = unenforced (
+        ^ anObj shallowCopy
+    )
+
+    readField: idx of: obj = unenforced (
+        ^ obj instVarAt: idx
+    )
+
+    readLiteral: literal = unenforced (
+        ^ literal value
+    )
+
+    requestExecution: p1 of: aSelector on: anObject = unenforced (
+        ^ anObject baselevelPerform: aSelector with: p1
+    )
+
+    requestExecution: p1 with: p2 of: aSelector on: anObject = unenforced (
+        ^ anObject baselevelPerform: aSelector with: p1 with: p2
+    )
+
+    requestExecution: p1 with: p2 with: p3 of: aSelector on: anObject = unenforced (
+        ^ anObject baselevelPerform: aSelector with: p1 with: p2 with: p3
+    )
+
+    requestExecution: p1 with: p2 with: p3 with: p4 of: aSelector on: anObject = unenforced (
+        ^ anObject baselevelPerform: aSelector with: p1 with: p2 with: p3 with: p4
+    )
+
+    requestExecution: p1 with: p2 with: p3 with: p4 with: p5 of: aSelector on: anObject  = unenforced (
+        ^ anObject baselevelPerform: aSelector with: p1 with: p2 with: p3 with: p4 with: p5
+    )
+
+    requestExecution: p1 with: p2 with: p3 with: p4 with: p5 with: p6 of: aSelector on: anObject  = unenforced (
+        ^ anObject baselevelPerform: aSelector with: p1 with: p2 with: p3 with: p4 with: p5 with: p6
+    )
+
+    requestExecution: p1 with: p2 with: p3 with: p4 with: p5 with: p6 with: p7 of: aSelector on: anObject = unenforced (
+        ^ anObject baselevelPerform: aSelector with: p1 with: p2 with: p3 with: p4 with: p5 with: p6 with: p7
+    )
+
+    requestExecution: p1 with: p2 with: p3 with: p4 with: p5 with: p6 with: p7 with: p8  of: aSelector on: anObject  = unenforced (
+        ^ anObject baselevelPerform: aSelector with: p1 with: p2 with: p3 with: p4 with: p5 with: p6 with: p7 with: p8
+    )
+
+    requestExecution: p1 with: p2 with: p3 with: p4 with: p5 with: p6 with: p7 with: p8 with: p9  of: aSelector on: anObject  = unenforced (
+        ^ anObject baselevelPerform: aSelector with: p1 with: p2 with: p3 with: p4 with: p5 with: p6 with: p7 with: p8 with: p9
+    )
+
+    requestExecution: p1 with: p2 with: p3 with: p4 with: p5 with: p6 with: p7 with: p8 with: p9 with: p10 of: aSelector on: anObject  = unenforced (
+        ^ anObject baselevelPerform: aSelector with: p1 with: p2 with: p3 with: p4 with: p5 with: p6 with: p7 with: p8 with: p9 with: p10
+    )
+
+    requestExecutionOf: aSelector on: anObject = unenforced (
+        ^ anObject baselevelPerform: aSelector
+    )
+
+    requestExecutionOf: aSelector with: argArray lookup: cls on: anObject = unenforced (
+        ^ anObject baselevelPerform: aSelector withArguments: argArray inSuperclass: cls.
+    )
+
+    write: val toField: idx of: obj = unenforced (
+        ^ obj instVarAt: idx put: val.
+    )
+
+    write: val toLiteral: literal = unenforced (
+        "All globals are literals, and we treat all literals equal in the VM"
+        literal value: val.
+        ^ val
+    )
+
+    ----
+    
+
+    currentDomain = unenforced (
+        ^ OstMirror currentDomain
+    )
+
+    omniDomainFrom: obj = (
+        ^ OstMirror domainOf: obj
+    )
+)

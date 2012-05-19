@@ -1,0 +1,20 @@
+OstMirror = (
+    "The Mirror API for the Omni related operations"
+
+    ----
+
+       domainOf: anObject               = primitive
+    setDomainOf: anObject to: aDomain   = primitive
+    
+    evaluate: block onCurrentLevel: domain = primitive
+    evaluate: block onBaseLevel: domain = primitive
+    
+    currentDomain                       = primitive
+    
+    executesOnBaseLevel                 = unenforced primitive
+    executesOnMetaLevel                 = unenforced primitive
+
+    "TODO: STEFAN check whether these are necessary"
+    switchToBaseLevel                   = unenforced primitive
+    switchToMetaLevel                   = unenforced primitive
+)

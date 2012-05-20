@@ -1,0 +1,54 @@
+ONOTestObject = (
+    | a b |
+
+    a = (
+        ^ a
+    )
+
+    a: anObj = (
+        a := anObj
+    )
+
+    ab = (
+        ^ a, b
+    )
+
+    b = (
+        ^ b
+    )
+
+    b: anObj = (
+        b := anObj
+    )
+
+    magicNil = (
+        ^ nil
+    )
+
+    magicOne = (
+        ^ 1
+    )
+
+    magicSelf = (
+        ^ self
+    )
+
+    makeOne = (
+        b := 1.
+    )
+
+
+    initialize = (
+        a := #a.
+        b := #b.
+    )
+    
+    ----
+    
+    new = (
+        | o |
+        o := super new.
+        o initialize.
+        ^ o
+    )
+)

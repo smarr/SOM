@@ -1,0 +1,99 @@
+ONOTestDomain = OstDomain (
+
+    | target requestedSelectors cntReadA cntReadB cntWriteA cntWriteB readLiteral writtenLiteral |
+
+    requestedSelectors = (
+        ^ requestedSelectors
+    )
+
+    target: targetObj = (
+        target := targetObj
+    )
+
+
+    initialize = (
+        super initialize.
+    
+        requestedSelectors := Set new.
+
+        cntReadA := 0.
+        cntReadB := 0.
+        cntWriteA := 0.
+        cntWriteB := 0.
+
+        readLiteral := Vector new.
+    )
+
+
+    readCountA = (
+        ^ cntReadA
+    )
+
+    readCountB = (
+        ^ cntReadB
+    )
+
+    readField: idx of: obj = unenforced (
+        obj == target ifTrue: [
+            idx = 1 ifTrue: [cntReadA := cntReadA + 1.].
+            idx = 2 ifTrue: [cntReadB := cntReadB + 1.].
+        ].
+    
+        ^ obj instVarAt: idx
+    )
+
+    readLiteral = (
+        ^ readLiteral
+    )
+
+    readLiteral: literal = unenforced (
+        readLiteral add: literal.
+        ^ literal value
+    )
+
+    requestExecution: p1 of: aSelector on: receiver = unenforced (
+        receiver == target ifTrue: [
+            requestedSelectors add: aSelector.
+        ].
+        ^ super requestExecution: p1 of: aSelector on: receiver
+    )
+
+    requestExecutionOf: aSelector on: receiver = unenforced (
+        receiver == target ifTrue: [
+            requestedSelectors add: aSelector.
+        ].
+        ^ super requestExecutionOf: aSelector on: receiver
+    )
+
+    write: val toField: idx of: obj = unenforced (
+        obj == target ifTrue: [
+            idx = 1 ifTrue: [cntWriteA := cntWriteA + 1.].
+            idx = 2 ifTrue: [cntWriteB := cntWriteB + 1.].
+        ].
+
+        obj instVarAt: idx put: val.
+        ^ obj
+    )
+
+    write: val toLiteral: literal = unenforced (
+        "All globals are literals, and we treat all literals equal in the VM"
+    
+        writtenLiteral := literal.
+    
+        literal value: val.
+        ^ val
+    )
+
+    writeCountA = (
+        ^ cntWriteA
+    )
+
+    writeCountB = (
+        ^ cntWriteB
+    )
+
+    writtenLiteral = (
+        ^ writtenLiteral
+    )
+
+)

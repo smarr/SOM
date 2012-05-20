@@ -1,0 +1,232 @@
+"Tests very similar to OstDomainTest, but originally written to fix bugs in the OmniVM based on the RoarVM."
+ONODomainTest = TestCase (
+
+    testAdopt = (
+        | o d |
+        o := Object new.
+        d := OstDomain new.
+    
+        self assert: nil equals: (OstMirror domainOf: o).
+    
+        d adoptObject: o.
+    
+        self assert: d equals: (OstMirror domainOf: o).
+    )
+
+    testClass = (
+        | d o c |
+        d := ONOTestDomain new.
+        o := ONOTestObject new.
+        d adoptObject: o.
+    
+        c := [o class] enforced: d.
+    
+        self assert: ONOTestObject equals: c.
+    )
+
+"SOM doesn't have a clone primitive at the moment.
+    testClone = (
+        | d o clone |
+        d := ONOTestDomain new.
+        o := ONOTestObject new.
+        d adoptObject: o.
+    
+        clone := [o copy] enforced: d.
+    
+        self assert: d equals: (OstMirror domainOf: clone).
+    )"
+
+    testDomainForNewObjectsInitialization = (
+        | domain |
+        domain := ONOTestDomain new.
+        self assert: domain equals: domain domainForNewObjects.
+    
+        self assert: domain equals: (domain instVarNamed: #domainForNewObjects).
+    )
+
+" STEFAN: not sure what the SOM view on literals is, and the general support for globals...
+    testLiteralReadWithDomain = (
+        | d read |
+        d := ONOTestDomain new.
+    
+        read := [ ONODomainTest ] enforced: d.
+
+        self assert: ONODomainTest equals: read.
+        self assert: (Smalltalk associationAt: #ONODomainTest) equals: d readLiteral first.
+    )
+
+    testLiteralWriteWithDomain = (
+        | d read |
+        d := ONOTestDomain new.
+    
+        SomeClassVar := nil.
+    
+        read := [ SomeClassVar := #foo ] enforced: d.
+
+        self assert: read equals: #foo.
+        self assert: SomeClassVar equals: #foo.
+        self assert: d writtenLiteral equals: (ONODomainTest bindingOf: #SomeClassVar).
+    )"
+
+    testReadWithDomain = (
+        | o d |
+        o := ONOTestObject new.
+        d := ONOTestDomain new.
+        d adoptObject: o.
+        d target: o.
+    
+        [self helperExecuteAllMessages: o ] enforced: d.
+
+        self assert: 3 equals: d readCountA.
+        self assert: 4 equals: d readCountB.
+    
+        self assert: 1 equals: d writeCountA.
+        self assert: 2 equals: d writeCountB.
+    )
+
+    testRequestExecWithDomain = (
+        | o d expectedSelectors |
+        o := ONOTestObject new.
+        d := ONOTestDomain new.
+        d adoptObject: o.
+        d target: o.
+    
+        expectedSelectors := ONOTestObject selectors reject: [:sel | sel = #initialize].
+    
+        [self helperExecuteAllMessages: o ] enforced: d.
+
+        "All selectors that are expected should already be in that set, and then there are a few more
+         which actually got recorded because of the implementation details of the methods executed"
+        self assert: (d requestedSelectors union: expectedSelectors) equals: d requestedSelectors.
+    )
+
+    testSimpleReadWithDomain = (
+        | o d |
+        o := ONOTestObject new.
+        d := ONORWTestDomain new.
+        d adoptObject: o.
+        d target: o.
+    
+        [ o a ] enforced: d.
+
+        self assert: 1 equals: d readCountA.
+    )
+
+    testSimpleSuperSendWithDomain = (
+        | o d |
+        o := ONOTestObjectSub new.
+        d := ONORWTestDomain new.
+        d adoptObject: o.
+        d target: o.
+    
+        [ o a ] enforced: d.
+ 
+        self assert: #a equals: d lastSuperSelector.
+        self assert: 1 equals: d readCountA.
+    )
+
+    testSimpleWriteWithDomain = (
+        | o d |
+        o := ONOTestObject new.
+        d := ONORWTestDomain new.
+        d adoptObject: o.
+        d target: o.
+    
+        [ o a: #bbb ] enforced: d.
+
+        self assert: 1 equals: d writeCountA.
+    )
+
+    testSpecialSendBytecode = (
+        | o d r |
+        o := ONOTestObjectSub new.
+        o initForTestSpecialSendBytecode.
+        d := OstDomain new.
+        d adoptObject: o.
+    
+        r := [ o next ] enforced: d.
+
+        self assert: 1 equals: o a.
+        self assert: #first equals: r.
+    )
+
+    testTimesRepeat = (
+        | o d r |
+        o := ONOTestObjectSub new.
+        o initForTimesRepeat.
+        d := OstDomain new.
+        d adoptObject: o.
+    
+        r := [ o repeat: 4 on: o ] enforced: d.
+
+        self assert: 4 equals: o c.
+        o collection do: [:execOnBase |
+            self assert: execOnBase].
+
+    )
+
+    testWithDomain = (
+        | o d expectedSelectors |
+        o := ONOTestObject new.
+        d := ONOTestDomain new.
+        d adoptObject: o.
+        d target: o.
+    
+        expectedSelectors := ONOTestObject selectors reject: [:sel | sel = #initialize].
+        expectedSelectors add: #=.
+    
+        [self helperExecuteAllMessages: o ] enforced: d.
+    
+        "All selectors that are expected should already be in that set, and then there are a few more
+         which actually got recorded because of the implementation details of the methods executed"
+        self assert: (d requestedSelectors union: expectedSelectors) equals: d requestedSelectors.
+    
+        self assert: 3 equals: d readCountA.
+        self assert: 4 equals: d readCountB.
+    
+        self assert: 1 equals: d writeCountA.
+        self assert: 2 equals: d writeCountB.
+    )
+
+    testWithNilDomain = (
+        | o |
+        o := ONOTestObject new.
+        self helperExecuteAllMessages: o.
+    )
+
+
+    helperExecuteAllMessages: o = (
+        self assert: #a equals: o a.
+        self assert: #b equals: o b.
+        self assert: nil equals: o magicNil.
+        self assert: 1 equals: o magicOne.
+        self assert: o equals: o magicSelf.
+        self assert: 'ab' equals: o ab.
+    
+        o b: #bb.
+        self assert: #bb equals: o b.
+    
+        o a: #aa.
+        self assert: #aa equals: o a. 
+    
+        o makeOne.
+        self assert: 1 equals: o b.
+    )
+
+    helperExecuteAllMessagesSimple: o = (
+        o a.
+        o b.
+        o magicNil.
+        o magicOne.
+        o magicSelf.
+        o ab.
+        o b: #bb.
+        o a: #aa.
+        o makeOne.
+    )
+
+----
+    
+    | SomeClassVar |
+
+)

@@ -100,5 +100,9 @@ Object = nil (
     instVarAt: idx          = primitive
     instVarAt: idx put: obj = primitive
     instVarNamed: sym       = primitive
+    
+    "Omni"
+    performEnforced: aSymbol = primitive
+    performEnforced: aSymbol withArguments: args = primitive
 
 )

@@ -85,51 +85,12 @@ OstDomain = (
         ^ literal value
     )
 
-    requestExecution: p1 of: aSelector on: anObject = unenforced (
-        ^ anObject performEnforced: aSelector with: p1
+
+    requestExecutionOf: aSelector with: argArray on: anObject = unenforced (
+        ^ anObject performEnforced: aSelector withArguments: argArray
     )
 
-    requestExecution: p1 with: p2 of: aSelector on: anObject = unenforced (
-        ^ anObject performEnforced: aSelector with: p1 with: p2
-    )
-
-    requestExecution: p1 with: p2 with: p3 of: aSelector on: anObject = unenforced (
-        ^ anObject performEnforced: aSelector with: p1 with: p2 with: p3
-    )
-
-    requestExecution: p1 with: p2 with: p3 with: p4 of: aSelector on: anObject = unenforced (
-        ^ anObject performEnforced: aSelector with: p1 with: p2 with: p3 with: p4
-    )
-
-    requestExecution: p1 with: p2 with: p3 with: p4 with: p5 of: aSelector on: anObject  = unenforced (
-        ^ anObject performEnforced: aSelector with: p1 with: p2 with: p3 with: p4 with: p5
-    )
-
-    requestExecution: p1 with: p2 with: p3 with: p4 with: p5 with: p6 of: aSelector on: anObject  = unenforced (
-        ^ anObject performEnforced: aSelector with: p1 with: p2 with: p3 with: p4 with: p5 with: p6
-    )
-
-    requestExecution: p1 with: p2 with: p3 with: p4 with: p5 with: p6 with: p7 of: aSelector on: anObject = unenforced (
-        ^ anObject performEnforced: aSelector with: p1 with: p2 with: p3 with: p4 with: p5 with: p6 with: p7
-    )
-
-    requestExecution: p1 with: p2 with: p3 with: p4 with: p5 with: p6 with: p7 with: p8  of: aSelector on: anObject  = unenforced (
-        ^ anObject performEnforced: aSelector with: p1 with: p2 with: p3 with: p4 with: p5 with: p6 with: p7 with: p8
-    )
-
-    requestExecution: p1 with: p2 with: p3 with: p4 with: p5 with: p6 with: p7 with: p8 with: p9  of: aSelector on: anObject  = unenforced (
-        ^ anObject performEnforced: aSelector with: p1 with: p2 with: p3 with: p4 with: p5 with: p6 with: p7 with: p8 with: p9
-    )
-
-    requestExecution: p1 with: p2 with: p3 with: p4 with: p5 with: p6 with: p7 with: p8 with: p9 with: p10 of: aSelector on: anObject  = unenforced (
-        ^ anObject performEnforced: aSelector with: p1 with: p2 with: p3 with: p4 with: p5 with: p6 with: p7 with: p8 with: p9 with: p10
-    )
-
-    requestExecutionOf: aSelector on: anObject = unenforced (
-        ^ anObject performEnforced: aSelector
-    )
-
-    requestExecutionOf: aSelector with: argArray lookup: cls on: anObject = unenforced (
+    requestExecutionOf: aSelector with: argArray on: anObject lookup: cls = unenforced (
         ^ anObject performEnforced: aSelector withArguments: argArray inSuperclass: cls.
     )
 

@@ -173,7 +173,7 @@ ONODomainTest = TestCase (
         d target: o.
     
         expectedSelectors := ONOTestObject selectors reject: [:sel | sel = #initialize].
-        expectedSelectors add: #=.
+        expectedSelectors append: #=.
     
         [self helperExecuteAllMessages: o ] enforced: d.
     

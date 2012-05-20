@@ -1,7 +1,7 @@
 OmniTestSuite = (
 	
 	tests = (
-		^ OstDomainTest, OstDomainTest
+		^ OstDomainTest, ONODomainTest
 	)
 
 	run = (

@@ -28,7 +28,7 @@ OstMirrorTest = TestCase (
         | d enforced |
         d := OstDomain new.
     
-        enforced := [ OstMirror executesEnforced ] omni: d.
+        enforced := [ OstMirror executesEnforced ] enforced: d.
     
         self assert: enforced.
     )
@@ -75,7 +75,7 @@ OstMirrorTest = TestCase (
         | d  execD |
         d := OstDomain new.
     
-        execD := [ OstMirror domainOf: thisContext ] omni: d.
+        execD := [ OstMirror domainOf: thisContext ] enforced: d.
     
         self assert: d equals: execD.
     )"

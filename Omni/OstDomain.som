@@ -49,7 +49,7 @@ OstDomain = (
         ^ (self newProcessFor: aBlock) resume
     )
 
-    primAt: idx on: anObj = unenforced (
+"    primAt: idx on: anObj = unenforced (
         ^ anObj at: idx
     )
 
@@ -63,20 +63,20 @@ OstDomain = (
 
     primBasicAt: idx on: anObj put: aVal = unenforced (
         ^ anObj basicAt: idx put: aVal
-    )
+    )"
 
-    primInstVarAt: idx on: anObj = unenforced (
+    priminstVarAt: idx on: anObj = unenforced (
         ^ anObj instVarAt: idx
     )
 
-    primInstVarAt: idx on: anObj put: aVal = unenforced (
+    priminstVarAt: idx put: aVal on: anObj = unenforced (
         ^ anObj instVarAt: idx put: aVal
     )
 
-    primShallowCopy: anObj = unenforced (
+"    primShallowCopy: anObj = unenforced (
         ^ anObj shallowCopy
-    )
-
+    )"
+    
     readField: idx of: obj = unenforced (
         ^ obj instVarAt: idx
     )

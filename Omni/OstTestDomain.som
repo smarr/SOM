@@ -1,7 +1,7 @@
 OstTestDomain = OstDomain (
     | primitive primitiveArgs |
 
-    primAt: idx on: obj = unenforced (
+"    primAt: idx on: obj = unenforced (
         primitive := #primAt:on:.
         primitiveArgs := Array with: idx with: obj
     )
@@ -19,23 +19,23 @@ OstTestDomain = OstDomain (
     primBasicAt: idx on: obj put: val = unenforced (
         primitive := #primBasicAt:on:put:.
         primitiveArgs := Array with: idx with: obj with: val
-    )
+    )"
 
-    primInstVarAt: idx on: obj = unenforced (
+    priminstVarAt: idx on: obj = unenforced (
         primitive := #primInstVarAt:on:.
         primitiveArgs := Array with: idx with: obj
     )
 
-    primInstVarAt: idx on: obj put: val = unenforced (
+    priminstVarAt: idx put: val on: obj = unenforced (
         primitive := #primInstVarAt:on:put:.
         primitiveArgs := Array with: idx with: obj with: val
     )
 
-    primShallowCopy: obj = unenforced (
+"    primShallowCopy: obj = unenforced (
         primitive := #primShallowCopy:.
         primitiveArgs := obj
     )
-
+"
     primitive = (
         ^ primitive
     )

@@ -160,8 +160,8 @@ ONODomainTest = TestCase (
         r := [ o repeat: 4 on: o ] enforced: d.
 
         self assert: 4 equals: o c.
-        o collection do: [:execOnBase |
-            self assert: execOnBase].
+        o collection do: [:execEnforced |
+            self assert: execEnforced ].
 
     )
 

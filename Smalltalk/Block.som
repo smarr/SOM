@@ -49,6 +49,6 @@ Block = (
 	"Omni"
 	enforced: aDomain = (
 		"Move to language/baselevel and in the context of the given domain"
-		^ aDomain evaluateInContextOnBaseLevel: self
+		^ aDomain evaluateEnforced: self
 	)
 )

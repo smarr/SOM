@@ -21,11 +21,11 @@ OstDomain = (
     )
     
     evaluateInContext: aBlock = unenforced (
-        ^ OstMirror evaluate: aBlock onCurrentLevel: self
+        ^ OstMirror evaluate: aBlock in: self
     )
 
-    evaluateInContextOnBaseLevel: aBlock = unenforced (
-        ^ OstMirror evaluate: aBlock onBaseLevel: self
+    evaluateEnforced: aBlock = unenforced (
+        ^ OstMirror evaluate: aBlock enforcedIn: self
     )
 
     newProcessFor: aBlock = (
@@ -86,51 +86,51 @@ OstDomain = (
     )
 
     requestExecution: p1 of: aSelector on: anObject = unenforced (
-        ^ anObject baselevelPerform: aSelector with: p1
+        ^ anObject performEnforced: aSelector with: p1
     )
 
     requestExecution: p1 with: p2 of: aSelector on: anObject = unenforced (
-        ^ anObject baselevelPerform: aSelector with: p1 with: p2
+        ^ anObject performEnforced: aSelector with: p1 with: p2
     )
 
     requestExecution: p1 with: p2 with: p3 of: aSelector on: anObject = unenforced (
-        ^ anObject baselevelPerform: aSelector with: p1 with: p2 with: p3
+        ^ anObject performEnforced: aSelector with: p1 with: p2 with: p3
     )
 
     requestExecution: p1 with: p2 with: p3 with: p4 of: aSelector on: anObject = unenforced (
-        ^ anObject baselevelPerform: aSelector with: p1 with: p2 with: p3 with: p4
+        ^ anObject performEnforced: aSelector with: p1 with: p2 with: p3 with: p4
     )
 
     requestExecution: p1 with: p2 with: p3 with: p4 with: p5 of: aSelector on: anObject  = unenforced (
-        ^ anObject baselevelPerform: aSelector with: p1 with: p2 with: p3 with: p4 with: p5
+        ^ anObject performEnforced: aSelector with: p1 with: p2 with: p3 with: p4 with: p5
     )
 
     requestExecution: p1 with: p2 with: p3 with: p4 with: p5 with: p6 of: aSelector on: anObject  = unenforced (
-        ^ anObject baselevelPerform: aSelector with: p1 with: p2 with: p3 with: p4 with: p5 with: p6
+        ^ anObject performEnforced: aSelector with: p1 with: p2 with: p3 with: p4 with: p5 with: p6
     )
 
     requestExecution: p1 with: p2 with: p3 with: p4 with: p5 with: p6 with: p7 of: aSelector on: anObject = unenforced (
-        ^ anObject baselevelPerform: aSelector with: p1 with: p2 with: p3 with: p4 with: p5 with: p6 with: p7
+        ^ anObject performEnforced: aSelector with: p1 with: p2 with: p3 with: p4 with: p5 with: p6 with: p7
     )
 
     requestExecution: p1 with: p2 with: p3 with: p4 with: p5 with: p6 with: p7 with: p8  of: aSelector on: anObject  = unenforced (
-        ^ anObject baselevelPerform: aSelector with: p1 with: p2 with: p3 with: p4 with: p5 with: p6 with: p7 with: p8
+        ^ anObject performEnforced: aSelector with: p1 with: p2 with: p3 with: p4 with: p5 with: p6 with: p7 with: p8
     )
 
     requestExecution: p1 with: p2 with: p3 with: p4 with: p5 with: p6 with: p7 with: p8 with: p9  of: aSelector on: anObject  = unenforced (
-        ^ anObject baselevelPerform: aSelector with: p1 with: p2 with: p3 with: p4 with: p5 with: p6 with: p7 with: p8 with: p9
+        ^ anObject performEnforced: aSelector with: p1 with: p2 with: p3 with: p4 with: p5 with: p6 with: p7 with: p8 with: p9
     )
 
     requestExecution: p1 with: p2 with: p3 with: p4 with: p5 with: p6 with: p7 with: p8 with: p9 with: p10 of: aSelector on: anObject  = unenforced (
-        ^ anObject baselevelPerform: aSelector with: p1 with: p2 with: p3 with: p4 with: p5 with: p6 with: p7 with: p8 with: p9 with: p10
+        ^ anObject performEnforced: aSelector with: p1 with: p2 with: p3 with: p4 with: p5 with: p6 with: p7 with: p8 with: p9 with: p10
     )
 
     requestExecutionOf: aSelector on: anObject = unenforced (
-        ^ anObject baselevelPerform: aSelector
+        ^ anObject performEnforced: aSelector
     )
 
     requestExecutionOf: aSelector with: argArray lookup: cls on: anObject = unenforced (
-        ^ anObject baselevelPerform: aSelector withArguments: argArray inSuperclass: cls.
+        ^ anObject performEnforced: aSelector withArguments: argArray inSuperclass: cls.
     )
 
     write: val toField: idx of: obj = unenforced (

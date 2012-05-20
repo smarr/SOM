@@ -108,5 +108,8 @@ Object = nil (
     "Omni"
     performEnforced: aSymbol = primitive
     performEnforced: aSymbol withArguments: args = primitive
+    
+    performEnforced: aSymbol inSuperclass: cls = primitive
+    performEnforced: aSymbol withArguments: args inSuperclass: cls = primitive
 
 )

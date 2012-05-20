@@ -38,8 +38,9 @@ Class = (
     
     "Meta Information"
     superclass = ( ^superClass )
-    fields = ( ^instanceFields )
-    methods = ( ^instanceInvokables )
+    fields     = ( ^instanceFields )
+    methods    = ( ^instanceInvokables )
+    selectors  = ( ^instanceInvokables collect: [:inv | inv signature ] )
     
     hasMethod: aSymbol = (
         instanceInvokables do: [ :m |

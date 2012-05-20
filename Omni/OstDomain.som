@@ -1,5 +1,10 @@
 OstDomain = (
     "OstDomain is the root class for all Omni Domain definitions."
+    | domainForNewObjects |
+    
+    initialize = (
+        domainForNewObjects := self domainForNewObjects.
+    )
     
     adoptObject: obj = ( "returns obj"
         ^ OstMirror setDomainOf: obj to: self.
@@ -140,6 +145,12 @@ OstDomain = (
 
     ----
     
+    new = (
+        | o |
+        o := super new.
+        o initialize.
+        ^ o
+    )
 
     currentDomain = unenforced (
         ^ OstMirror currentDomain

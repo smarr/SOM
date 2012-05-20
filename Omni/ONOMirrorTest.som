@@ -1,0 +1,116 @@
+OstMirrorTest = TestCase (
+
+    testPerformEnforce = (
+        self assert: OstMirror executesUnenforced.
+    
+        self assert: (self performEnforced: #unenforcedNoPragma) not.
+    
+        self assert: OstMirror executesUnenforced.
+    )
+
+    testPerformEnforcedWithArguments = (
+        self assert: OstMirror executesUnenforced.
+    
+        self assert: (self performEnforced: #unenforcedNoPragma withArguments: Array new) not.
+    
+        self assert: OstMirror executesUnenforced.
+    )
+
+    testPerformEnforcedWithArgumentsInSuperclass = (
+        self assert: OstMirror executesUnenforced.
+    
+        self assert: (self performEnforced: #unenforcedNoPragma withArguments: Array new inSuperclass: self class) not.
+    
+        self assert: OstMirror executesUnenforced.
+    )
+
+    testBlockEnforced = (
+        | d enforced |
+        d := OstDomain new.
+    
+        enforced := [ OstMirror executesEnforced ] omni: d.
+    
+        self assert: enforced.
+    )
+
+"    testBlockEnforcedValueWithArgs = (
+        | enforced |
+    
+        OstMirror switchToBaseLevel.
+    
+        enforced := [:i | OstMirror executesEnforced ] value: 1.
+    
+        OstMirror switchToMetaLevel.
+    
+        self assert: enforced.
+    
+    
+    )"
+
+"    testUnenforcedPragma = (
+        | enforced1 enforced2 unEnf |
+        self assert: OstMirror executesUnenforced.
+    
+        self assert: self isUnenforced.
+    
+        self assert: self unenforcedNoPragma.
+    
+        OstMirror switchToBaseLevel.
+    
+        ""We post-pone the asserts to not run into trouble with SUnit and the tests.""
+        enforced1 := self unenforcedNoPragma not.
+        unEnf := self isUnenforced.
+        enforced2 := self unenforcedNoPragma not.
+    
+        OstMirror switchToMetaLevel.
+    
+        self assert: enforced1.
+        self assert: unEnf.
+        self assert: enforced2.
+    
+        self assert: OstMirror executesUnenforced.
+    )"
+
+"    testOmniBlockThisContext = (
+        | d  execD |
+        d := OstDomain new.
+    
+        execD := [ OstMirror domainOf: thisContext ] omni: d.
+    
+        self assert: d equals: execD.
+    )"
+
+    testPrimitiveGetSetDomain = (
+        | o d |
+        o := Object new.
+    
+        self assert: nil equals: (OstMirror domainOf: o).
+     
+        d := Object new.
+        OstMirror setDomainOf: o to: d.
+        self assert: d equals: (OstMirror domainOf: o).
+    )
+
+"    testSwitchEnforcement = (
+        | enforced |
+        self assert: OstMirror executesUnenforced.
+    
+        OstMirror switchToBaseLevel.
+    
+        enforced := OstMirror executesEnforced.
+        OstMirror switchToMetaLevel.
+    
+        self assert: enforced.
+        self assert: OstMirror executesUnenforced.
+    )"
+
+
+    isUnenforced = unenforced (
+        ^ OstMirror executesUnenforced
+    )
+
+    unenforcedNoPragma = (
+        ^ OstMirror executesUnenforced
+    )
+
+)

@@ -35,8 +35,8 @@ ONOTestDomain = OstDomain (
 
     readField: idx of: obj = unenforced (
         obj == target ifTrue: [
-            idx = 1 ifTrue: [cntReadA := cntReadA + 1.].
-            idx = 2 ifTrue: [cntReadB := cntReadB + 1.].
+            idx = 3 ifTrue: [cntReadA := cntReadA + 1.].
+            idx = 4 ifTrue: [cntReadB := cntReadB + 1.].
         ].
     
         ^ obj instVarAt: idx
@@ -67,8 +67,8 @@ ONOTestDomain = OstDomain (
 
     write: val toField: idx of: obj = unenforced (
         obj == target ifTrue: [
-            idx = 1 ifTrue: [cntWriteA := cntWriteA + 1.].
-            idx = 2 ifTrue: [cntWriteB := cntWriteB + 1.].
+            idx = 3 ifTrue: [cntWriteA := cntWriteA + 1.].
+            idx = 4 ifTrue: [cntWriteB := cntWriteB + 1.].
         ].
 
         obj instVarAt: idx put: val.

@@ -34,22 +34,22 @@ ONORWTestDomain = OstDomain (
 
     readField: idx of: obj = unenforced (
         obj == target ifTrue: [    
-            idx = 1 ifTrue: [cntReadA := cntReadA + 1.].
-            idx = 2 ifTrue: [cntReadB := cntReadB + 1.].
+            idx = 3 ifTrue: [cntReadA := cntReadA + 1.].
+            idx = 4 ifTrue: [cntReadB := cntReadB + 1.].
         ].
     
         ^ obj instVarAt: idx
     )
 
-    requestExecutionOf: aSelector with: argArray lookup: cls on: anObject = unenforced (
+    requestExecutionOf: aSelector with: argArray on: anObject lookup: cls = unenforced (
         lastSuperSelector := aSelector.
         ^ anObject performEnforced: aSelector withArguments: argArray inSuperclass: cls.
     )
 
     write: val toField: idx of: obj = unenforced (
         obj == target ifTrue: [
-            idx = 1 ifTrue: [cntWriteA := cntWriteA + 1.].
-            idx = 2 ifTrue: [cntWriteB := cntWriteB + 1.].
+            idx = 3 ifTrue: [cntWriteA := cntWriteA + 1.].
+            idx = 4 ifTrue: [cntWriteB := cntWriteB + 1.].
         ].
 
         obj instVarAt: idx put: val.

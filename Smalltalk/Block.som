@@ -37,14 +37,14 @@ Block = (
         [ self value not ] whileTrue: block 
     )
     
-    whileTrue: block = (
+    whileTrue: block = unenforced (     "Need to make that one unenforced, because the reset primitive needs to work on the correct frame object"
         (self value) ifFalse: [ ^nil ].
         block value.
         self restart
     )
     
     "Restarting"
-    restart = primitive
+    restart = unenforced primitive "STEFAN: do not have a solution for primitives that need access to the frame, or stack beyond their direct arguments"
     
 	"Omni"
 	enforced: aDomain = (

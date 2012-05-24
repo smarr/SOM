@@ -49,15 +49,20 @@ OstDomain = (
         ^ (self newProcessFor: aBlock) resume
     )
 
-"    primAt: idx on: anObj = unenforced (
+    primat: idx on: anObj = unenforced (
         ^ anObj at: idx
     )
 
-    primAt: idx on: anObj put: aVal = unenforced (
+    primat: idx put: aVal on: anObj = unenforced (
         ^ anObj at: idx put: aVal
     )
+    
+    primasStringon: anObj = unenforced (
+        ^ anObj asString
+    )
+    
 
-    primBasicAt: idx on: anObj = unenforced (
+"    primBasicAt: idx on: anObj = unenforced (
         ^ anObj basicAt: idx
     )
 

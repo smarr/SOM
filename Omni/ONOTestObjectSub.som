@@ -38,7 +38,7 @@ ONOTestObjectSub = ONOTestObject (
     )
 
     next = (
-        "For the test necessary of missbehavior of BGRepeatStream>>#next"
+        "For the test necessary of misbehavior of BGRepeatStream>>#next"
 
         ^collection at: (a := a + 1)
     )

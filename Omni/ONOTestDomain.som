@@ -51,19 +51,20 @@ ONOTestDomain = OstDomain (
         ^ literal value
     )
 
-    requestExecution: p1 of: aSelector on: receiver = unenforced (
+    requestExecutionOf: aSelector with: args on: receiver = unenforced (
         receiver == target ifTrue: [
             requestedSelectors add: aSelector.
         ].
-        ^ super requestExecution: p1 of: aSelector on: receiver
+        ^ super requestExecutionOf: aSelector with: args on: receiver
     )
-
-    requestExecutionOf: aSelector on: receiver = unenforced (
+    
+    requestExecutionOf: aSelector with: args on: receiver lookup: cls = unenforced (
         receiver == target ifTrue: [
             requestedSelectors add: aSelector.
         ].
-        ^ super requestExecutionOf: aSelector on: receiver
+        ^ super requestExecutionOf: aSelector with: args on: receiver
     )
+    
 
     write: val toField: idx of: obj = unenforced (
         obj == target ifTrue: [

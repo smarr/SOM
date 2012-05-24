@@ -10,7 +10,7 @@ ONOTestObject = (
     )
 
     ab = (
-        ^ a, b
+        ^ a + b
     )
 
     b = (

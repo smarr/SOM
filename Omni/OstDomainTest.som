@@ -20,8 +20,8 @@ OstDomainTest = TestCase (
     
         hello := domain evaluateInContext: [ Object new. ].
     
-        "This is expected behavior because omnification is not enabled for #evaluateInContext:"
-        self assert: nil equals: (OstMirror domainOf: hello).
+        "SOM always keeps track of execution domains"
+        self assert: domain equals: (OstMirror domainOf: hello).
     )
 
     testDomainForNewObjectsWithOmnification = (

@@ -26,23 +26,23 @@ THE SOFTWARE.
 Integer = (
 
     "Arithmetic"
-    + argument  = primitive
-    - argument  = primitive
-    * argument  = primitive
-    / argument  = primitive
-    // argument = primitive
-    % argument  = primitive
-    & argument  = primitive
+    + argument  = unenforced primitive
+    - argument  = unenforced primitive
+    * argument  = unenforced primitive
+    / argument  = unenforced primitive
+    // argument = unenforced primitive
+    % argument  = unenforced primitive
+    & argument  = unenforced primitive
     abs         = ( ^(self < 0) ifTrue: (0 - self) ifFalse: self )
-    sqrt        = primitive
+    sqrt        = unenforced primitive
     negated     = ( ^0 - self )
     
     "Random numbers"
-    atRandom = primitive
+    atRandom = unenforced primitive
     
     "Comparing"
-    =  argument = primitive
-    <  argument = primitive
+    =  argument = unenforced primitive
+    <  argument = unenforced primitive
     >  argument = ( ^(self >= argument) and: [ self <> argument ] )
     >= argument = ( ^(self < argument) not )
     <= argument = ( ^(self < argument) or: [ self = argument ] )
@@ -50,7 +50,7 @@ Integer = (
     between: a and: b = ( ^(self > a) and: [ self < b ] )
     
     "Converting"
-    asString    = primitive
+    asString    = unenforced primitive
     hashcode    = ( ^self )
     
     "Iterating"

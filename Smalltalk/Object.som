@@ -36,7 +36,7 @@ Object = nil (
     "Comparing"
     =  other    = ( ^self == other )
     <> argument = ( ^(self = argument) not )
-    == other    = primitive
+    == other    = unenforced primitive
     isNil       = ( ^false )
     " If you override =, you MUST override hashcode as well.  The rule
       obj1 = obj2   =>  obj1 hashcode = obj2 hashcode
@@ -45,7 +45,7 @@ Object = nil (
     "Converting"
     asString  = ( ^'instance of ' + (self class) )
     , element = ( ^(Vector new append: self) append: element )
-    hashcode  = primitive
+    hashcode  = unenforced primitive
     
     "Evaluating"
     value     = ( ^self )
@@ -60,8 +60,8 @@ Object = nil (
     println   = ( self print. system printNewline )
 
     "Debugging"
-    inspect   = primitive
-    halt      = primitive
+    inspect   = unenforced primitive
+    halt      = unenforced primitive
     
     "Error handling"
     error: string = ( '' println. ('ERROR: ' + string) println. system exit )
@@ -107,10 +107,10 @@ Object = nil (
     instVarNamed: sym       = primitive
     
     "Omni"
-    performEnforced: aSymbol = primitive
-    performEnforced: aSymbol withArguments: args = primitive
+    performEnforced: aSymbol = unenforced primitive
+    performEnforced: aSymbol withArguments: args = unenforced primitive
     
-    performEnforced: aSymbol inSuperclass: cls = primitive
-    performEnforced: aSymbol withArguments: args inSuperclass: cls = primitive
+    performEnforced: aSymbol inSuperclass: cls = unenforced primitive
+    performEnforced: aSymbol withArguments: args inSuperclass: cls = unenforced primitive
 
 )

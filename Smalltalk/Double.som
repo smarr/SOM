@@ -26,19 +26,19 @@ THE SOFTWARE.
 Double = (
 
     "Arithmetic"
-    + argument  = primitive
-    - argument  = primitive
-    * argument  = primitive
-    // argument  = primitive
-    % argument  = primitive
-    & argument  = primitive
+    + argument  = unenforced primitive
+    - argument  = unenforced primitive
+    * argument  = unenforced primitive
+    // argument = unenforced primitive
+    % argument  = unenforced primitive
+    & argument  = unenforced primitive
     abs         = ( ^(self < 0) ifTrue: (0 - self) ifFalse: self )
-    sqrt        = primitive
+    sqrt        = unenforced primitive
     negated     = ( ^0 - self )
     
     "Comparing"
-    =  argument = primitive
-    <  argument = primitive
+    =  argument = unenforced primitive
+    <  argument = unenforced primitive
     >  argument = ( ^(self >= argument) and: [ self <> argument ] )
     >= argument = ( ^(self < argument) not )
     <= argument = ( ^(self < argument) or: [ self = argument ] )
@@ -46,7 +46,7 @@ Double = (
     between: a and: b = ( ^(self > a) and: [ self < b ] )
     
     "Converting"
-    asString    = primitive
+    asString    = unenforced primitive
     
     "Iterating"
     to: limit do: block = (

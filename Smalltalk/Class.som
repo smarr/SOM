@@ -34,7 +34,7 @@ Class = (
     asString = ( ^self name asString )
     
     "Allocation"
-    new      = primitive
+    new      = unenforced primitive
     
     "Meta Information"
     superclass = ( ^superClass )

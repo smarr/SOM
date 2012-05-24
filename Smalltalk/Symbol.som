@@ -26,7 +26,7 @@ THE SOFTWARE.
 Symbol = (
 
     "Converting"
-    asString = primitive
+    asString = unenforced primitive
     asSymbol = ( ^self )
     
     "Printing"

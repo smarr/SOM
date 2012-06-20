@@ -124,6 +124,22 @@ ONODomainTest = TestCase (
         self assert: #a equals: d lastSuperSelector.
         self assert: 1 equals: d readCountA.
     )
+    
+    testCorrectDomainUsedForEnforcement = (
+        | o d1 d2 |
+        o := ONOTestObjectSub new.
+        
+        d1 := ONORWTestDomain new.
+        d2 := ONORWTestDomain new.
+        
+        d1 adoptObject: o.
+        d1 target: o.
+        
+        [ o a ] enforced: d2.
+        
+        self assert: #a  equals: d1 lastSuperSelector.
+        self assert: nil equals: d2 lastSuperSelector.
+    )
 
     testSimpleWriteWithDomain = (
         | o d |

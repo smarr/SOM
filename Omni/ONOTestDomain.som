@@ -50,19 +50,12 @@ ONOTestDomain = OstDomain (
         readLiteral add: literal.
         ^ literal value
     )
-
-    requestExecutionOf: aSelector with: args on: receiver = unenforced (
-        receiver == target ifTrue: [
-            requestedSelectors add: aSelector.
-        ].
-        ^ super requestExecutionOf: aSelector with: args on: receiver
-    )
     
     requestExecutionOf: aSelector with: args on: receiver lookup: cls = unenforced (
         receiver == target ifTrue: [
             requestedSelectors add: aSelector.
         ].
-        ^ super requestExecutionOf: aSelector with: args on: receiver
+        ^ super requestExecutionOf: aSelector with: args on: receiver lookup: cls
     )
     
 

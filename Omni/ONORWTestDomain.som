@@ -1,5 +1,5 @@
 ONORWTestDomain = OstDomain (
-    | target cntReadA cntReadB cntWriteA cntWriteB lastSuperSelector |
+    | target cntReadA cntReadB cntWriteA cntWriteB lastSelector |
 
     readCountA = (
         ^ cntReadA
@@ -42,7 +42,7 @@ ONORWTestDomain = OstDomain (
     )
 
     requestExecutionOf: aSelector with: argArray on: anObject lookup: cls = unenforced (
-        lastSuperSelector := aSelector.
+        lastSelector := aSelector.
         ^ anObject performEnforced: aSelector withArguments: argArray inSuperclass: cls.
     )
 
@@ -58,7 +58,7 @@ ONORWTestDomain = OstDomain (
 
 
     lastSuperSelector = (
-        ^ lastSuperSelector
+        ^ lastSelector
     )
 
 )

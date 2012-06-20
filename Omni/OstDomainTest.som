@@ -18,7 +18,7 @@ OstDomainTest = TestCase (
         | domain hello |
         domain := OstDomain new.
     
-        hello := domain evaluateInContext: [ Object new. ].
+        hello := domain evaluateInContext: [ Object new ].
     
         "SOM always keeps track of execution domains"
         self assert: domain equals: (OstMirror domainOf: hello).

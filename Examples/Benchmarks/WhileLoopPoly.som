@@ -1,8 +1,5 @@
 "
-
-$Id: Echo.som 226 2008-04-21 12:45:01Z michael.haupt $
-
-Copyright (c) 2001-2007 see AUTHORS file
+Copyright (c) 2013 see AUTHORS file
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the 'Software'), to deal
@@ -23,11 +20,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 "
 
-Echo = (
+WhileLoopPoly = Benchmark (
 
-    run: args = (
-        args from: 2 to: args length do: [ :arg | arg print. ' ' print ].
-        '' println.
+    singleRun = (
+        | sum poly b |
+        sum := 0.
+        [sum < 1000]
+            whileTrue:
+                [sum := sum + 1
+                ((sum % 4) = 0) ifTrue:  [poly := 1].
+                ((sum % 4) = 1) ifTrue:  [poly := 'abc'].
+                ((sum % 4) = 2) ifTrue:  [poly := 2222222222222222].
+                ((sum % 4) = 3) ifTrue:  [poly := 1//2].
+                b := poly
+                ].
+        b := b + b.
+        ^ sum
     )
 
+    benchmark = ( 
+        | sum |
+        sum := 0.
+        [sum < 20000]
+            whileTrue:
+                [sum := sum + self singleRun].
+        ^ sum
+    )
+    
 )
+

@@ -2,7 +2,7 @@
 
 $Id: IntegerLoop.som 31 2009-07-31 12:25:18Z michael.haupt $
 
-Copyright (c) 2001-2007 see AUTHORS file
+Copyright (c) 2001-2013 see AUTHORS file
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the 'Software'), to deal
@@ -26,9 +26,7 @@ THE SOFTWARE.
 IntegerLoop = Benchmark (
 
     benchmark = ( | bounds |
-    
-				bounds := 20000.
-				
+        bounds := 20000.
         bounds negated to: bounds by: 1 do: [:value | |a| a := value-value].
-    )    
+    )
 )

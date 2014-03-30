@@ -1,7 +1,5 @@
 "
-
-
-Copyright (c) 2001-2007 see AUTHORS file
+Copyright (c) 2013 see AUTHORS file
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the 'Software'), to deal
@@ -22,38 +20,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 "
 
-StringTest = (
+WhileLoopVAt = Benchmark (
 
-    "The 'run' method is called when initializing the system"
-    run = ( 
-        |str1 str2 str3|
-        
-        "test equality (true, false, true)"
-        str1 := 'foo'.
-        str2 := 'bar'.
-        
-        (str1 = str1) println.
-        (str1 = str2) println.
-        (str2 = str2) println.
-        
-        "test length (6)"
-        str3 := str1 + str2.
-        str3 length println.
-        
-        "test charAt"
-        (str3 charAt: 0) println.
-        (str3 charAt: 1) println.
-        (str3 charAt: 2) println.
-        (str3 charAt: 3) println.
-        (str3 charAt: 4) println.
-        (str3 charAt: 5) println.
-        
-        "test substring. 'foo' , 'bar' , 'foobar'" 
-        (str3 primSubstringFrom: 0 To: 2) println.
-        (str3 primSubstringFrom: 3 To: 5) println.
-        (str3 primSubstringFrom: 0 To: 5) println.
-        
-        'Hello, World from SmallTalk(tm)' println
+    singleRun = (
+        | sum v |
+        v := Vector new.
+        v at: 1 put: 1.
+        sum := 0.
+        [sum < 1000]
+            whileTrue:
+                [sum := sum + (v at: 1)].
+        ^ sum
+    )
+
+    benchmark = ( 
+        | sum |
+        sum := 0.
+        [sum < 20000]
+            whileTrue:
+                [sum := sum + self singleRun].
+        ^ sum
     )
     
 )
+

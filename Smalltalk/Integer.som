@@ -2,7 +2,7 @@
 
 $Id: Integer.som 29 2009-07-31 11:28:44Z michael.haupt $
 
-Copyright (c) 2001-2007 see AUTHORS file
+Copyright (c) 2001-2013 see AUTHORS file
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the 'Software'), to deal
@@ -42,6 +42,7 @@ Integer = (
     
     "Comparing"
     =  argument = unenforced primitive
+    ~= argument = (^ (self = argument) not )
     <  argument = unenforced primitive
     >  argument = ( ^(self >= argument) and: [ self <> argument ] )
     >= argument = ( ^(self < argument) not )
@@ -86,5 +87,13 @@ Integer = (
         self to: upper do: [ :i | range at: i put: i ].
         ^range
     )
+
+    max: otherInt = (
+        (self < otherInt) ifTrue: [^otherInt] ifFalse: [^self].
+    )
+
+    ----
+    
+    fromString: aString = primitive
     
 )

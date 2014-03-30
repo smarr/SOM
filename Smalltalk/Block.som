@@ -2,7 +2,7 @@
 
 $Id: Block.som 27 2009-07-31 11:17:53Z michael.haupt $
 
-Copyright (c) 2001-2007 see AUTHORS file
+Copyright (c) 2001-2013 see AUTHORS file
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the 'Software'), to deal
@@ -26,8 +26,6 @@ THE SOFTWARE.
 Block = (
 
     "For the creation of Block instances, see Universe_new_block()."
-
-    | method context |
     
     "Evaluation"
     value = primitive
@@ -46,7 +44,7 @@ Block = (
     "Restarting"
     restart = unenforced primitive "STEFAN: do not have a solution for primitives that need access to the frame, or stack beyond their direct arguments"
     
-	"Omni"
+	"OMOP"
 	enforced: aDomain = (
 		"Move to language/baselevel and in the context of the given domain"
 		^ aDomain evaluateEnforced: self

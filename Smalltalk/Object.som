@@ -2,7 +2,7 @@
 
 $Id: Object.som 27 2009-07-31 11:17:53Z michael.haupt $
 
-Copyright (c) 2001-2007 see AUTHORS file
+Copyright (c) 2001-2013 see AUTHORS file
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the 'Software'), to deal
@@ -24,23 +24,20 @@ THE SOFTWARE.
 "
 
 Object = nil (
-
-    | class domain |
-    
-    "Accessing"
-    class     = ( ^class )
-    
-    "Primitive size in bytes"
-    objectSize = primitive
+    class      = primitive
+    objectSize = primitive  "size in bytes"
     
     "Comparing"
-    =  other    = ( ^self == other )
-    <> argument = ( ^(self = argument) not )
-    == other    = unenforced primitive
-    isNil       = ( ^false )
+
     " If you override =, you MUST override hashcode as well.  The rule
       obj1 = obj2   =>  obj1 hashcode = obj2 hashcode
       must be valid for all objects, or Hashtable will not work"
+    =  other    = ( ^self == other )
+    <> argument = ( ^(self = argument) not )
+    == other    = unenforced primitive
+    ~= other    = (^ (self == other) not )
+    isNil       = ( ^false )
+    notNil      = ( ^true )
     
     "Converting"
     asString  = ( ^'instance of ' + (self class) )
@@ -64,7 +61,7 @@ Object = nil (
     halt      = unenforced primitive
     
     "Error handling"
-    error: string = ( '' println. ('ERROR: ' + string) println. system exit )
+    error: string = ( '' println. ('ERROR: ' + string) println. system exit: 1 )
     
     "Abstract method support"
     subclassResponsibility = (
@@ -74,7 +71,7 @@ Object = nil (
     "Error recovering"
     doesNotUnderstand: selector arguments: arguments = (
         self error:
-            ('Method ' + selector + ' not found in class ' + class name)
+            ('Method ' + selector + ' not found in class ' + self class name)
     )
     
     escapedBlock: block = (
@@ -106,7 +103,7 @@ Object = nil (
     instVarAt: idx put: obj = primitive
     instVarNamed: sym       = primitive
     
-    "Omni"
+    "OMOP"
     performEnforced: aSymbol = unenforced primitive
     performEnforced: aSymbol withArguments: args = unenforced primitive
     

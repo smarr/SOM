@@ -2,7 +2,7 @@
 
 $Id: Double.som 27 2009-07-31 11:17:53Z michael.haupt $
 
-Copyright (c) 2001-2007 see AUTHORS file
+Copyright (c) 2001-2013 see AUTHORS file
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the 'Software'), to deal
@@ -26,15 +26,17 @@ THE SOFTWARE.
 Double = (
 
     "Arithmetic"
-    + argument  = unenforced primitive
-    - argument  = unenforced primitive
-    * argument  = unenforced primitive
-    // argument = unenforced primitive
-    % argument  = unenforced primitive
-    & argument  = unenforced primitive
+    + argument   = unenforced primitive
+    - argument   = unenforced primitive
+    * argument   = unenforced primitive
+    // argument  = unenforced primitive
+    % argument   = unenforced primitive
+    & argument   = unenforced primitive
+    bitXor: argument = unenforced primitive
     abs         = ( ^(self < 0) ifTrue: (0 - self) ifFalse: self )
     sqrt        = unenforced primitive
     negated     = ( ^0 - self )
+    round       = unenforced primitive
     
     "Comparing"
     =  argument = unenforced primitive

@@ -29,7 +29,9 @@ TestCase = (
     
     signalFailure: aString = (
         failed := true.
-        runner fail: self class name + '>>#' + testSelector because: aString.
+        runner fail: self class name asString + '>>#' + testSelector asString 
+            because: aString.
+        cleanupAndReturnBlock value
     )
     
     comparingStringBetween: expected and: actual = (
@@ -69,7 +71,7 @@ TestCase = (
         | tests |
         tests := Vector new: self methods length.
         self methods do: [:m |
-            (m signature beginsWith: #test) ifTrue: [
+            (m signature asString beginsWith: 'test') ifTrue: [
                 tests append: (self for: m signature).
             ].
         ].

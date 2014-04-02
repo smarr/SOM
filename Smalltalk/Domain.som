@@ -1,0 +1,125 @@
+Domain = (
+    "Domain is the root class for all Omni Domain definitions."
+    | domainForNewObjects |
+
+    "Base-level interface:
+        The methods here are used to interact with the domain object directly."
+
+    initialize = (
+        domainForNewObjects := self domainForNewObjects.
+    )
+    
+    adoptObject: obj = ( "returns obj"
+        ^ Mirror setDomainOf: obj to: self.
+    )
+    
+    evaluateInContext: aBlock = unenforced (
+        ^ Mirror evaluate: aBlock in: self
+    )
+
+    evaluateEnforced: aBlock = unenforced (
+        ^ Mirror evaluate: aBlock enforcedIn: self
+    )
+    
+    newProcessFor: aBlock = (
+        "Answer a Process running the code in aBlock in this domain.
+         The process is not scheduled."
+        "| ctx proc |
+        ctx := [aBlock value.
+                Processor terminateActive] asContext.
+        proc := Process
+            forContext: ctx
+            priority: Processor activePriority.
+
+        Mirror setDomainOf: ctx  to: self.
+        Mirror setDomainOf: proc to: self.
+        ^ proc."
+    )
+
+    spawnHere: aBlock = (
+        "Spawn the given block as a process in this domain" 
+        ^ (self newProcessFor: aBlock) resume
+    )
+
+    "Meta-level interface:
+        The methods here enable the change of semantics in the base level.
+        They are triggered for the corresponding action in the base level."
+    
+    domainForNewObjects = (
+        "New objects are automatically initialized to be part of a domain.
+         Override this method to associate them with another domain than
+         the one they are created in.
+         WARNING: we use a field to short-cut this in the VM, if you need
+                  conditional behavior here, remember to set that field."
+        ^ self
+    )
+    
+    requestThreadResumption: aProcess = unenforced (
+        "Some concurrency models need control over the number of
+         threads/process that are active in the same domain."
+        ^ aProcess resume.
+    )
+    
+    requestExecutionOf: aSelector with: argArray on: anObject lookup: cls = unenforced (
+        ^ anObject performEnforced: aSelector withArguments: argArray inSuperclass: cls.
+    )
+
+    write: val toField: idx of: obj = unenforced (
+        ^ obj instVarAt: idx put: val.
+    )
+
+    write: val toLiteral: literal = unenforced (
+        "All globals are literals, and we treat all literals equal in the VM"
+        literal value: val.
+        ^ val
+    )
+    
+    requestExectionOfPrimitive: prim with: args on: obj = unenforced (
+        ^ prim invokeOn: obj with: args
+    )
+    
+    primat: idx on: anObj = unenforced (
+        ^ anObj at: idx
+    )
+
+    primat: idx put: aVal on: anObj = unenforced (
+        ^ anObj at: idx put: aVal
+    )
+    
+    primasStringon: anObj = unenforced (
+        ^ anObj asString
+    )
+    
+    priminstVarAt: idx on: anObj = unenforced (
+        ^ anObj instVarAt: idx
+    )
+
+    priminstVarAt: idx put: aVal on: anObj = unenforced (
+        ^ anObj instVarAt: idx put: aVal
+    )
+
+    readField: idx of: obj = unenforced (
+        ^ obj instVarAt: idx
+    )
+
+    readLiteral: literal = unenforced (
+        ^ literal value
+    )
+
+    ----
+    
+    new = (
+        | o |
+        o := super new.
+        o initialize.
+        ^ o
+    )
+
+    currentDomain = unenforced (
+        ^ Mirror currentDomain
+    )
+
+    omniDomainFrom: obj = (
+        ^ Mirror domainOf: obj
+    )
+)

@@ -1,0 +1,16 @@
+Mirror = (
+    "The Mirror API for OMOP related operations"
+
+    ----
+
+       domainOf: anObject               = primitive
+    setDomainOf: anObject to: aDomain   = primitive
+    
+    evaluate: block in: domain          = primitive
+    evaluate: block enforcedIn: domain  = primitive
+    
+    currentDomain                       = primitive
+    
+    executesEnforced                    = unenforced primitive
+    executesUnenforced                  = unenforced primitive
+)

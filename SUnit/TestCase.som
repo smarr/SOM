@@ -1,5 +1,5 @@
 TestCase = (
-    | testSelector runner failed |
+    | testSelector runner failed cleanupAndReturnBlock |
     
     selector       = ( ^ testSelector )
     selector: aSym = ( testSelector := aSym )
@@ -44,19 +44,19 @@ TestCase = (
         runner := aRunner.
         failed := false.
         
+        cleanupAndReturnBlock := [^self tearDown].
+        
         self setUp.
         self performTest.
-        self tearDown.
         
-        failed ifFalse: [
-            runner passed: self class name + '>>#' + testSelector
-        ].
+        runner passed: self class name asString + '>>#' + testSelector asString.
+        cleanupAndReturnBlock value.
     )
     
     setUp    = ()
     tearDown = ()
     
-    performTest = ( self perform: testSelector )
+    performTest  = ( self perform: testSelector )
     
     ----
     

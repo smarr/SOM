@@ -68,12 +68,6 @@ Domain = (
         ^ obj instVarAt: idx put: val.
     )
 
-    write: val toLiteral: literal = unenforced (
-        "All globals are literals, and we treat all literals equal in the VM"
-        literal value: val.
-        ^ val
-    )
-    
     requestExecutionOfPrimitive: prim with: args on: obj = unenforced (
         ^ prim invokeOn: obj with: args
     )

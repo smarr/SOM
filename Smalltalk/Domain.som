@@ -74,7 +74,7 @@ Domain = (
         ^ val
     )
     
-    requestExectionOfPrimitive: prim with: args on: obj = unenforced (
+    requestExecutionOfPrimitive: prim with: args on: obj = unenforced (
         ^ prim invokeOn: obj with: args
     )
     

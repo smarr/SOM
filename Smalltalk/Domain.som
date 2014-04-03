@@ -102,8 +102,8 @@ Domain = (
         ^ obj instVarAt: idx
     )
 
-    readLiteral: literal = unenforced (
-        ^ literal value
+    readGlobal: sym = unenforced (
+        ^ system global: sym
     )
 
     ----

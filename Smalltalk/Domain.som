@@ -64,16 +64,16 @@ Domain = (
         ^ anObject performEnforced: aSelector withArguments: argArray inSuperclass: cls.
     )
 
-    write: val toField: idx of: obj = unenforced (
-        ^ obj instVarAt: idx put: val.
-    )
-
     requestExecutionOfPrimitive: prim with: args on: obj = unenforced (
         ^ prim invokeOn: obj with: args
     )
 
     readField: idx of: obj = unenforced (
         ^ obj instVarAt: idx
+    )
+
+    write: val toField: idx of: obj = unenforced (
+        ^ obj instVarAt: idx put: val.
     )
 
     readGlobal: sym = unenforced (

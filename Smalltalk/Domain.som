@@ -71,26 +71,6 @@ Domain = (
     requestExecutionOfPrimitive: prim with: args on: obj = unenforced (
         ^ prim invokeOn: obj with: args
     )
-    
-    primat: idx on: anObj = unenforced (
-        ^ anObj at: idx
-    )
-
-    primat: idx put: aVal on: anObj = unenforced (
-        ^ anObj at: idx put: aVal
-    )
-    
-    primasStringon: anObj = unenforced (
-        ^ anObj asString
-    )
-    
-    priminstVarAt: idx on: anObj = unenforced (
-        ^ anObj instVarAt: idx
-    )
-
-    priminstVarAt: idx put: aVal on: anObj = unenforced (
-        ^ anObj instVarAt: idx put: aVal
-    )
 
     readField: idx of: obj = unenforced (
         ^ obj instVarAt: idx

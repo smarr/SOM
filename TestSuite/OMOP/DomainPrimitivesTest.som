@@ -1,0 +1,125 @@
+DomainPrimitivesTest = TestCase (
+
+
+
+"   testNewProcessFor = (
+        | domain  promise block proc |
+        domain := Domain new.
+    
+        promise := OPromise new.
+        block := [ promise deliver: (Domain currentDomain) ].
+    
+        proc := domain newProcessFor: block.
+    
+        self assert: (proc isKindOf: Process).
+        self assert: domain equals: (Mirror domainOf: proc).
+    
+        proc resume.
+        self assert: domain equals: promise read.
+    )"
+
+"The following primitives are currently not supported by SOM."
+"    testPrimAt = (
+        | domain obj args |
+        domain := PrimitiveTestDomain new.
+        obj := Object new.
+        domain adoptObject: obj.
+    
+        [ obj at: 1 ] enforced: domain.
+
+        self assert: #primAt:on: equals: domain primitive.
+
+        args := domain primitiveArgs.
+        self assert: 1   equals: (args at: 1).
+        self assert: obj equals: (args at: 2).
+    )
+
+    testPrimAtPut = (
+        | domain obj args |
+        domain := PrimitiveTestDomain new.
+        obj := Pair new.
+        domain adoptObject: obj.
+    
+        [ obj at: 3 put: #foo ] enforced: domain.
+
+        self assert: #primAt:on:put: equals: domain primitive.
+        args := domain primitiveArgs.
+        self assert: 3   equals: (args at: 1).
+        self assert: obj equals: (args at: 2).
+        self assert: #foo   equals: (args at: 3).
+    )"
+    
+    "The following primitives are currently not supported by SOM."
+"
+    testPrimBasicAt = (
+        | domain obj args |
+        domain := PrimitiveTestDomain new.
+        obj := Object new.
+        domain adoptObject: obj.
+    
+        [ obj basicAt: 1 ] enforced: domain.
+
+        self assert: #primBasicAt:on: equals: domain primitive.
+        args := domain primitiveArgs.
+        self assert: 1   equals: (args at: 1).
+        self assert: obj equals: (args at: 2).
+    )
+
+    testPrimBasicAtPut = (
+        | domain obj args |
+        domain := PrimitiveTestDomain new.
+        obj := Object new.
+        domain adoptObject: obj.
+    
+        [ obj basicAt: 1 put: 2 ] enforced: domain.
+
+        self assert: #primBasicAt:on:put: equals: domain primitive.
+        args := domain primitiveArgs.
+        self assert: 1   equals: (args at: 1).
+        self assert: obj equals: (args at: 2).
+        self assert: 2   equals: (args at: 3).
+    )"
+
+    testPrimInstVarAt = (
+        | domain obj args |
+        domain := PrimitiveTestDomain new.
+        obj := Object new.
+        domain adoptObject: obj.
+    
+        [ obj instVarAt: 1 ] enforced: domain.
+
+        self assert: #instVarAt: equals: domain primitive.
+        args := domain primitiveArgs.
+        self assert: 1   equals: (args at: 1).
+        self assert: obj equals: domain primitiveRcvr.
+    )
+
+    testPrimInstVarAtPut = (
+        | domain obj args |
+        domain := PrimitiveTestDomain new.
+        obj := Object new.
+        domain adoptObject: obj.
+    
+        [ obj instVarAt: 1 put: 2 ] enforced: domain.
+
+        self assert: #instVarAt:put: equals: domain primitive.
+
+        args := domain primitiveArgs.
+        self assert: 1   equals: (args at: 1).
+        self assert: 2   equals: (args at: 2).
+        
+        self assert: obj equals: domain primitiveRcvr.
+    )
+
+"    testPrimShallowCopy = (
+        | domain obj |
+        domain := TestDomain new.
+        obj := Object new.
+        domain adoptObject: obj.
+    
+        [ obj shallowCopy ] enforced: domain.
+
+        self assert: #primShallowCopy: equals: domain primitive.
+        self assert: obj equals: domain primitiveArgs.
+    )"
+)

@@ -1,0 +1,15 @@
+OmopTestSuite = (
+    
+    tests = (
+        ^ DomainTest, MirrorTest, DomainPrimitivesTest
+    )
+
+    run = (
+        self tests do: [:t |
+            | runner |
+            runner := TestRunner new.
+            runner initializeOn: t.
+            runner run.
+        ]
+    )
+)

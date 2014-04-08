@@ -1,0 +1,76 @@
+TestDomain = Domain (
+
+    | target requestedSelectors cntReadA cntReadB cntWriteA cntWriteB readGlobal |
+
+    requestedSelectors = (
+        ^ requestedSelectors
+    )
+
+    target: targetObj = (
+        target := targetObj
+    )
+
+    initialize = (
+        super initialize.
+    
+        requestedSelectors := Set new.
+
+        cntReadA := 0.
+        cntReadB := 0.
+        cntWriteA := 0.
+        cntWriteB := 0.
+
+        readGlobal := Vector new.
+    )
+
+    readCountA = (
+        ^ cntReadA
+    )
+
+    readCountB = (
+        ^ cntReadB
+    )
+
+    readField: idx of: obj = unenforced (
+        obj == target ifTrue: [
+            idx = 1 ifTrue: [cntReadA := cntReadA + 1.].
+            idx = 2 ifTrue: [cntReadB := cntReadB + 1.].
+        ].
+    
+        ^ obj instVarAt: idx
+    )
+
+    readGlobal = (
+        ^ readGlobal
+    )
+
+    readGlobal: sym = unenforced (
+        readGlobal append: sym.
+        ^ system global: sym
+    )
+    
+    requestExecutionOf: aSelector with: args on: receiver lookup: cls = unenforced (
+        receiver == target ifTrue: [
+            requestedSelectors add: aSelector.
+        ].
+        ^ super requestExecutionOf: aSelector with: args on: receiver lookup: cls
+    )
+
+    write: val toField: idx of: obj = unenforced (
+        obj == target ifTrue: [
+            idx = 1 ifTrue: [cntWriteA := cntWriteA + 1.].
+            idx = 2 ifTrue: [cntWriteB := cntWriteB + 1.].
+        ].
+
+        obj instVarAt: idx put: val.
+        ^ obj
+    )
+
+    writeCountA = (
+        ^ cntWriteA
+    )
+
+    writeCountB = (
+        ^ cntWriteB
+    )
+)

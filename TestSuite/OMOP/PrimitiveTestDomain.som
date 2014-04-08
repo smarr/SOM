@@ -1,0 +1,27 @@
+PrimitiveTestDomain = Domain (
+    | primitive primitiveArgs primitiveRcvr |
+    
+    requestExecutionOfPrimitive: prim with: args on: obj = unenforced (
+        primitive     := prim signature.
+        primitiveArgs := args.
+        primitiveRcvr := obj.
+    )
+
+    primitive     = ( ^ primitive )
+    primitiveArgs = ( ^ primitiveArgs )
+    primitiveRcvr = ( ^ primitiveRcvr )
+    
+    initialize = (
+        primitiveArgs := Array new: 3.
+    )
+
+    ----
+    
+    new = (
+        | o |
+        o := super new.
+        o initialize.
+        ^ o
+    )
+
+)

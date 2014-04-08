@@ -1,0 +1,116 @@
+MirrorTest = TestCase (
+
+    testPerformEnforce = (
+        self assert: Mirror executesUnenforced.
+    
+        self assert: (self performEnforced: #unenforcedNoPragma) not.
+    
+        self assert: Mirror executesUnenforced.
+    )
+
+    testPerformEnforcedWithArguments = (
+        self assert: Mirror executesUnenforced.
+    
+        self assert: (self performEnforced: #unenforcedNoPragma withArguments: Array new) not.
+    
+        self assert: Mirror executesUnenforced.
+    )
+
+    testPerformEnforcedWithArgumentsInSuperclass = (
+        self assert: Mirror executesUnenforced.
+    
+        self assert: (self performEnforced: #unenforcedNoPragma withArguments: Array new inSuperclass: self class) not.
+    
+        self assert: Mirror executesUnenforced.
+    )
+
+    testBlockEnforced = (
+        | d enforced |
+        d := Domain new.
+    
+        enforced := [ Mirror executesEnforced ] enforced: d.
+    
+        self assert: enforced.
+    )
+
+"    testBlockEnforcedValueWithArgs = (
+        | enforced |
+    
+        Mirror switchToBaseLevel.
+    
+        enforced := [:i | Mirror executesEnforced ] value: 1.
+    
+        Mirror switchToMetaLevel.
+    
+        self assert: enforced.
+    
+    
+    )"
+
+"    testUnenforcedPragma = (
+        | enforced1 enforced2 unEnf |
+        self assert: Mirror executesUnenforced.
+    
+        self assert: self isUnenforced.
+    
+        self assert: self unenforcedNoPragma.
+    
+        Mirror switchToBaseLevel.
+    
+        ""We post-pone the asserts to not run into trouble with SUnit and the tests.""
+        enforced1 := self unenforcedNoPragma not.
+        unEnf := self isUnenforced.
+        enforced2 := self unenforcedNoPragma not.
+    
+        Mirror switchToMetaLevel.
+    
+        self assert: enforced1.
+        self assert: unEnf.
+        self assert: enforced2.
+    
+        self assert: Mirror executesUnenforced.
+    )"
+
+"    testOmniBlockThisContext = (
+        | d  execD |
+        d := Domain new.
+    
+        execD := [ Mirror domainOf: thisContext ] enforced: d.
+    
+        self assert: d equals: execD.
+    )"
+
+    testPrimitiveGetSetDomain = (
+        | o d |
+        o := Object new.
+    
+        self assert: Mirror currentDomain equals: (Mirror domainOf: o).
+     
+        d := Object new.
+        Mirror setDomainOf: o to: d.
+        self assert: d equals: (Mirror domainOf: o).
+    )
+
+"    testSwitchEnforcement = (
+        | enforced |
+        self assert: Mirror executesUnenforced.
+    
+        Mirror switchToBaseLevel.
+    
+        enforced := Mirror executesEnforced.
+        Mirror switchToMetaLevel.
+    
+        self assert: enforced.
+        self assert: Mirror executesUnenforced.
+    )"
+
+
+    isUnenforced = unenforced (
+        ^ Mirror executesUnenforced
+    )
+
+    unenforcedNoPragma = (
+        ^ Mirror executesUnenforced
+    )
+
+)

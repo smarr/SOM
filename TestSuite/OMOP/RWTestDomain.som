@@ -1,0 +1,64 @@
+RWTestDomain = Domain (
+    | target cntReadA cntReadB cntWriteA cntWriteB lastSelector |
+
+    readCountA = (
+        ^ cntReadA
+    )
+
+    readCountB = (
+        ^ cntReadB
+    )
+
+    target: targetObj = (
+        target := targetObj
+    )
+
+    writeCountA = (
+        ^ cntWriteA
+    )
+
+    writeCountB = (
+        ^ cntWriteB
+    )
+
+
+    initialize = (
+        super initialize.
+    
+        cntReadA := 0.
+        cntReadB := 0.
+        cntWriteA := 0.
+        cntWriteB := 0.
+    )
+
+
+    readField: idx of: obj = unenforced (
+        obj == target ifTrue: [    
+            idx = 1 ifTrue: [cntReadA := cntReadA + 1.].
+            idx = 2 ifTrue: [cntReadB := cntReadB + 1.].
+        ].
+    
+        ^ obj instVarAt: idx
+    )
+
+    requestExecutionOf: aSelector with: argArray on: anObject lookup: cls = unenforced (
+        lastSelector := aSelector.
+        ^ anObject performEnforced: aSelector withArguments: argArray inSuperclass: cls.
+    )
+
+    write: val toField: idx of: obj = unenforced (
+        obj == target ifTrue: [
+            idx = 1 ifTrue: [cntWriteA := cntWriteA + 1.].
+            idx = 2 ifTrue: [cntWriteB := cntWriteB + 1.].
+        ].
+
+        obj instVarAt: idx put: val.
+        ^ obj
+    )
+
+
+    lastSuperSelector = (
+        ^ lastSelector
+    )
+
+)

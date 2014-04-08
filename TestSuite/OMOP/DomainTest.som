@@ -1,0 +1,282 @@
+"Tests very similar to DomainTest, but originally written to fix bugs in the OmniVM based on the RoarVM."
+DomainTest = TestCase (
+
+    testAdopt = (
+        | o d |
+        o := Object new.
+        d := Domain new.
+    
+        self assert: Mirror currentDomain equals: (Mirror domainOf: o).
+    
+        d adoptObject: o.
+    
+        self assert: d equals: (Mirror domainOf: o).
+    )
+
+    testClass = (
+        | d o c |
+        d := TestDomain new.
+        o := TestObject new.
+        d adoptObject: o.
+    
+        c := [o class] enforced: d.
+    
+        self assert: TestObject equals: c.
+    )
+
+    "SOM doesn't have a clone primitive at the moment.
+    testClone = (
+        | d o clone |
+        d := TestDomain new.
+        o := TestObject new.
+        d adoptObject: o.
+    
+        clone := [o copy] enforced: d.
+    
+        self assert: d equals: (Mirror domainOf: clone).
+    )"
+
+    testDomainForNewObjectsInitialization = (
+        | domain |
+        domain := TestDomain new.
+        self assert: domain equals: domain domainForNewObjects.
+    
+        self assert: domain equals: (domain instVarNamed: #domainForNewObjects).
+    )
+    
+    testDomainForNewObjectsNotUsedWithoutEnforcement = (
+        | domain hello |
+        domain := TestDomain new.
+        hello  := domain evaluateInContext: [ Object new ].
+    
+        "SOM always keeps track of execution domains"
+        self assert: domain equals: (Mirror domainOf: hello).
+    )
+    
+    testDomainForNewObjectsWithEnforcement = (
+        | domain hello |
+        domain := TestDomain new.
+
+        hello  := [ Object new ] enforced: domain.
+    
+        "This should work since we used the #enforced: entry."
+        self assert: domain equals: (Mirror domainOf: hello).
+    )
+    
+    testEvaluateInContext = (
+        | domain result |
+        domain := Domain new.
+    
+        "We just use the array to be sure that we got the result of the block and nothing else"
+        result := domain evaluateInContext: [ Array new: 1 withAll: [Domain currentDomain ] ].
+    
+        self assert: domain equals: (result at: 1).
+    )
+
+    testGlobalReadWithDomain = (
+        | d read |
+        d := TestDomain new.
+    
+        read := [ DomainTest ] enforced: d.
+
+        self assert: DomainTest equals: read.
+        self assert: #DomainTest equals: d readGlobal first.
+    )
+
+    testReadWithDomain = (
+        | o d |
+        o := TestObject new.
+        d := TestDomain new.
+        d adoptObject: o.
+        d target: o.
+    
+        [self helperExecuteAllMessages: o ] enforced: d.
+
+        self assert: 3 equals: d readCountA.
+        self assert: 4 equals: d readCountB.
+    
+        self assert: 1 equals: d writeCountA.
+        self assert: 2 equals: d writeCountB.
+    )
+
+    testRequestExecWithDomain = (
+        | o d expectedSelectors |
+        o := TestObject new.
+        d := TestDomain new.
+        d adoptObject: o.
+        d target: o.
+    
+        expectedSelectors := TestObject selectors reject: [:sel | sel = #initialize].
+        expectedSelectors append: #=.
+        expectedSelectors append: #==.
+        
+        [ self helperExecuteAllMessages: o ] enforced: d.
+                
+        "All selectors that are expected should already be in that set, and then there are a few more
+         which actually got recorded because of the implementation details of the methods executed"
+        
+        '------' println.
+        'requestedSelectors: ' print.
+        d requestedSelectors do: [:e | e print. ' ' print.].
+        '' println.
+        'expectedSelectors: ' print.
+        expectedSelectors do: [:e | e print. ' ' print.].
+        '' println.
+        'missing: ' print.
+        (expectedSelectors asSet - (d requestedSelectors)) do: [:e | e print. ' ' print.].
+        '' println.
+        '------' println.
+         
+        self assert: (d requestedSelectors union: expectedSelectors) equals: d requestedSelectors.
+    )
+
+    testSimpleReadWithDomain = (
+        | o d |
+        o := TestObject new.
+        d := RWTestDomain new.
+        d adoptObject: o.
+        d target: o.
+        
+        1 halt.
+    
+        [ o a ] enforced: d.
+
+        self assert: 1 equals: d readCountA.
+    )
+
+    testSimpleSuperSendWithDomain = (
+        | o d |
+        o := TestObjectSub new.
+        d := RWTestDomain new.
+        d adoptObject: o.
+        d target: o.
+    
+        [ o a ] enforced: d.
+ 
+        self assert: #a equals: d lastSuperSelector.
+        self assert: 1 equals: d readCountA.
+    )
+    
+    testCorrectDomainUsedForEnforcement = (
+        | o d1 d2 |
+        o := TestObjectSub new.
+        
+        d1 := RWTestDomain new.
+        d2 := RWTestDomain new.
+        
+        d1 adoptObject: o.
+        d1 target: o.
+        
+        [ o a ] enforced: d2.
+        
+        self assert: #a  equals: d1 lastSuperSelector.
+        self assert: nil equals: d2 lastSuperSelector.
+    )
+
+    testSimpleWriteWithDomain = (
+        | o d |
+        o := TestObject new.
+        d := RWTestDomain new.
+        d adoptObject: o.
+        d target: o.
+    
+        [ o a: #bbb ] enforced: d.
+
+        self assert: 1 equals: d writeCountA.
+    )
+
+"    testSpecialSendBytecode = (
+        | o d r |
+        o := TestObjectSub new.
+        o initForTestSpecialSendBytecode.
+        d := Domain new.
+        d adoptObject: o.
+    
+        r := [ o next ] enforced: d.
+
+        self assert: 1 equals: o a.
+        self assert: #first equals: r.
+    )"
+
+    testTimesRepeat = (
+        | o d r |
+        o := TestObjectSub new.
+        o initForTimesRepeat.
+        d := Domain new.
+        d adoptObject: o.
+    
+        r := [ o repeat: 4 on: o ] enforced: d.
+
+        self assert: 4 equals: o c.
+        o collection do: [:execEnforced |
+            self assert: true equals: execEnforced ].
+
+    )
+
+    testWithDomain = (
+        | o d expectedSelectors |
+        o := TestObject new.
+        d := TestDomain new.
+        d adoptObject: o.
+        d target: o.
+    
+        expectedSelectors := TestObject selectors reject: [:sel | sel = #initialize].
+        expectedSelectors append: #=.
+    
+        [self helperExecuteAllMessages: o ] enforced: d.
+    
+        "All selectors that are expected should already be in that set, and then there are a few more
+         which actually got recorded because of the implementation details of the methods executed"
+        self assert: (d requestedSelectors union: expectedSelectors) equals: d requestedSelectors.
+    
+        self assert: 3 equals: d readCountA.
+        self assert: 4 equals: d readCountB.
+    
+        self assert: 1 equals: d writeCountA.
+        self assert: 2 equals: d writeCountB.
+    )
+
+    testWithNilDomain = (
+        | o |
+        o := TestObject new.
+        self helperExecuteAllMessages: o.
+    )
+
+
+    helperExecuteAllMessages: o = (
+        self assert: #a   equals: o a.
+        self assert: #b   equals: o b.
+        self assert: nil  equals: o magicNil.
+        self assert: 1    equals: o magicOne.
+        self assert: o    equals: o magicSelf.
+        self assert: 'ab' equals: o ab.
+        
+        1 halt.
+    
+        o b: #bb.
+        self assert: #bb equals: o b.
+    
+        o a: #aa.
+        self assert: #aa equals: o a. 
+    
+        o makeOne.
+        self assert: 1 equals: o b.
+    )
+
+    helperExecuteAllMessagesSimple: o = (
+        o a.
+        o b.
+        o magicNil.
+        o magicOne.
+        o magicSelf.
+        o ab.
+        o b: #bb.
+        o a: #aa.
+        o makeOne.
+    )
+
+----
+    
+    | SomeClassVar |
+
+)

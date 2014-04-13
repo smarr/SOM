@@ -1,0 +1,25 @@
+AddFieldWrite = Benchmark (
+    | obj |
+
+    benchmark = (
+        obj set: 0.
+
+        1 to: 20000 do: [ :i | 
+            obj incTwice: 1
+        ].
+
+        obj get = 40000 ifFalse: [ self error: 'Benchmark failed with wrong result']
+    )
+    
+    method: argument = ( ^argument )
+    
+    initialize = (
+        obj := AddFieldWriteObj new.
+    )
+    
+    ----
+    
+    new = (
+        ^ super new initialize
+    )
+)

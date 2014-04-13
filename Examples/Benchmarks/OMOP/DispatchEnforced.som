@@ -1,0 +1,22 @@
+DispatchEnforced = Benchmark (
+    | domain |
+
+    benchmark = (
+        Mirror evaluate: [
+            1 to: 20000 do: [ :i | self method: i ]
+        ] enforcedIn: domain.
+    )
+    
+    method: argument = ( ^argument )
+    
+    initialize = (
+        domain := DummyDomain new.
+        domain adoptObject: self.
+    )
+    
+    ----
+    
+    new = (
+        ^ super new initialize
+    )
+)

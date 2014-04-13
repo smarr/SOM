@@ -1,0 +1,9 @@
+DummyDomain = Domain (
+    "Just an empty domain to work around the current standard heuristic that 
+     avoids reification overhead"
+     
+     "TODO: this is also a test case for showing that we actually
+            need to make that heuristic smarter... because it is not
+            the domain class but the intercession handler that
+            indicates whether it has standard semantics or not"
+)

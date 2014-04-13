@@ -1,0 +1,5 @@
+AddDispatchDomain = Domain (
+    requestExecutionOf: aSelector with: argArray on: anObject lookup: cls = unenforced (
+        ^ 1 + (anObject performEnforced: aSelector withArguments: argArray inSuperclass: cls)
+    )
+)

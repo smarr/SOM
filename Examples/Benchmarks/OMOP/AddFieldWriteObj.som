@@ -1,0 +1,21 @@
+AddFieldWriteObj = (
+    | field |
+    
+    get = ( ^ field )
+    
+    incOnce: anInt  = ( field := field + anInt )
+    incTwice: anInt = (
+        field := field + anInt.
+        field := field + anInt.
+    )
+    
+    set: val = ( field := val )
+    
+    initialize = ( field := 0 )
+    
+    ----
+    
+    new = (
+        ^ super new initialize
+    )
+)

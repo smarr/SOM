@@ -1,0 +1,6 @@
+AddFieldWriteDomain = Domain (
+    write: val toField: idx of: obj = unenforced (
+          obj instVarAt: idx put: val.      
+        ^ obj instVarAt: idx put: (1 + (obj instVarAt: idx)).
+    )
+)

@@ -1,0 +1,21 @@
+AddDispatch = Benchmark (
+
+    benchmark = (
+        | sum |
+        sum := 0.
+
+        1 to: 20000 do: [ :i | sum := sum + (1 + (self method: i)) ].
+
+        sum = 200030000 ifFalse: [ self error: 'Benchmark failed with wrong result']
+    )
+    
+    method: argument = ( ^argument )
+    
+    initialize = ()
+    
+    ----
+    
+    new = (
+        ^ super new initialize
+    )
+)

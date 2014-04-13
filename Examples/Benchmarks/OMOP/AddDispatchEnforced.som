@@ -1,0 +1,25 @@
+AddDispatchEnforced = Benchmark (
+    | domain |
+
+    benchmark = (
+        | sum |
+        sum := 0.
+        Mirror evaluate: [
+            1 to: 20000 do: [ :i | sum := sum + (self method: i) ].
+        ] enforcedIn: domain.
+        sum = 200030000 ifFalse: [ self error: 'Benchmark failed with wrong result']
+    )
+    
+    method: argument = ( ^argument )
+    
+    initialize = (
+        domain := AddDispatchDomain new.
+        domain adoptObject: self.
+    )
+    
+    ----
+    
+    new = (
+        ^ super new initialize
+    )
+)

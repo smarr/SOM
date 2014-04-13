@@ -1,0 +1,5 @@
+FieldReadDomain = Domain (
+    readField: idx of: obj = unenforced (
+        ^ 1 + (obj instVarAt: idx)
+    )
+)

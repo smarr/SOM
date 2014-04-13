@@ -1,0 +1,25 @@
+ReqPrim = Benchmark (
+    | arr |
+
+    benchmark = (
+        | sum |
+        sum := 0.
+
+        1 to: 20000 do: [ :i | sum := sum + (1 + (arr at: 1)) ].
+
+        sum = 40000 ifFalse: [ self error: 'Benchmark failed with wrong result']
+    )
+    
+    method: argument = ( ^argument )
+    
+    initialize = (
+        arr := Array new: 1.
+        arr at: 1 put: 1.
+    )
+    
+    ----
+    
+    new = (
+        ^ super new initialize
+    )
+)

@@ -1,0 +1,25 @@
+FieldRead = Benchmark (
+    | obj |
+
+    benchmark = (
+        | sum |
+        sum := 0.
+
+        1 to: 20000 do: [ :i | sum := sum + (1 + obj get) ].
+
+        sum = 40000 ifFalse: [ self error: 'Benchmark failed with wrong result']
+    )
+    
+    method: argument = ( ^argument )
+    
+    initialize = (
+        obj := AddFieldWriteObj new.
+        obj set: 1.
+    )
+    
+    ----
+    
+    new = (
+        ^ super new initialize
+    )
+)

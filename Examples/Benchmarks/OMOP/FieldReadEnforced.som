@@ -1,0 +1,31 @@
+FieldReadEnforced = Benchmark (
+    | domain obj |
+
+    benchmark = (
+        | sum |
+        sum := 0.
+
+        Mirror evaluate: [
+            1 to: 20000 do: [ :i | sum := sum + obj get ].
+        ] enforcedIn: domain.
+
+        sum = 40000 ifFalse: [ self error: 'Benchmark failed with wrong result']
+    )
+    
+    method: argument = ( ^argument )
+    
+    initialize = (
+        domain := FieldReadDomain new.
+        obj := AddFieldWriteObj new.
+        obj set: 1.
+        domain adoptObject: obj.
+    )
+    
+    
+    ----
+    
+    new = (
+        system global: #ONE put: 1.
+        ^ super new initialize
+    )
+)

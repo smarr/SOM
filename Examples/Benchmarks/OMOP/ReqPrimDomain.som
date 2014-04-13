@@ -1,0 +1,5 @@
+ReqPrimDomain = Domain (
+    requestExecutionOfPrimitive: prim with: args on: obj = unenforced (
+        ^ 1 + (prim invokeOn: obj with: args)
+    )
+)

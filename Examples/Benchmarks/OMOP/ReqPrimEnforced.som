@@ -1,0 +1,31 @@
+ReqPrimEnforced = Benchmark (
+    | arr domain |
+
+    benchmark = (
+        | sum |
+        sum := 0.
+        
+        Mirror evaluate: [
+            1 to: 20000 do: [ :i | sum := sum + (arr at: 1) ].
+        ] enforcedIn: domain.
+
+        sum = 40000 ifFalse: [ self error: 'Benchmark failed with wrong result']
+    )
+    
+    method: argument = ( ^argument )
+    
+    initialize = (
+        domain := ReqPrimDomain new.
+
+        arr := Array new: 1.
+        arr at: 1 put: 1.
+        
+        domain adoptObject: arr.
+    )
+    
+    ----
+    
+    new = (
+        ^ super new initialize
+    )
+)

@@ -1,0 +1,5 @@
+GlobalReadDomain = Domain (
+    readGlobal: sym = unenforced (
+        ^ 1 + (system global: sym)
+    )
+)

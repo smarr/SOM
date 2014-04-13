@@ -1,0 +1,28 @@
+GlobalReadEnforced = Benchmark (
+    | domain |
+
+    benchmark = (
+        | sum |
+        sum := 0.
+
+        Mirror evaluate: [
+            1 to: 20000 do: [ :i | sum := sum + ONE ].
+        ] enforcedIn: domain.
+
+        sum = 40000 ifFalse: [ self error: 'Benchmark failed with wrong result']
+    )
+    
+    method: argument = ( ^argument )
+    
+    initialize = (
+        domain := GlobalReadDomain new.
+    )
+    
+    
+    ----
+    
+    new = (
+        system global: #ONE put: 1.
+        ^ super new initialize
+    )
+)

@@ -1,0 +1,22 @@
+GlobalRead = Benchmark (
+
+    benchmark = (
+        | sum |
+        sum := 0.
+
+        1 to: 20000 do: [ :i | sum := sum + (1 + ONE) ].
+
+        sum = 40000 ifFalse: [ self error: 'Benchmark failed with wrong result']
+    )
+    
+    method: argument = ( ^argument )
+    
+    initialize = ()
+    
+    ----
+    
+    new = (
+        system global: #ONE put: 1.
+        ^ super new initialize
+    )
+)

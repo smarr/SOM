@@ -76,8 +76,10 @@ Domain = (
         ^ obj instVarAt: idx put: val.
     )
 
-    readGlobal: sym = unenforced (
-        ^ system global: sym
+    readGlobal: sym  for: rcvr = unenforced (
+        (system hasGlobal: sym)
+            ifTrue:  [ ^ system global: sym ]
+            ifFalse: [ ^ rcvr unknownGlobal: sym ]
     )
 
     ----

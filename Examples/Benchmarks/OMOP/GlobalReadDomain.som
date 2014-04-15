@@ -1,5 +1,5 @@
 GlobalReadDomain = Domain (
-    readGlobal: sym = unenforced (
+    readGlobal: sym for: rcvr = unenforced (
         ^ 1 + (system global: sym)
     )
 )

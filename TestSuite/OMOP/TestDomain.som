@@ -44,7 +44,7 @@ TestDomain = Domain (
         ^ readGlobal
     )
 
-    readGlobal: sym = unenforced (
+    readGlobal: sym for: rcvr = unenforced (
         readGlobal append: sym.
         ^ system global: sym
     )

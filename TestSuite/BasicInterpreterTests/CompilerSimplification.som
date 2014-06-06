@@ -1,8 +1,5 @@
 "
-
-$Id: BubbleSort.som 31 2009-07-31 12:25:18Z michael.haupt $
-
-Copyright (c) 2001-2013 see AUTHORS file
+Copyright (c) 2014 see AUTHORS file
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the 'Software'), to deal
@@ -23,22 +20,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 "
 
-BubbleSort = Sort (
-
-    sort: array = (
-        | top |
-        
-        array length downTo: 1 do: [ :i |
-            1 to: i - 1 do: [ :j |
-                | current next |
-                current := array at: j.
-                next    := array at: j + 1.
-                (current > next)
-                    ifTrue: [
-                        array at: j put: next.
-                        array at: j + 1 put: current ] ] ]
+CompilerSimplification = (
+    ----
+    | aField |
+    
+    returnConstantSymbol = ( ^ #constant )
+    returnConstantInt    = ( ^ 42 )
+    
+    returnSelf           = (^ self)
+    returnSelfImplicitly = ()
+    
+    returnArgument: n      = ( ^ n )
+    returnArgument: n a: a = ( ^ a )
+    
+    testReturnArgumentN = ( ^ self returnArgument: 55 )
+    testReturnArgumentA = ( ^ self returnArgument: 55 a: 44 )
+    
+    
+    setField: val = ( aField := val )
+    testSetField  = (
+        aField := #bar.
+        self setField: #foo.
+        ^ aField
     )
     
-    dataSize = ( ^130 )
+    getField = (^ aField)
     
+    testGetField = (
+        aField := 40.
+        ^ self getField
+    )
 )

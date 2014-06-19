@@ -26,9 +26,7 @@ THE SOFTWARE.
 "
 
 ReflectionTest = (
-    run: harness = (
-        | tmp o |
-        
+    testIntrospection: harness = (
         (Object methods at: 1) signature = #class ifFalse: [
             harness
                 fail: self
@@ -50,22 +48,24 @@ ReflectionTest = (
             harness
                 fail: self
                 because: '23 should respond to #+.' ].
-        
-        "Testing #perform"
+    )
+    
+    testPerform: harness = (
+        | tmp o |
         tmp := 23 perform: #class.
-        
+    
         tmp = Integer ifFalse: [
             harness
                 fail: self
                 because: '`23 perform: #class` should return Integer, but returned ', tmp asString. ].
-                
+            
         tmp := 23 perform: #between:and: withArguments: (Array with: 22 with: 24).
         tmp ifFalse: [
             harness
                 fail: self
                 because: '#between:and: seems to have failed when it was applied with #perform:withArguments:'.
         ].
-        
+    
         o := SuperTest new.
         tmp := o perform: #something inSuperclass: SuperTestSuperClass.
         tmp = #super ifFalse: [
@@ -73,22 +73,24 @@ ReflectionTest = (
                 fail: self
                 because: 'Perform was not executed in expected super class'.
         ].
-        
+    
         "Trying to see whether the stack works properly"
         tmp := (23 perform: #class) = Integer ifTrue: [#a] ifFalse: [#b].
         tmp = #a ifFalse: [
             harness
                 fail: self
                 because: 'There seems to be something fishy going on with the stack. tmp = ' + tmp asString ].
-        
+    
         tmp := 5 + (23 perform: #value).
         tmp = 28 ifFalse: [
             harness
                 fail: self
                 because: 'There seems to be something fishy going on with the stack. tmp = ' + tmp asString ].
-                    
+    )
+    
+    testInstVarAccess: harness = (
+        | tmp |
         
-        "Testing #at: and #at:put:"
         tmp := Pair withKey: 3 andValue: 42.
         (tmp instVarAt: 1) = tmp key ifFalse: [  "REM: this might be different, depending on the number of fields in Object!!!"
             harness
@@ -102,6 +104,24 @@ ReflectionTest = (
                 fail: self
                 because: '#at:put: did not set the correct field in the pair object.'
         ].
+    )
+    
+    testInvokeOn: harness = (
+        | o m result |
+        o := ClassA new.
+        m := o class methods last.
+        m signature = #result ifFalse: [
+            harness fail: self because: 'unexpected method on ClassA. perhaps test needs to be updated' ].
         
+        result := m invokeOn: o with: (Array new: 0).
+        result = 42 ifFalse: [
+            harness fail: self because: 'Expected #result to return 42, but got' + result asString ].
+    )
+
+    run: harness = (
+        self testIntrospection: harness.
+        self testPerform:       harness.
+        self testInstVarAccess: harness.
+        self testInvokeOn:      harness.
     )
 )

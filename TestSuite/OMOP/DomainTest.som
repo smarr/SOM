@@ -5,11 +5,10 @@ DomainTest = TestCase (
         | o d |
         o := Object new.
         d := Domain new.
-    
         self assert: Mirror currentDomain equals: (Mirror domainOf: o).
-    
+
         d adoptObject: o.
-    
+
         self assert: d equals: (Mirror domainOf: o).
     )
 
@@ -116,19 +115,6 @@ DomainTest = TestCase (
                 
         "All selectors that are expected should already be in that set, and then there are a few more
          which actually got recorded because of the implementation details of the methods executed"
-        
-        '------' println.
-        'requestedSelectors: ' print.
-        d requestedSelectors do: [:e | e print. ' ' print.].
-        '' println.
-        'expectedSelectors: ' print.
-        expectedSelectors do: [:e | e print. ' ' print.].
-        '' println.
-        'missing: ' print.
-        (expectedSelectors asSet - (d requestedSelectors)) do: [:e | e print. ' ' print.].
-        '' println.
-        '------' println.
-         
         self assert: (d requestedSelectors union: expectedSelectors) equals: d requestedSelectors.
     )
 
@@ -138,9 +124,7 @@ DomainTest = TestCase (
         d := RWTestDomain new.
         d adoptObject: o.
         d target: o.
-        
-        1 halt.
-    
+
         [ o a ] enforced: d.
 
         self assert: 1 equals: d readCountA.
@@ -152,13 +136,13 @@ DomainTest = TestCase (
         d := RWTestDomain new.
         d adoptObject: o.
         d target: o.
-    
+
         [ o a ] enforced: d.
- 
+
         self assert: #a equals: d lastSuperSelector.
         self assert: 1 equals: d readCountA.
     )
-    
+
     testCorrectDomainUsedForEnforcement = (
         | o d1 d2 |
         o := TestObjectSub new.
@@ -253,8 +237,6 @@ DomainTest = TestCase (
         self assert: o    equals: o magicSelf.
         self assert: 'ab' equals: o ab.
         
-        1 halt.
-    
         o b: #bb.
         self assert: #bb equals: o b.
     
@@ -277,7 +259,7 @@ DomainTest = TestCase (
         o makeOne.
     )
 
-----
+    ----
     
     | SomeClassVar |
 

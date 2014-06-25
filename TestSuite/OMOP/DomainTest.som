@@ -109,6 +109,8 @@ DomainTest = TestCase (
         expectedSelectors := TestObject selectors reject: [:sel | sel = #initialize].
         expectedSelectors append: #=.
         expectedSelectors append: #==.
+        expectedSelectors append: #asString.
+        expectedSelectors append: #class.
         
         [ self helperExecuteAllMessages: o ] enforced: d.
                 

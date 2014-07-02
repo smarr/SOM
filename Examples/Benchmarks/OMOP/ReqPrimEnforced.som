@@ -9,7 +9,7 @@ ReqPrimEnforced = Benchmark (
             1 to: 20000 do: [ :i | sum := sum + (arr at: 1) ].
         ] enforcedIn: domain.
 
-        sum = 40000 ifFalse: [ self error: 'Benchmark failed with wrong result']
+        sum = 40000 ifFalse: [ self error: 'Benchmark failed with wrong result: ' + sum]
     )
     
     method: argument = ( ^argument )

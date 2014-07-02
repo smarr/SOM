@@ -111,6 +111,14 @@ Set = (
         ')' println
     )
     
+    asString = (
+        | result |
+        result := 'a Set('.
+        items do: [:e | result := result + e asString + ', '].
+        result := result + ')'.
+        ^ result
+    )
+    
     size = (
         ^ items size
     )

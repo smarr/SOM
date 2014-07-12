@@ -1,0 +1,19 @@
+PerformAdd = Benchmark (
+    | calc |
+    
+    initialize = (
+        calc := Calculator new: 5.
+    )
+
+    benchmark = (
+        1 to: 20000 do: [ :i | 
+            calc perform: #inc: withArguments: (Array with: #once)
+        ]
+    )
+    
+    ----
+    
+    new = (
+        ^ super new initialize
+    )
+)

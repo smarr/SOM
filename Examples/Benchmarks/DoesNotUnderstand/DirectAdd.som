@@ -1,0 +1,20 @@
+DirectAdd = Benchmark (
+    | calc |
+    
+    initialize = (
+        calc := Calculator new: 5.
+    )
+
+    benchmark = (
+        1 to: 20000 do: [ :i | 
+            calc inc: #once
+        ].
+    )
+    
+    ----
+    
+    new = (
+        ^ super new initialize
+    )
+    
+)

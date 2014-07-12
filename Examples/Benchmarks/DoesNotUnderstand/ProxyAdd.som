@@ -1,0 +1,21 @@
+ProxyAdd = Benchmark (
+    | proxy |
+    
+    initialize = (
+        | calc |
+        calc := Calculator new: 5.
+        proxy := Proxy new: calc
+    )
+
+    benchmark = (
+        1 to: 20000 do: [ :i | 
+            proxy inc: #once
+        ]
+    )
+    
+    ----
+    
+    new = (
+        ^ super new initialize
+    )
+)

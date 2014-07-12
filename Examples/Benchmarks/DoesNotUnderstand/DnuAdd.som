@@ -1,0 +1,19 @@
+DnuAdd = Benchmark (
+    | calc |
+    
+    initialize = (
+        calc := Calculator new: 5.
+    )
+
+    benchmark = (
+        1 to: 20000 do: [ :i | 
+            calc incDNU: #once
+        ]
+    )
+    
+    ----
+    
+    new = (
+        ^ super new initialize
+    )
+)

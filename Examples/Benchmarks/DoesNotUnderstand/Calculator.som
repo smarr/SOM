@@ -1,0 +1,30 @@
+Calculator = (
+    | a |
+    
+    initializeWith: anInt = (
+        a := anInt
+    )
+    
+    add: b = (
+        ^ a + b
+    )
+    
+    inc: aSymbol = (
+        aSymbol = #once ifTrue: [ a := a + 1 ]
+    )
+    
+    a = ( ^ a )
+    
+    doesNotUnderstand: selector arguments: arguments = (
+        ^ self inc: #once
+    )
+    
+    ----
+    
+    new: a = (
+        | calc |
+        calc := self new.
+        calc initializeWith: a.
+        ^ calc
+    )
+)

@@ -9,7 +9,7 @@ GlobalReadEnforced = Benchmark (
             1 to: 20000 do: [ :i | sum := sum + ONE ].
         ] enforcedIn: domain.
 
-        sum = 40000 ifFalse: [ self error: 'Benchmark failed with wrong result']
+        sum = 40000 ifFalse: [ self error: 'Benchmark failed with wrong result: ' + sum asString ]
     )
     
     method: argument = ( ^argument )

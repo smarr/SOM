@@ -44,7 +44,8 @@ TestHarness = (
           VectorTest,
           BlockTest,
           StringTest,
-          ClassStructureTest
+          ClassStructureTest,
+          DoesNotUnderstandTest
     )
     
     suites = ( "List of more complex test suites" 

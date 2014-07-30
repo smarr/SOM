@@ -1,6 +1,6 @@
 MirrorTest = TestCase (
 
-    testPerformEnforce = (
+    testPerformEnforced = (
         self assert: Mirror executesUnenforced.
     
         self assert: (self performEnforced: #unenforcedNoPragma) not.

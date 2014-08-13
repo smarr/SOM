@@ -23,7 +23,8 @@ THE SOFTWARE.
 "
 
 Benchmark = (
-    | numIterations numWarmUpIterations innerIterations printIndividualRuns maxRuntime total |
+    | numIterations numWarmUpIterations innerIterations printIndividualRuns maxRuntime total
+      omopMode | "omopMode: true, false, nil"
     
     total = ( ^ total )
     numIterations = ( ^ numIterations )
@@ -33,6 +34,10 @@ Benchmark = (
         "converted to microseconds i.e. ticks"
         seconds ifNotNil: [
             maxRuntime := seconds * 1000 * 1000].
+    )
+    
+    omopMode: aBool = (
+        omopMode := aBool
     )
 
     run: numIter with: numWarmUpIter and: numInner printAll: aBool = (
@@ -89,6 +94,11 @@ Benchmark = (
     )
     
     doRuns = (
+        omopMode = nil ifTrue:  [ ^ self doStandardRuns ]
+                       ifFalse: [ ^ self doOmopRuns     ]
+    )
+    
+    doStandardRuns = (
         | i total |
         i := 0.
         total := 0.
@@ -113,6 +123,44 @@ Benchmark = (
             system fullGC ].
         
         ^ total
+    )
+    
+    doOmopRuns = (
+        | i total |
+        i := 0.
+        total := 0.
+        
+        [ i < numIterations ] whileTrue: [
+            | startTime endTime runTime |
+            startTime := system ticks.
+            omopMode ifTrue:  [ self innerBenchmarkLoopEnforced   ]
+                     ifFalse: [ self innerBenchmarkLoopUnenforced ].
+            endTime   := system ticks.
+            
+            runTime := endTime - startTime.
+            printIndividualRuns ifTrue: [ self printRun: runTime ].
+            
+            total := total + runTime.
+            i := i + 1.
+            
+            maxRuntime ifNotNil: [
+                total > maxRuntime ifTrue: [
+                    numIterations := i.
+                    ^ total ]].
+            
+            system fullGC ].
+        
+        ^ total
+    )
+    
+    innerBenchmarkLoopUnenforced = (
+        Mirror evaluate: [ self innerBenchmarkLoop ]
+                     in: Mirror currentDomain.
+    )
+    
+    innerBenchmarkLoopEnforced = (
+        Mirror evaluate: [self innerBenchmarkLoop]
+             enforcedIn: Mirror currentDomain.
     )
     
     innerBenchmarkLoop = (

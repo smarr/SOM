@@ -29,7 +29,7 @@ TestHarness = (
 
     tests = ( "Now ordered by alphabetical order to improve maintainability"
         ^ EmptyTest,
-
+          SpecialSelectorsTest,
           ArrayTest,
           BlockTest,
           ClassLoadingTest,

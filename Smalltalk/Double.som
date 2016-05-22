@@ -35,6 +35,9 @@ Double = (
     sqrt        = primitive
     negated     = ( ^0.0 - self )
     round       = primitive
+    asInteger   = primitive
+    cos         = primitive
+    sin         = primitive
     
     "Comparing"
     =  argument = primitive

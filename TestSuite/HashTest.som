@@ -29,10 +29,10 @@ HashTest = TestCase (
     | ht string array t | 
     
     ht := Hashtable new.
-    self assert: ht isEmpty.
+    self assert: ht isEmpty description: 'new ht needs to be empty'.
     
     ht at: 'a' put: 'b'.
-    self assert: (ht containsValue: 'b').
+    self assert: (ht containsValue: 'b') description: 'needs to contain "b"'.
     self deny: ht isEmpty.
     
     self assert: 1 equals: ht size.
@@ -44,11 +44,11 @@ HashTest = TestCase (
     t := Hashtable new.
     ht at: Hashtable put: t.
     
-    self assert: (ht containsValue: 'b').
-    self assert: (ht containsValue: 'd').
-    self assert: (ht containsValue: 2).
-    self assert: (ht containsValue: t).
-    self assert: (ht containsKey: Hashtable).
+    self assert: (ht containsValue: 'b') description: 'needs to contain "b"'.
+    self assert: (ht containsValue: 'd') description: 'needs to contain "d"'.
+    self assert: (ht containsValue: 2)   description: 'needs to contain "2"'.
+    self assert: (ht containsValue: t)   description: 'needs to contain t'.
+    self assert: (ht containsKey: Hashtable) description: 'needs to contain Hashtable'.
     
     ht clear.
     self assert: ht isEmpty.

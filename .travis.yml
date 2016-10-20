@@ -28,4 +28,4 @@ script:
   - cd som-vm
   - git --no-pager log -n 1
   - $BUILD
-  - ./som.sh -cp ../Smalltalk ../TestSuite/TestHarness.som
+  - if [ -f ./som.sh ]; then export SOM=./som.sh; else export SOM=./som; fi; $SOM -cp ../Smalltalk ../TestSuite/TestHarness.som

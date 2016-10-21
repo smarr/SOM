@@ -22,7 +22,7 @@ env:
 
 install:
   - if [ "$SOM" = "SOMpp" ]; then sudo apt-get install libc6-dev-i386; fi
-  # - if [ "$SOM" = "TruffleSOM" ]; then sudo apt-get install oracle-java8-installer oracle-java8-set-default; fi
+  - if [ "$SOM" = "CSOM"  ]; then sudo apt-get install libc6-dev-i386; fi
   - sudo apt-get install -qq python-yaml
   - git clone --depth 1 $REPO som-vm
 

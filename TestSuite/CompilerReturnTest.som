@@ -100,4 +100,13 @@ CompilerReturnTest = TestCase (
         (3 >= 1) ifTrue: [arr at: 2 put: 2 "WITHOUT DOT"].
         arr at: 3 put: 3.
     )
+
+    testWriteArgument = (
+        self assert: 42 equals: (self dec: 43).
+    )
+  
+    dec: anInt = (
+        anInt := anInt - 1.
+        ^ anInt
+    )
 )

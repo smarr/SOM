@@ -1,8 +1,6 @@
 "
 
-$Id: SuperTest.som 30 2009-07-31 12:20:25Z michael.haupt $
-
-Copyright (c) 2007-2013 see AUTHORS file
+Copyright (c) 2007-2018 see AUTHORS file
 Software Architecture Group, Hasso Plattner Institute, Potsdam, Germany
 http://www.hpi.uni-potsdam.de/swa/
 
@@ -42,5 +40,34 @@ SuperTest = SuperTestSuperClass (
   
   something = (
     ^ #sub
+  )
+  
+  testAssignSelf = (
+    | that |
+    "self should not be assignable.
+     Once this is enforced, we likely need to convert this into an
+     external test, or a BasicInterpreterTest, where we can check
+     an exception generated during parsing."
+    that := self.
+    self := 43.
+    that expect: that is: self.
+  )
+  
+  testGlobalSelfDoesNotShadowKeyword = (
+    | that |
+    that := self.
+    system global: #self put: 42.
+    that expect: that is: self.
+    
+    self assert: 42 equals: (system global: #self)
+  )
+  
+  testGlobalSuperDoesNotShadowKeyword = (
+    | that |
+    that := super.
+    system global: #super put: 42.
+    that expect: that is: super.
+    
+    self assert: 42 equals: (system global: #super)
   )
 )

@@ -22,7 +22,7 @@ env:
 install:
   - if [ "$SOM" = "SOMpp" ]; then sudo apt-get install libc6-dev-i386; fi
   - if [ "$SOM" = "CSOM"  ]; then sudo apt-get install libc6-dev-i386; fi
-  - sudo apt-get install -qq python-yaml
+  - pip install pyyaml
   - git clone --depth 1 $REPO som-vm
 
 # command to run tests

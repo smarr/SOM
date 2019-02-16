@@ -31,9 +31,9 @@ IntegerTest = TestCase (
     | a b |
     a := 42.
     b := 42.
-    
-    self assert: a = b.  "Integers are equal based on their value"
-    self assert: a == b. "Integers do not have pointer/reference equality. It is also supposed to be value equality."
+
+    self assert: a = b   description: 'Integers are equal based on their value'.
+    self assert: a == b  description: 'Integers do not have pointer/reference equality. It is also supposed to be value equality'.
 
     "Sometimes it can be hard to implement efficiently, but it SHOULD really
      be true for all values of integers."

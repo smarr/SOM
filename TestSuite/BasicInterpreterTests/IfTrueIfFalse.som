@@ -31,7 +31,6 @@ IfTrueIfFalse = (
     test2 = (
         self resolve: 42.
         self resolve: 42.
-        self halt.
         ^ self resolve: 33
     )
     

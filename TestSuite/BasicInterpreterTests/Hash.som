@@ -51,7 +51,6 @@ Hash = (
         (ht containsValue: 'd')
             ifFalse: [ '2 not in Hashtable'. ^ 2 ].
 
-        self halt.
         (ht containsValue: 2)
             ifFalse: [ '3 not in Hashtable'. ^ 3 ].
         (ht containsValue: t)

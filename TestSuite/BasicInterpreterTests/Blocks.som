@@ -24,18 +24,18 @@ Blocks = (
     
     ----
     
-    arg1 = ( ^ [:a | a - 1] value: 43 )
+    testArg1 = ( ^ [:a | a - 1] value: 43 )
 
-    arg2 = ( ^ [:a :b | a * b ] value: 11 with: 7 )
+    testArg2 = ( ^ [:a :b | a * b ] value: 11 with: 7 )
   
-    argAndLocal = (
+    testArgAndLocal = (
       ^ ([:a |
         | blockLocal | 
         blockLocal := 3.
         a + blockLocal] value: 5)
     )
     
-    argAndContext = ( | methodLocal |
+    testArgAndContext = ( | methodLocal |
       ^ ([:a |
         methodLocal := 3.
         a + methodLocal] value: 5)

@@ -24,7 +24,7 @@ Hash = (
     
     ----
     
-    hashTest = (
+    testHash = (
         | ht string array t | 
     
         ht := Hashtable new.

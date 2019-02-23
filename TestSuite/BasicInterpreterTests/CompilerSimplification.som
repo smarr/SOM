@@ -24,17 +24,17 @@ CompilerSimplification = (
     ----
     | aField |
     
-    returnConstantSymbol = ( ^ #constant )
-    returnConstantInt    = ( ^ 42 )
+    testReturnConstantSymbol = ( ^ #constant )
+    testReturnConstantInt    = ( ^ 42 )
     
-    returnSelf           = (^ self)
-    returnSelfImplicitly = ()
+    testReturnSelf           = (^ self)
+    testReturnSelfImplicitly = ()
     
-    returnArgument: n      = ( ^ n )
-    returnArgument: n a: a = ( ^ a )
+    testReturnArgument: n      = ( ^ n )
+    testReturnArgument: n a: a = ( ^ a )
     
-    testReturnArgumentN = ( ^ self returnArgument: 55 )
-    testReturnArgumentA = ( ^ self returnArgument: 55 a: 44 )
+    testReturnArgumentN = ( ^ self testReturnArgument: 55 )
+    testReturnArgumentA = ( ^ self testReturnArgument: 55 a: 44 )
     
     
     setField: val = ( aField := val )
@@ -45,7 +45,6 @@ CompilerSimplification = (
     )
     
     getField = (^ aField)
-    
     testGetField = (
         aField := 40.
         ^ self getField

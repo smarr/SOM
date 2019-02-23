@@ -23,7 +23,7 @@ THE SOFTWARE.
 NonLocalVars = (
      ----
      
-     writeDifferentTypes = (
+     testWriteDifferentTypes = (
         | value |
         1 to: 10 do: [:index |
             value := 0.

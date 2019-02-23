@@ -1,7 +1,9 @@
 #!/bin/sh
 SCRIPT_PATH=`dirname $0`
 TEST_FILE="${SCRIPT_PATH}/NumberOfTests.som"
-NUM_TESTS=`grep -R "test[^[:space:]]*[[:space:]]\+= (" "${SCRIPT_PATH}" | wc -l`
+
+# find all tests, count them, trim whitespace from result
+NUM_TESTS=`grep -R "test[^[:space:]]*[[:space:]]\+= (" "${SCRIPT_PATH}" | wc -l | tr -d '[:space:]'`
 
 TEST_CODE="    numberOfTests = ( ^ ${NUM_TESTS} )"
 

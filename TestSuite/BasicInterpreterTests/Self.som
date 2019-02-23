@@ -24,9 +24,13 @@ Self = (
     
     ----
     
-    assignSuper = (
+    testAssignSuper = (
       super := 42.
       ^ super
     )
 
+    testAssignSelf = (
+      self := 42.
+      ^ self
+    )
 )

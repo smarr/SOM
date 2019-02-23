@@ -42,16 +42,7 @@ SuperTest = SuperTestSuperClass (
     ^ #sub
   )
   
-  testAssignSelf = (
-    | that |
-    "self should not be assignable.
-     Once this is enforced, we likely need to convert this into an
-     external test, or a BasicInterpreterTest, where we can check
-     an exception generated during parsing."
-    that := self.
-    self := 43.
-    that expect: that is: self.
-  )
+  "Note: testing assigning self was moved to basic interpreter tests"
   
   testGlobalSelfDoesNotShadowKeyword = (
     | that |

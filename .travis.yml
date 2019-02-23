@@ -27,6 +27,7 @@ install:
 
 # command to run tests
 script:
+  - ./TestSuite/BasicInterpreterTests/number-of-tests.sh
   - export ST_DIR=`pwd`/Smalltalk
   - cd som-vm
   - git --no-pager log -n 1

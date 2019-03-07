@@ -5,4 +5,11 @@ SystemTest = TestCase (
      to indicate the a GC was done."
     self expect: system fullGC description: 'VM does not support #fullGC.'
   )
+  
+  testTicks = (
+    | ticks |
+    ticks := system ticks.
+    self assert: ticks class equals: Integer.
+    self assert: ticks > 0 description: 'Should return the microseconds since the start'
+  )
 )

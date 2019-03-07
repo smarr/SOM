@@ -14,6 +14,10 @@ ClassStructureTest = TestCase (
     self assert: True    equals: true class.
     self assert: False   equals: false class.
     self assert: Nil     equals: nil class.
+    
+    self assert: True superclass equals: False superclass.
+    self assert: True superclass equals: Boolean.
+    self assert: True superclass equals: Boolean.
   )
     
   testThatCertainMethodsArePrimitives = (

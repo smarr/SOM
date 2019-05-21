@@ -18,18 +18,34 @@ env:
   - SOM=SOM         REPO=https://github.com/SOM-st/som-java.git    BUILD=make    SOM=./som.sh
   - SOM=SOMpp       REPO=https://github.com/SOM-st/SOMpp.git       BUILD=make    SOM=./som.sh
   - SOM=TruffleSOM  REPO=https://github.com/SOM-st/TruffleSOM.git  BUILD=make    SOM="./som -G"
+  - SOM=spec
 
 install:
-  - if [ "$SOM" = "SOMpp" ]; then sudo apt-get install libc6-dev-i386; fi
-  - if [ "$SOM" = "CSOM"  ]; then sudo apt-get install libc6-dev-i386; fi
-  - pip install pyyaml
-  - git clone --depth 1 $REPO som-vm
+  - |
+    if [ "$SOM" != "spec" ]
+    then
+      if [ "$SOM" = "SOMpp" ] || [ "$SOM" = "CSOM"  ]
+      then
+        sudo apt-get install libc6-dev-i386
+      fi
+      pip install pyyaml
+      git clone --depth 1 $REPO som-vm
+    fi
+    
 
 # command to run tests
 script:
-  - ./TestSuite/BasicInterpreterTests/number-of-tests.sh
-  - export ST_DIR=`pwd`/Smalltalk
-  - cd som-vm
-  - git --no-pager log -n 1
-  - $BUILD
-  - $SOM -cp ../Smalltalk ../TestSuite/TestHarness.som
+  - |
+    set -e
+    if [ "$SOM" = "spec" ]
+    then
+      cd specification
+      make test
+    else
+      ./TestSuite/BasicInterpreterTests/number-of-tests.sh
+      export ST_DIR=`pwd`/Smalltalk
+      cd som-vm
+      git --no-pager log -n 1
+      $BUILD
+      $SOM -cp ../Smalltalk ../TestSuite/TestHarness.som
+    fi

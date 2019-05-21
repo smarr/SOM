@@ -60,7 +60,7 @@ BoardView = (
     Terminal cursorToX: 1 Y: 1.
     Terminal put: '/'.
     width timesRepeat: [ Terminal put: '-' ].
-    Terminal put: '\'.
+    Terminal put: '\\'.
 
     1 to: height do: [ :i |
       Terminal cursorToX: 1 Y: i + 1.
@@ -70,7 +70,7 @@ BoardView = (
     ].
 
     Terminal cursorToX: 1 Y: height + 2.
-    Terminal put: '\'.
+    Terminal put: '\\'.
     width timesRepeat: [ Terminal put: '-' ].
     Terminal put: '/'.
   )

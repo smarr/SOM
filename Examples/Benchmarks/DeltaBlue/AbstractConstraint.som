@@ -130,9 +130,9 @@ AbstractConstraint = (
                  out determinedBy: self.
                  (Planner current addPropagate: self mark: mark) ifFalse:
                     [self notify:
-                        ('Cycle encountered adding:\   ',
+                        ('Cycle encountered adding:\n   ',
                          self printString,
-                         '\Constraint removed.') withCRs.
+                         '\nConstraint removed.') withCRs.
                      ^nil].
                  out mark: mark]
             ifFalse:            "constraint cannot be satisfied"

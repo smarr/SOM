@@ -1,3 +1,18 @@
+matrix:
+  include:
+    - env: SOM=SOMpp       REPO=https://github.com/SOM-st/SOMpp.git       BUILD="cmake . ; make" SOM=./som.sh
+      language: c++
+      dist: xenial
+      addons: {apt: {packages: [cmake]}}
+    - env: SOM=CSOM        REPO=https://github.com/SOM-st/CSOM.git        BUILD=make    SOM=./som.sh
+    - env: SOM=JsSOM       REPO=https://github.com/SOM-st/JsSOM.git       BUILD=make    SOM=./som.sh
+    - env: SOM=PySOM       REPO=https://github.com/SOM-st/PySOM.git       BUILD=""      SOM=./som.sh
+    - env: SOM=RPySOM      REPO=https://github.com/SOM-st/RPySOM.git      BUILD=""      SOM=./som.sh
+    - env: SOM=RTruffleSOM REPO=https://github.com/SOM-st/RTruffleSOM.git BUILD=""      SOM=./som.sh
+    - env: SOM=SOM         REPO=https://github.com/SOM-st/som-java.git    BUILD=make    SOM=./som.sh
+    - env: SOM=TruffleSOM  REPO=https://github.com/SOM-st/TruffleSOM.git  BUILD=make    SOM="./som -G"
+    - env: SOM=spec
+
 language: python
 
 python:
@@ -9,29 +24,17 @@ dist: trusty
 before_install:
   - sudo apt-get update
 
-env:
-  - SOM=CSOM        REPO=https://github.com/SOM-st/CSOM.git        BUILD=make    SOM=./som.sh
-  - SOM=JsSOM       REPO=https://github.com/SOM-st/JsSOM.git       BUILD=make    SOM=./som.sh
-  - SOM=PySOM       REPO=https://github.com/SOM-st/PySOM.git       BUILD=""      SOM=./som.sh
-  - SOM=RPySOM      REPO=https://github.com/SOM-st/RPySOM.git      BUILD=""      SOM=./som.sh
-  - SOM=RTruffleSOM REPO=https://github.com/SOM-st/RTruffleSOM.git BUILD=""      SOM=./som.sh
-  - SOM=SOM         REPO=https://github.com/SOM-st/som-java.git    BUILD=make    SOM=./som.sh
-  - SOM=SOMpp       REPO=https://github.com/SOM-st/SOMpp.git       BUILD=make    SOM=./som.sh
-  - SOM=TruffleSOM  REPO=https://github.com/SOM-st/TruffleSOM.git  BUILD=make    SOM="./som -G"
-  - SOM=spec
-
 install:
   - |
     if [ "$SOM" != "spec" ]
     then
-      if [ "$SOM" = "SOMpp" ] || [ "$SOM" = "CSOM"  ]
+      if [ "$SOM" = "CSOM"  ]
       then
         sudo apt-get install libc6-dev-i386
       fi
       pip install pyyaml
       git clone --depth 1 $REPO som-vm
     fi
-    
 
 # command to run tests
 script:

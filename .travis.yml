@@ -1,37 +1,73 @@
+dist: xenial
+sudo: false
+
 matrix:
   include:
-    - env: SOM=SOMpp       REPO=https://github.com/SOM-st/SOMpp.git       BUILD="cmake . ; make" SOM=./som.sh
-      language: c++
-      dist: xenial
-      addons: {apt: {packages: [cmake]}}
-    - env: SOM=CSOM        REPO=https://github.com/SOM-st/CSOM.git        BUILD=make    SOM=./som.sh
-    - env: SOM=JsSOM       REPO=https://github.com/SOM-st/JsSOM.git       BUILD=make    SOM=./som.sh
-    - env: SOM=PySOM       REPO=https://github.com/SOM-st/PySOM.git       BUILD=""      SOM=./som.sh
-    - env: SOM=RPySOM      REPO=https://github.com/SOM-st/RPySOM.git      BUILD=""      SOM=./som.sh
-    - env: SOM=RTruffleSOM REPO=https://github.com/SOM-st/RTruffleSOM.git BUILD=""      SOM=./som.sh
-    - env: SOM=SOM         REPO=https://github.com/SOM-st/som-java.git    BUILD=make    SOM=./som.sh
-    - env: SOM=TruffleSOM  REPO=https://github.com/SOM-st/TruffleSOM.git  BUILD=make    SOM="./som -G"
-    - env: SOM=spec
+    - language: cpp
+      addons: {apt: {packages: [cmake, libcppunit-dev]}}
+      env: SOM=SOMpp       REPO=https://github.com/SOM-st/SOMpp.git       BUILD="cmake . && make SOM++" SOM=./som.sh
 
-language: python
+    - language: c
+      env: SOM=CSOM        REPO=https://github.com/SOM-st/CSOM.git        BUILD=make    SOM=./som.sh COMPILER=gcc ARCH=64bit
 
-python:
-  - "2.7"
+    # JsSOM can't currently be parameterized with another core lib, so, we can't really test it
+    # - language: node_js
+    #   env: SOM=JsSOM       REPO=https://github.com/SOM-st/JsSOM.git       BUILD=make    SOM=./som.sh
 
-sudo: required
-dist: trusty
+    - language: python
+      env: SOM=PySOM       REPO=https://github.com/SOM-st/PySOM.git       BUILD=""      SOM=./som.sh  PYTHON=python
+      python:
+        - "2.7"
 
-before_install:
-  - sudo apt-get update
+    - language: python
+      env: SOM=RPySOM      REPO=https://github.com/SOM-st/RPySOM.git      BUILD=""      SOM=./som.sh  PYTHON=python
+      python:
+        - "2.7"
+      before_script:
+        - |
+          cd som-vm
+          travis_retry wget https://bitbucket.org/pypy/pypy/downloads/pypy2.7-v7.0.0-src.tar.bz2
+          tar -xjf pypy2.7-v7.0.0-src.tar.bz2
+          mv pypy2.7-v7.0.0-src pypy
+          cd ..
+
+    - language: python
+      env: SOM=RTruffleSOM REPO=https://github.com/SOM-st/RTruffleSOM.git BUILD=""      SOM=./som.sh  PYTHON=python
+      python:
+        - "2.7"
+      before_script:
+        - |
+          cd som-vm
+          travis_retry wget https://bitbucket.org/pypy/pypy/downloads/pypy2.7-v7.0.0-src.tar.bz2
+          tar -xjf pypy2.7-v7.0.0-src.tar.bz2
+          mv pypy2.7-v7.0.0-src pypy
+          cd ..
+
+    - language: java
+      dist: trusty
+      env: SOM=SOM         REPO=https://github.com/SOM-st/som-java.git    BUILD=make    SOM=./som.sh
+      jdk: [oraclejdk8]
+      addons: {apt: {packages: [libc6-dev-i386]}}
+      
+    - language: java
+      dist: trusty
+      env: SOM=TruffleSOM  REPO=https://github.com/SOM-st/TruffleSOM.git  BUILD=make    SOM="./som -G"
+      jdk: [oraclejdk8]
+      addons: {apt: {packages: [libc6-dev-i386]}}
+      
+    - language: java
+      env: SOM=spec
+      jdk: [oraclejdk8]
+
+  allow_failures:
+    # - env: SOM=JsSOM       REPO=https://github.com/SOM-st/JsSOM.git       BUILD=make    SOM=./som.sh
+    - env: SOM=PySOM       REPO=https://github.com/SOM-st/PySOM.git       BUILD=""      SOM=./som.sh  PYTHON=python
+    - env: SOM=RPySOM      REPO=https://github.com/SOM-st/RPySOM.git      BUILD=""      SOM=./som.sh  PYTHON=python
 
 install:
   - |
     if [ "$SOM" != "spec" ]
     then
-      if [ "$SOM" = "CSOM"  ]
-      then
-        sudo apt-get install libc6-dev-i386
-      fi
       pip install pyyaml
       git clone --depth 1 $REPO som-vm
     fi
@@ -49,6 +85,6 @@ script:
       export ST_DIR=`pwd`/Smalltalk
       cd som-vm
       git --no-pager log -n 1
-      $BUILD
+      eval $BUILD
       $SOM -cp ../Smalltalk ../TestSuite/TestHarness.som
     fi

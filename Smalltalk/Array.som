@@ -41,16 +41,19 @@ Array = (
     doIndexes: block     = ( 1 to: self length do: [:i |
                                 block value: i. ] )
     
-    from: start to: end do: block = ( | i |
+    from: start to: end do: block = (
         start to: end do: [:i | block value: (self at: i) ] )
     
     "Copying (inclusively)"
-    copyFrom: start to: end = ( | result i |
+    copyFrom: start to: end = (
+        | result i |
+
         result := Array new: end - start + 1.
         i := 1.
         self from: start to: end do: [ :e |
-            result at: i put: e.
-            i := i + 1 ].
+          result at: i put: e.
+          i := i + 1 ].
+
         ^result
     )
     

@@ -26,19 +26,19 @@ StringTest = TestCase (
     | str1 str2 |
     str1 := 'foo'.
     str2 := 'bar'.
-    
+
     self assert: str1 = str1.
     self assert: str1 = 'foo'.
     self assert: str1 = ('f' + 'oo').
     self deny:   str1 = str2.
     self assert: str2 = str2.
   )
-  
+
   testLength = (
     self assert: 1 equals: 't' length.
-    self assert: 6 equals: ('foo' + 'bar') length.  
+    self assert: 6 equals: ('foo' + 'bar') length.
   )
-  
+
   testCharAt = (
     | str |
     str := 'foobar'.
@@ -49,7 +49,7 @@ StringTest = TestCase (
     self assert: 'a' equals: (str charAt: 5).
     self assert: 'r' equals: (str charAt: 6).
   )
-  
+
   testPrimSubstringFrom = (
     | str |
     str := 'foobar'.
@@ -58,19 +58,19 @@ StringTest = TestCase (
     self assert: 'foobar' equals: (str primSubstringFrom: 1 to: 6).
     self assert: 'oob' equals: ('foobar' substringFrom: 2 to: 4).
   )
-  
+
   testBeginsWith = (
     self deny:   ('foo' beginsWith: 'oo').
     self assert: ('foo' beginsWith: 'foo').
   )
-  
+
   testEndsWith = (
     self assert: ('foo' endsWith: 'foo').
     self assert: ('foo' endsWith: 'oo').
     self deny: ('f' endsWith: 'bar').
     self deny: ('f' endsWith: 'foo').
   )
-  
+
   testMultiLineString = (
     "Test whether the parser will parse multi-line strings correctly."
     self assert: '
@@ -85,12 +85,12 @@ StringTest = TestCase (
 1234567890
 1234567890'
   )
-  
+
   testEscapeSequences = (
     "Tests for escape sequences, not all of them are reliable represented as
      proper strings. So, we do a simple equality test, and check substring or
      length.
-    
+
      \t	  a tab character
      \b	  a backspace character
      \n	  a newline character
@@ -113,18 +113,18 @@ StringTest = TestCase (
     self assert: '\r' equals: '\r'.
     self assert: 1 equals: '\n' length.
     self deny: ('\r' endsWith: 'r').
-    
+
     self assert: '\f' equals: '\f'.
     self assert: 1 equals: '\f' length.
     self deny: ('\f' endsWith: 'f').
-    
+
     self assert: '\'' equals: '\''.
     self assert: 1 equals: '\'' length.
 
     self assert: '\\' equals: '\\'.
     self assert: 1 equals: '\\' length.
   )
-  
+
   testHash = (
     | str |
     "Hash should be identical for strings that are identical,
@@ -132,13 +132,51 @@ StringTest = TestCase (
     self assert: 'foobar' hashcode equals: 'foobar' hashcode.
     self assert: 'ssdf aksdf; kasd;fk a;dfk a;dfk a;d' hashcode
          equals: 'ssdf aksdf; kasd;fk a;dfk a;dfk a;d' hashcode.
-    
+
     str := 'foo' + 'bar'.
     str := str + str.
     self assert: 'foobarfoobar' hashcode equals: str hashcode.
-    
+
     str := 'dfadf fgsfg sfg sdfg sfg sfg' + '345243n 24n5 kwertlw erltnwrtln'.
     self assert: 'dfadf fgsfg sfg sdfg sfg sfg345243n 24n5 kwertlw erltnwrtln' hashcode
          equals: str hashcode.
+  )
+
+  testWhiteSpace = (
+    self assert: ' ' isWhiteSpace.
+    self assert: '\t' isWhiteSpace.
+    self assert: '\t\n   \n \n' isWhiteSpace.
+
+    self deny: '' isWhiteSpace.
+    self deny: '\t\n N  \n \n' isWhiteSpace.
+    self deny: 'N' isWhiteSpace.
+    self deny: '3' isWhiteSpace.
+  )
+
+  testLetters = (
+    self assert: 'a' isLetters.
+    self assert: 'all' isLetters.
+    self assert: 'aOoöéÉíä' isLetters.
+
+    self deny: '' isLetters.
+    self deny: ' ' isLetters.
+    self deny: '3' isLetters.
+    self deny: '3333' isLetters.
+    self deny: 'aOo öéÉíä' isLetters.
+    self deny: 'aOo1öéÉíä' isLetters.
+  )
+
+  testDigits = (
+    self assert: '0' isDigits.
+    self assert: '0123' isDigits.
+    self assert: '0123456789' isDigits.
+
+    self deny: '' isDigits.
+    self deny: ' ' isDigits.
+    self deny: 'S' isDigits.
+    self deny: '333 3' isDigits.
+    self deny: '66i77' isDigits.
+    self deny: '66e7' isDigits.
+    self deny: 'aOo1öéÉíä' isDigits.
   )
 )

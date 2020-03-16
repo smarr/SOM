@@ -29,21 +29,33 @@ String = (
     "Concatenate: returns a new string object"
     concatenate: argument = primitive
     + argument            = ( ^self concatenate: argument asString )
-    
+
     "Converting"
     asString = ( ^self )
     asSymbol = primitive
     hashcode = primitive
-    
+
     "Info"
     length = primitive
-    
-    "Comparing"   
+
+    "Returns true if all characters in the string are whitespace.
+     False otherwise, including for the empty string."
+    isWhiteSpace = primitive
+
+    "Returns true if all characters in the string are letters.
+     False otherwise, including for the empty string."
+    isLetters = primitive
+
+    "Returns true if all characters in the string are digits.
+     False otherwise, including for the empty string."
+    isDigits = primitive
+
+    "Comparing"
     = argument = primitive
-    
+
     "substring: from 'start' to (and including) 'end'."
     primSubstringFrom: start to: end = primitive
-    
+
     substringFrom: start to: end = (
         ((end <= self length) && (start > 0) && (start <= end))
             ifTrue: [^self primSubstringFrom: start to: end]
@@ -53,14 +65,14 @@ String = (
 
     beginsWith: prefix = (
         self length < prefix length ifTrue: [ ^ false ].
-        
-        1 to: prefix length do: [:i | 
-            ((self charAt: i) = (prefix charAt: i)) ifFalse: [ ^ false ].  
+
+        1 to: prefix length do: [:i |
+            ((self charAt: i) = (prefix charAt: i)) ifFalse: [ ^ false ].
         ].
-        
+
         ^ true
     )
-    
+
     endsWith: suffix = (
       | l sufL |
       l := self length.
@@ -76,11 +88,11 @@ String = (
     asInteger = (
         ^ Integer fromString: self
     )
-    
+
     charAt: argument = (
         ^self substringFrom: argument to: argument
     )
-    
+
     "Printing"
     print    = ( system printString: self )
 

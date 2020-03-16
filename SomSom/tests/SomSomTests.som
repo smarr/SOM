@@ -1,0 +1,6 @@
+SomSomTests = TestHarness (
+  tests = (
+    ^ EmptyTest,
+      LexerTests
+  )
+)

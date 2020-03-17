@@ -1,7 +1,7 @@
 dist: xenial
 sudo: false
 
-matrix:
+jobs:
   include:
     - language: cpp
       addons: {apt: {packages: [cmake, libcppunit-dev]}}
@@ -48,14 +48,15 @@ matrix:
       env: SOM=SOM         REPO=https://github.com/SOM-st/som-java.git    BUILD=make    SOM=./som.sh
       jdk: [oraclejdk8]
       addons: {apt: {packages: [libc6-dev-i386]}}
-      
+
     - language: java
       dist: trusty
       env: SOM=TruffleSOM  REPO=https://github.com/SOM-st/TruffleSOM.git  BUILD=make    SOM="./som -G"
       jdk: [oraclejdk8]
       addons: {apt: {packages: [libc6-dev-i386]}}
-      
+
     - language: java
+      dist: trusty
       env: SOM=spec
       jdk: [oraclejdk8]
 

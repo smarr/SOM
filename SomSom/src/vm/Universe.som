@@ -1,0 +1,28 @@
+Universe = (
+  | symbolTable |
+  initialize = (
+    symbolTable := Dictionary new.
+  )
+
+  symbolFor: aString = (
+    | result |
+    result := symbolTable at: aString.
+    result == nil ifFalse: [
+      ^ result ].
+
+    ^ self newSymbol: aString
+  )
+
+  newSymbol: aString = (
+    | result |
+    result := SSymbol new: aString.
+    symbolTable at: aString put: result.
+    ^ result
+  )
+
+  ----
+
+  new = (
+    ^ super new initialize
+  )
+)

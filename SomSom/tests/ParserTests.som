@@ -1,0 +1,8 @@
+ParserTests = TestCase (
+  testEmptyClass = (
+    | cgenc parser u |
+    u := Universe new.
+    parser := Parser newWith: 'Foo = nil ()' for: 'Foo.som' in: u.
+    cgenc := parser classdef.
+  )
+)

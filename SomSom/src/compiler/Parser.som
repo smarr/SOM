@@ -1,0 +1,126 @@
+Parser = (
+  | lexer sym text nextSym filename cgenc |
+
+  initializeWith: aString for: aFilename in: universe = (
+    filename := aFilename.
+    lexer := Lexer new: aString.
+    cgenc := ClassGenerationContext new: universe.
+    self takeSymbolFromLexer.
+  )
+
+  takeSymbolFromLexer = (
+    sym := lexer sym.
+    text := lexer text.
+    nextSym := #none.
+  )
+
+  classdef = (
+    | name |
+    name := text. "TODO: set on cgenc: universe.symbolFor(text)"
+    self expect: #identifier.
+    self expect: #equal.
+
+    self superclass.
+
+    self expect: #newTerm.
+    self classBody.
+
+    (self accept: #separator) ifTrue: [
+      cgenc startClassSide.
+      self classBody ].
+
+    self expect: #endTerm.
+    ^ cgenc
+  )
+
+  classBody = (
+    self fields.
+    [self symIsMethod] whileTrue: [
+       | mgenc |
+       mgenc := MethodGenerationContext new: cgenc.
+       mgenc addArgument: 'self'.
+       self method: mgenc.
+       cgenc addMethod: (mgenc assemble: universe) ].
+  )
+
+  superclass = (
+    | superName |
+    sym == #identifier
+      ifTrue: [
+        superName := text. "TODO: universe.symbolFor text"
+        self accept: #identifier ]
+      ifFalse: [
+        superName := 'Object'. "TODO universe.symbolFor Object" ].
+
+    cgenc superName: superName.
+
+    superName = 'nil' ifFalse: [ "superName.getEmbeddedString = 'nil' "
+      | superClass |
+      superClass := universe loadClass: superName.
+      superClass == nil ifTrue: [
+        self error: 'Was not able to load super class: ' + superName ].
+      cgenc instanceFieldsOfSuper: superClass instanceFields.
+      cgenc classFieldsOfSuper: superClass somClass instanceFields. ]
+  )
+
+  fields = (
+    (self accept: #or) ifTrue: [
+      [sym == #identifier] whileTrue: [
+        | var |
+        var := self variable.
+        cgenc addField: (universe symbolFor: var) ].
+      self expect: #or ]
+  )
+
+  accept: s = (
+    sym == s ifTrue: [
+      self takeSymbolFromLexer.
+      ^ true ].
+    ^ false
+  )
+
+  expect: s = (
+    (self accept: s) ifTrue: [ ^ true ].
+
+    self error: 'Parsing failed, expected ' + s + ' but found ' + sym + ' (' + text + ')'
+  )
+
+  symIsMethod = (
+    ^ sym = #identifier or: [
+      sym = #keyword or: [
+      sym = #operatorSequence or: [
+      self symIn: Parser binaryOpSyms ] ] ]
+  )
+
+  symIn: ss = (
+    ^ ss contains: sym
+  )
+
+  ----
+  | singleOpSyms binaryOpSyms keywordSelectorSyms |
+
+  singleOpSyms = (
+    singleOpSyms == nil ifTrue: [
+      singleOpSyms := #(#not #and #or #star #div #mod #plus #equal
+                        #more #less #comma #at #per #none) ].
+    ^ singleOpSyms
+  )
+
+  binaryOpSyms = (
+    binaryOpSyms == nil ifTrue: [
+      binaryOpSyms := #(#or #comma #minus #equal #not #and #or #star
+                        #div #mod #plus #equal #more #less #comma #at
+                        #per #none) ].
+    ^ binaryOpSyms
+  )
+
+  keywordSelectorSyms = (
+    keywordSelectorSyms == nil ifTrue: [
+      keywordSelectorSyms := #(#keyword #keywordSequence) ].
+    ^ keywordSelectorSyms
+  )
+
+  newWith: aString for: aFilename in: universe = (
+    ^ self new initializeWith: aString for: aFilename in: universe
+  )
+)

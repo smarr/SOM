@@ -1,0 +1,20 @@
+ClassGenerationContext = (
+  | universe superName |
+  initalize: aUniverse = (
+    universe := aUniverse
+  )
+
+  superName = (
+    ^ superName
+  )
+
+  superName: aSymbol = (
+    superName := aSymbol
+  )
+
+  ----
+
+  new: aUniverse = (
+    ^ self new initalize: aUniverse
+  )
+)

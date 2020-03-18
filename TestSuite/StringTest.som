@@ -98,6 +98,7 @@ StringTest = TestCase (
      \f	  a formfeed character
      \'	  a single quote character
      \\	  backslash character
+     \0   zero byte character
     "
 
     self assert: '\t' equals: '\t'.
@@ -123,6 +124,10 @@ StringTest = TestCase (
 
     self assert: '\\' equals: '\\'.
     self assert: 1 equals: '\\' length.
+
+    self assert: '\0' equals: '\0'.
+    self assert: 1 equals: '\0' length.
+    self assert: 5 equals: '\0rest' length.
   )
 
   testHash = (

@@ -5,22 +5,22 @@ jobs:
   include:
     - language: cpp
       addons: {apt: {packages: [cmake, libcppunit-dev]}}
-      env: SOM=SOMpp       REPO=https://github.com/SOM-st/SOMpp.git       BUILD="cmake . && make SOM++" SOM=./som.sh
+      env: SOM=SOMpp       REPO=SOMpp.git       BUILD="cmake . && make SOM++" SOM=./som.sh
 
     - language: c
-      env: SOM=CSOM        REPO=https://github.com/SOM-st/CSOM.git        BUILD=make    SOM=./som.sh COMPILER=gcc ARCH=64bit
+      env: SOM=CSOM        REPO=CSOM.git        BUILD=make    SOM=./som.sh COMPILER=gcc ARCH=64bit
 
     # JsSOM can't currently be parameterized with another core lib, so, we can't really test it
     # - language: node_js
-    #   env: SOM=JsSOM       REPO=https://github.com/SOM-st/JsSOM.git       BUILD=make    SOM=./som.sh
+    #   env: SOM=JsSOM       REPO=JsSOM.git       BUILD=make    SOM=./som.sh
 
     - language: python
-      env: SOM=PySOM       REPO=https://github.com/SOM-st/PySOM.git       BUILD=""      SOM=./som.sh  PYTHON=python
+      env: SOM=PySOM       REPO=PySOM.git       BUILD=""      SOM=./som.sh  PYTHON=python
       python:
         - "2.7"
 
     - language: python
-      env: SOM=RPySOM      REPO=https://github.com/SOM-st/RPySOM.git      BUILD=""      SOM=./som.sh  PYTHON=python
+      env: SOM=RPySOM      REPO=RPySOM.git      BUILD=""      SOM=./som.sh  PYTHON=python
       python:
         - "2.7"
       before_script:
@@ -32,7 +32,7 @@ jobs:
           cd ..
 
     - language: python
-      env: SOM=RTruffleSOM REPO=https://github.com/SOM-st/RTruffleSOM.git BUILD=""      SOM=./som.sh  PYTHON=python
+      env: SOM=RTruffleSOM REPO=RTruffleSOM.git BUILD=""      SOM=./som.sh  PYTHON=python
       python:
         - "2.7"
       before_script:
@@ -45,13 +45,13 @@ jobs:
 
     - language: java
       dist: trusty
-      env: SOM=SOM         REPO=https://github.com/SOM-st/som-java.git    BUILD=make    SOM=./som.sh
+      env: SOM=SOM         REPO=som-java.git    BUILD=make    SOM=./som.sh
       jdk: [oraclejdk8]
       addons: {apt: {packages: [libc6-dev-i386]}}
 
     - language: java
       dist: trusty
-      env: SOM=TruffleSOM  REPO=https://github.com/SOM-st/TruffleSOM.git  BUILD=make    SOM="./som -G"
+      env: SOM=TruffleSOM  REPO=TruffleSOM.git  BUILD=make    SOM="./som -G"
       jdk: [oraclejdk8]
       addons: {apt: {packages: [libc6-dev-i386]}}
 
@@ -61,16 +61,27 @@ jobs:
       jdk: [oraclejdk8]
 
   allow_failures:
-    # - env: SOM=JsSOM       REPO=https://github.com/SOM-st/JsSOM.git       BUILD=make    SOM=./som.sh
-    - env: SOM=PySOM       REPO=https://github.com/SOM-st/PySOM.git       BUILD=""      SOM=./som.sh  PYTHON=python
-    - env: SOM=RPySOM      REPO=https://github.com/SOM-st/RPySOM.git      BUILD=""      SOM=./som.sh  PYTHON=python
+    # - env: SOM=JsSOM       REPO=JsSOM.git       BUILD=make    SOM=./som.sh
+    - env: SOM=PySOM       REPO=PySOM.git       BUILD=""      SOM=./som.sh  PYTHON=python
+    - env: SOM=RPySOM      REPO=RPySOM.git      BUILD=""      SOM=./som.sh  PYTHON=python
 
 install:
   - |
+    # Install Dependencies and Load SOM VM
     if [ "$SOM" != "spec" ]
     then
-      pip install pyyaml
-      git clone --depth 1 $REPO som-vm
+      pip install -q pyyaml
+
+      if [ "$TRAVIS_PULL_REQUEST" = "false" ]
+      then
+        export BRANCH_NAME=$TRAVIS_BRANCH
+        export GITHUB_USER=`echo $TRAVIS_REPO_SLUG | cut -d/ -f1`
+      else
+        export BRANCH_NAME=$TRAVIS_PULL_REQUEST_BRANCH
+        export GITHUB_USER=`echo $TRAVIS_PULL_REQUEST_SLUG | cut -d/ -f1`
+      fi
+      echo "Get https://github.com/$GITHUB_USER/$REPO at branch $BRANCH_NAME for testing"
+      git clone --branch $BRANCH_NAME --depth 1 https://github.com/$GITHUB_USER/$REPO som-vm || git clone --depth 1 https://github.com/$GITHUB_USER/$REPO som-vm
     fi
 
 # command to run tests

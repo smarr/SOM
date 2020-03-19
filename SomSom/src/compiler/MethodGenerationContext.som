@@ -1,0 +1,55 @@
+MethodGenerationContext = (
+  | holderGenc outerGenc arguments signature finished prim |
+
+  initializeWith: aHolderGenc and: aOuterGenc = (
+    holderGenc := aHolderGenc.
+    outerGenc := aOuterGenc.
+    arguments := Vector new.
+    finished := false.
+    prim := false.
+  )
+
+  signature: aSymbol = (
+    signature := aSymbol
+  )
+
+  addArgument: aString = (
+    arguments append: aString
+  )
+
+  addArgumentIfAbsent: aString = (
+    (arguments contains: aString)
+      ifTrue: [^ false].
+
+    arguments append: aString.
+    ^ true
+  )
+
+  markAsFinished = (
+    finished := true
+  )
+
+  isFinished = (
+    ^ finished
+  )
+
+  markAsPrimitive = (
+    prim := true
+  )
+
+  assemble: universe = (
+    'TODO: MGC assemble' println.
+    "TODO: need to implement."
+    ^ nil
+  )
+
+  ----
+
+  new: holderGenc = (
+    ^ self new initializeWith: holderGenc and: nil
+  )
+
+  new: holderGenc with: outerGenc = (
+    ^ self new initializeWith: holderGenc and: outerGenc
+  )
+)

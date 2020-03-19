@@ -1,7 +1,17 @@
 ClassGenerationContext = (
-  | universe superName |
+  | universe
+    superName
+    classSide
+    classFields instanceFields
+    classMethods instanceMethods |
+
   initalize: aUniverse = (
-    universe := aUniverse
+    universe := aUniverse.
+    classSide := false.
+    classFields := Vector new.
+    instanceFields := Vector new.
+    classMethods := Vector new.
+    instanceMethods := Vector new.
   )
 
   superName = (
@@ -10,6 +20,18 @@ ClassGenerationContext = (
 
   superName: aSymbol = (
     superName := aSymbol
+  )
+
+  addField: aSymbol = (
+    classSide
+      ifTrue: [classFields append: aSymbol]
+      ifFalse: [instanceFields append: aSymbol]
+  )
+
+  addMethod: anInvokable = (
+    classSide
+      ifTrue: [classMethods append: anInvokable]
+      ifFalse: [instanceMethods append: anInvokable]
   )
 
   ----

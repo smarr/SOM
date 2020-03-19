@@ -1,3 +1,9 @@
 SString = SAbstractObject (
+  | string |
 
+  initializeWith: aString = (
+    string := aString.
+  )
+
+  string = ( ^ string )
 )

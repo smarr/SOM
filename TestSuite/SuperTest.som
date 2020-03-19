@@ -30,6 +30,11 @@ SuperTest = SuperTestSuperClass (
     self assert: 42 equals: self blockGive42.
   )
 
+  yourself = (
+    record := record + 1000.
+    ^ self
+  )
+
   give42 = (
     ^super give42
   )
@@ -40,6 +45,24 @@ SuperTest = SuperTestSuperClass (
 
   something = (
     ^ #sub
+  )
+
+  number = (
+    ^ 10
+  )
+
+  testBinaryMessage = (
+    | val |
+    record := 0.
+    val := super number * super number.
+    self assert: 1 equals: val.
+  )
+
+  testBinaryUnaryMessage = (
+    | val |
+    record := 0.
+    super yourself yourself @ super yourself yourself.
+    self assert: 2002 equals: record.
   )
 
   "Note: testing assigning self was moved to basic interpreter tests"

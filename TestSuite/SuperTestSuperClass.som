@@ -45,6 +45,10 @@ SuperTestSuperClass = TestCase (
         ^ 1
     )
 
+    key: a key: b = (
+        ^ self
+    )
+
     @ o = ( ^ self )
 )
 

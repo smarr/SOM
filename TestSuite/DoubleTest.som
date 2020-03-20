@@ -28,20 +28,20 @@ DoubleTest = TestCase (
   testIntegerDivision = (
     self assert: 1 equals: (4/3) + (4/5)
   )
-  
+
   testDoubleDivision = (
     self assert: 32 // 15 equals: (4//3) + (4//5)
   )
-  
+
   testAsString = (
     self assert: '0.5' equals: (1//2) asString.
     self assert: '0.5' equals: 0.5 asString.
   )
-  
+
   testEquals = (
     self assert: (1.0 = 1).
   )
-  
+
   testRound = (
     self assert:   1 equals:     (5//10) round.
     self assert:   1 equals:    (14//10) round.
@@ -52,7 +52,7 @@ DoubleTest = TestCase (
     self assert: 1 equals: 1.0 asInteger.
     self assert: 1 equals: 1.1 asInteger.
     self assert: 1 equals: 1.999 asInteger.
-    
+
     self assert: -1 equals: -1.0 asInteger.
     self assert: -1 equals: -1.999 asInteger.
   )
@@ -77,5 +77,13 @@ DoubleTest = TestCase (
     self assert: Double PositiveInfinity > 1.
     self assert: Double PositiveInfinity equals: Double PositiveInfinity + 1.
     self assert: Double PositiveInfinity equals: Double PositiveInfinity - 1.
+  )
+
+  testFromString = (
+    self assert:  0.0 equals: (Double fromString:  '0.0').
+    self assert: -1.1 equals: (Double fromString: '-1.1').
+
+    self assert:  3423.54656 equals: (Double fromString:  '3423.54656').
+    self assert: -672.433244 equals: (Double fromString: '-672.433244').
   )
 )

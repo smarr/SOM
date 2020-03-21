@@ -50,6 +50,15 @@ StringTest = TestCase (
     self assert: 'r' equals: (str charAt: 6).
   )
 
+  testStringLiteralLineBreak = (
+    | str |
+    "Some parsers get the literals and line bounderies wrong"
+    str := '
+'.
+    self assert: '\n' equals: (str charAt: 1).
+    self assert: 1 equals: str length.
+  )
+
   testPrimSubstringFrom = (
     | str |
     str := 'foobar'.

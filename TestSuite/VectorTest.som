@@ -27,27 +27,27 @@ THE SOFTWARE.
 
 VectorTest = TestCase (
   | a |
-  
+
   setUp = (
     a := Vector new.
     a append: 'hello'.
     a append: #world.
     a append: 23.
   )
-  
+
   testSize = (
     self assert: 3 equals: a size.
   )
-  
+
   testAt = (
     self assert: #world equals: (a at: 2).
     self assert:     23 equals: (a at: 3).
   )
-  
+
   testContains = (
     self assert: (a contains: 23).
   )
-  
+
   testDo = (
     | j |
     j := 1.
@@ -55,5 +55,46 @@ VectorTest = TestCase (
       self assert: i equals: (a at: j).
       j := j + 1.
     ].
+  )
+
+  testAppendAndRemoveFirst = (
+    | v |
+    v := Vector new: 10.
+    1 to: 100 do: [:i |
+      v append: i ].
+
+    "160 is implementation dependent, just here for orientation"
+    self assert: 160 equals: v capacity.
+    self assert: 100 equals: v size.
+
+    1 to: 100 do: [:i |
+      v removeFirst ].
+    1 to: 100 do: [:i |
+      v append: i ].
+
+    self assert: 320 equals: v capacity.
+    self assert: 100 equals: v size.
+  )
+
+  testIndexOf = (
+    | v |
+    v := Vector new: 3.
+    1 to: 17 do: [:i |
+      v append: i ].
+
+    self assert: -1 equals: (v indexOf: nil).
+    self assert: 1 equals: (v indexOf: 1).
+
+    self assert: 13 equals: (v indexOf: 13).
+    v at: 13 put: #test.
+
+    self assert: 13 equals: (v indexOf: #test).
+
+    v removeFirst.
+    self assert: -1 equals: (v indexOf: 1).
+
+    1 to: 12 do: [:i |
+      v removeFirst ].
+    self assert: -1 equals: (v indexOf: #test).
   )
 )

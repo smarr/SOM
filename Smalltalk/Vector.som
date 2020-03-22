@@ -28,28 +28,28 @@ THE SOFTWARE.
 Vector = (
 
     | first last storage |
-    
+
     "Accessing"
     at: index = ( ^ self checkIndex: index ifValid: [ storage at: index ] )
-    
+
     at: index put: value = (
         ^ self checkIndex: index ifValid: [ storage at: index put: value ]
     )
-    
+
     first = ( ^ (self size > 0) ifTrue: [storage at: 1] ifFalse: [nil] )
-    
+
     "Iterating"
     do: block = (
         first to: last - 1 do: [ :i | block value: (storage at: i) ]
     )
-    
+
     doIndexes: block = (
         first to: last - 1 do: block
     )
-    
+
     "Adding"
     , element = ( ^self append: element )
-    
+
     append: element = (
         (last >= storage length) ifTrue: [
             "Need to expand capacity first"
@@ -57,12 +57,12 @@ Vector = (
             newStorage := Array new: (2 * storage length).
             storage doIndexes: [ :i | newStorage at: i put: (storage at: i) ].
             storage := newStorage. ].
-        
+
         storage at: last put: element.
         last := last + 1.
         ^self
     )
-    
+
     "Removing"
     remove = (
         (last > first)
@@ -71,13 +71,13 @@ Vector = (
                 self error:
                     'Vector: Attempting to pop element from empty Vector' ]
     )
-    
+
     remove: object = (
         | newArray newLast found |
         newArray := Array new: self capacity.
         newLast := 1.
         found := false.
-       
+
         self do: [ :it |
           (it == object)
               ifTrue:  [ found := true ]
@@ -86,43 +86,51 @@ Vector = (
                   newLast := newLast + 1.
               ]
         ].
-       
+
         storage := newArray.
         last := newLast.
         first := 1.
         ^found
     )
-   
+
     contains: anObject = (
         ^ storage contains: anObject
     )
-  
+
+    "If anObject is in vector, return index of first occurance.
+     If it isn't, return -1."
+    indexOf: anObject = (
+        first to: last - 1 do: [ :i |
+            (storage at: i) = anObject ifTrue: [ ^ i ] ].
+        ^ -1
+    )
+
     "Printing"
     println = (
         '(' print.
         self do: [ :it | '(' print. it print. ')' print ].
         ')' println
     )
-    
+
     "Sizing"
     isEmpty  = ( ^last = first   )
     size     = ( ^last - first   )
     capacity = ( ^storage length )
-    
+
     "Conversion"
     asArray = ( | arr |
         arr := Array new: self size.
         self doIndexes: [ :i | arr at: i put: (self at: i) ].
         ^arr
     )
-    
+
     "Private"
     initialize: size = (
         storage := Array new: size.
         first := 1.
         last  := 1.
     )
-    
+
     checkIndex: index ifValid: block = (
         ^ ((first <= index) && (index <= last)
             ifTrue: [ block value ]
@@ -131,30 +139,30 @@ Vector = (
                     'Vector[' + first asString + '..' + last asString +
                     ']: Index ' + index asString + ' out of bounds' ])
     )
-    
+
     "DeltaBlue"
     removeFirst = (
         self isEmpty ifTrue: [ self error: 'OrderedCollection is empty' ].
         first := first + 1.
         ^ storage at: first - 1
     )
-    
+
     "Conversion"
     asSet = (
         ^ Set new addAll: self
     )
-    
+
     ----------------------------
-    
+
     "Allocation"
     new              = ( ^ self new: 50 )
     new: initialSize = ( ^ super new initialize: initialSize )
-    
+
     with: elem = (
         | newVector |
         newVector := self new: 1.
         newVector append: elem.
         ^ newVector
     )
-    
+
 )

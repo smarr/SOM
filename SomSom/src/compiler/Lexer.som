@@ -11,7 +11,7 @@ Lexer = (
     index := 1.
   )
 
-  peekDone = ( ^ peekDone )
+  isPeekDone = ( ^ peekDone )
   text = ( ^ text )
 
   peek = (

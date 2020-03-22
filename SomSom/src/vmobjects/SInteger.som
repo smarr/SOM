@@ -1,0 +1,14 @@
+SInteger = SAbstractObject (
+  | value |
+
+  initialize: anInteger = (
+    ^ value
+  )
+
+  ----
+
+  "TODO: see whether it makes sense to have a cache"
+  for: anInteger = (
+    ^ self new initialize: anInteger
+  )
+)

@@ -28,10 +28,26 @@ ClassGenerationContext = (
       ifFalse: [instanceFields append: aSymbol]
   )
 
+  hasField: aSymbol = (
+    ^ classSide
+      ifTrue: [classFields contains: aSymbol]
+      ifFalse: [instanceFields contains: aSymbol]
+  )
+
+  fieldIndex: aSymbol = (
+    ^ classSide
+      ifTrue: [classFields indexOf: aSymbol]
+      ifFalse: [instanceFields indexOf: aSymbol]
+  )
+
   addMethod: anInvokable = (
     classSide
       ifTrue: [classMethods append: anInvokable]
       ifFalse: [instanceMethods append: anInvokable]
+  )
+
+  startClassSide = (
+    classSide := true
   )
 
   ----

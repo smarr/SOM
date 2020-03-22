@@ -1,0 +1,13 @@
+SDouble = SAbstractObject (
+  | value |
+
+  initialize: aDouble = (
+    ^ value
+  )
+
+  ----
+
+  for: aDouble = (
+    ^ self new initialize: aDouble
+  )
+)

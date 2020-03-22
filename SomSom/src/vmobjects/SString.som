@@ -6,4 +6,10 @@ SString = SAbstractObject (
   )
 
   string = ( ^ string )
+
+  ----
+
+  new: aString = (
+    ^ self new initializeWith: aString
+  )
 )

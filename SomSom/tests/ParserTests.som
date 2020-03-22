@@ -110,10 +110,10 @@ ParserTests = TestCase (
       i: o = ( super foo )
       j: o = ( (1) )
       k: o = ( [1] )
-      k: o = ( 1 foo: 4 )
-      k: o = ( 1 + 4 )
-      k: o = ( 1 ++ 2 )
-      k: o = ( #(2 3 4 5) )
+      l: o = ( 1 foo: 4 )
+      m: o = ( 1 + 4 )
+      n: o = ( 1 ++ 2 )
+      o: o = ( #(2 3 4 5) )
     )' for: 'ClassWithVariousMethods.som' in: u.
     cgenc := parser classdef.
   )

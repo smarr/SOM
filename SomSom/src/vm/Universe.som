@@ -20,6 +20,18 @@ Universe = (
     ^ result
   )
 
+  newInteger: anInteger = (
+    ^ SInteger for: anInteger
+  )
+
+  newDouble: aDouble = (
+    ^ SDouble for: aDouble
+  )
+
+  newString: aString = (
+    ^ SString new: aString
+  )
+
   ----
 
   new = (

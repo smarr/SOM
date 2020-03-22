@@ -1,12 +1,24 @@
 MethodGenerationContext = (
-  | holderGenc outerGenc arguments signature finished prim |
+  | holderGenc outerGenc
+    arguments locals literals
+    signature
+    finished prim blockMethod
+    bytecode |
 
   initializeWith: aHolderGenc and: aOuterGenc = (
     holderGenc := aHolderGenc.
     outerGenc := aOuterGenc.
     arguments := Vector new.
+    locals := Vector new.
+    literals := Vector new.
     finished := false.
     prim := false.
+    blockMethod := false.
+    bytecode := Vector new.
+  )
+
+  holder = (
+    ^ holderGenc
   )
 
   signature: aSymbol = (
@@ -25,6 +37,58 @@ MethodGenerationContext = (
     ^ true
   )
 
+  numberOfArguments = (
+    ^ arguments size
+  )
+
+  addLocalIfAbsent: aString = (
+    (locals contains: aString)
+      ifTrue: [^ false].
+
+    locals append: aString.
+    ^ true
+  )
+
+  addLiteralIfAbsent: anAbstractObject = (
+    | idx |
+    idx := literals indexOf: anAbstractObject.
+    idx <> -1 ifTrue: [
+      ^ idx ].
+
+    ^ self addLiteral: anAbstractObject
+  )
+
+  addLiteral: anAbstractObject = (
+    | idx |
+    idx := literals size + 1.
+    literals append: anAbstractObject.
+    ^ idx
+  )
+
+  updateLiteral: oldVal at: idx put: newVal = (
+    (literals at: idx) == oldVal ifFalse: [
+      self error: 'updateLiteral saw wrong oldVal, indicates bug in parser' ].
+    literals at: idx put: newVal
+  )
+
+  findVar: var with: searchResult = (
+    "searchResult: index, context, isArgument"
+    searchResult at: 1 put: (locals indexOf: var).
+    (searchResult at: 1) = -1 ifTrue: [
+      searchResult at: 1 put: (arguments indexOf: var).
+      (searchResult at: 1) = -1
+        ifTrue: [
+          outerGenc == nil
+            ifTrue: [^ false]
+            ifFalse: [
+              searchResult at: 2 put: (searchResult at: 2) + 1.
+              ^ outerGenc findVar: var with: searchResult ] ]
+        ifFalse: [
+          searchResult at: 3 put: true ] ].
+
+    ^ true
+  )
+
   markAsFinished = (
     finished := true
   )
@@ -37,8 +101,38 @@ MethodGenerationContext = (
     prim := true
   )
 
+  isBlockMethod = (
+    ^ blockMethod
+  )
+
+  markAsBlockMethod = (
+    blockMethod := true
+  )
+
+  addBytecode: code = (
+    bytecode append: code
+  )
+
+  removeLastBytecode = (
+    bytecode remove
+  )
+
+  hasField: aSymbol = (
+    ^ holderGenc hasField: aSymbol
+  )
+
+  fieldIndex: aSymbol = (
+    ^ holderGenc fieldIndex: aSymbol
+  )
+
   assemble: universe = (
     'TODO: MGC assemble' println.
+    "TODO: need to implement."
+    ^ nil
+  )
+
+  assembleMethod: universe = (
+    'TODO: MGC assembleMethod' println.
     "TODO: need to implement."
     ^ nil
   )

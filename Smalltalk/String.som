@@ -93,6 +93,40 @@ String = (
         ^self substringFrom: argument to: argument
     )
 
+    indexOf: aString = (
+      ^ self indexOf: aString startingAt: 1
+    )
+
+    indexOf: aString startingAt: start = (
+      | l |
+      l := aString length.
+      start + l > (self length + 1) ifTrue: [ ^ -1 ].
+
+      start to: self length - l + 1 do: [:i |
+        (self primSubstringFrom: i to: i + l - 1) = aString ifTrue: [ ^ i ].
+      ].
+
+      ^ -1
+    )
+
+    split: split = (
+      | start newStart result |
+      self length < split length ifTrue: [ ^ Array new: self ].
+      start := 1.
+      result := Vector new.
+
+      [start > 0] whileTrue: [
+        newStart := self indexOf: split startingAt: start.
+        newStart = -1
+          ifTrue: [
+            result append: (self primSubstringFrom: start to: self length).
+            ^ result asArray ]
+          ifFalse: [
+            result append: (self primSubstringFrom: start to: newStart - 1).
+            start := newStart + split length ] ].
+      ^ result asArray
+    )
+
     "Printing"
     print    = ( system printString: self )
 

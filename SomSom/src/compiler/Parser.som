@@ -592,7 +592,21 @@ Parser = (
   expect: s = (
     (self accept: s) ifTrue: [ ^ true ].
 
-    self error: 'Parsing failed, expected ' + s + ' but found ' + sym + ' (' + text + ')'
+    self error: 'Parsing of ' + filename + ' failed, expected ' + s + ' but found ' + sym +
+      ' (' + text + ').\nCurrent parser context: ' + lexer currentTextContext
+  )
+
+  expectOneOf: ss = (
+    | err |
+    (self acceptOneOf: ss) ifTrue: [ ^ true ].
+
+    err := 'Parsing of ' + filename + ' failed, expected one of '.
+
+    ss do: [
+      err := err + s + ', ' ].
+    err := err + 'but found: ' + sym + ' (' + text + ').\nCurrent parser context: ' + lexer currentTextContext.
+
+    self error: err
   )
 
   symIsMethod = (

@@ -47,7 +47,7 @@ ParserTests = TestCase (
     u := Universe new.
     parser := ParserWithError newWith: 'Foo ()' for: 'Foo.som' in: u.
     cgenc := self parseAndCaptureError: parser.
-    self assert: 'Parsing failed, expected equal but found newTerm (()' equals: cgenc
+    self assert: (cgenc beginsWith: 'Parsing of Foo.som failed, expected equal but found newTerm')
   )
 
   testEmptyClassWithComment = (

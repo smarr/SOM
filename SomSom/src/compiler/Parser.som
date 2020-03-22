@@ -386,7 +386,7 @@ Parser = (
     | superSend |
     superSend := self primary: mgenc.
 
-    (sym == #identifier) ifTrue: [
+    [sym == #identifier] whileTrue: [
       self unaryMessage: mgenc with: superSend.
       superSend := false ].
 

@@ -135,13 +135,13 @@ ParserTests = TestCase (
       'Hashtable.som'
       'Integer.som'
       'Metaclass.som'
-      "'Method.som'"
+      'Method.som'
       'Nil.som'
-      "'Object.som'"
+      'Object.som'
       'Pair.som'
       'Primitive.som'
       'Set.som'
-      "'String.som'"
+      'String.som'
       'Symbol.som'
       'System.som'
       'True.som'

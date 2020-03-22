@@ -29,33 +29,38 @@ System = (
     global: name            = primitive
     global: name put: value = primitive
     hasGlobal: name         = primitive
-    
+
     "Initializing"
     initialize: arguments = (
         | application |
-        
+
         "Make sure we have got at least one argument"
         (arguments length < 1) ifTrue: [ 'No class specified' println. ^nil ].
-        
+
         "Load the class with the specified name, create an instance of it, and
          run it. If there is more than only the class given on the command line,
          and the class has a method #run:, the arguments array is passed to it,
          otherwise, #run is sent."
         application := (self resolve: (arguments at: 1) asSymbol) new.
-        
+
         (application respondsTo: #run:)
             ifTrue:  [ application run: arguments ]
             ifFalse: [ application run ]
     )
-    
+
+    "File support"
+
+    "Load a file identified by a path. Return content as a string"
+    loadFile: fileName = primitive
+
     "Loading and resolving"
     load:    symbol = primitive
     resolve: symbol = (
         | class current_class |
-        
+
         "Check if we've already got the global"
         (self global: symbol) == nil ifFalse: [ ^self global: symbol ].
-        
+
         "Try loading the class"
         class := self load: symbol.
         (class == nil) ifFalse: [
@@ -70,25 +75,25 @@ System = (
             ^class ].
         self error: 'Unable to resolve ' + symbol
     )
-    
+
     "Exiting"
-    exit: error  = primitive  
+    exit: error  = primitive
     exit         = ( self exit: 0 )
-    
+
     "Printing"
     printString: string = primitive
     printNewline        = primitive
-    
+
     "Time"
     time  = primitive
     ticks = primitive      "returns the microseconds since start"
-    
+
     "Force Garbage Collection"
     fullGC = primitive
-    
+
     ----------------------------------
-    
+
     "Allocation"
     new = ( self error: 'The system object is singular' )
-    
+
 )

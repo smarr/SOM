@@ -716,4 +716,12 @@ Parser = (
   newWith: aString for: aFilename in: universe = (
     ^ self new initializeWith: aString for: aFilename in: universe
   )
+
+  load: aFileName in: universe = (
+    | fileContent |
+    fileContent := system loadFile: aFileName.
+    fileContent == nil ifTrue: [ ^ nil ].
+
+    ^ self new initializeWith: fileContent for: aFileName in: universe
+  )
 )

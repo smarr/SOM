@@ -117,4 +117,42 @@ ParserTests = TestCase (
     )' for: 'ClassWithVariousMethods.som' in: u.
     cgenc := parser classdef.
   )
+
+  testSmalltalkFolder = (
+    | files |
+    files := #(
+      'Array.som'
+      'Block.som'
+      'Block1.som'
+      'Block2.som'
+      'Block3.som'
+      'Boolean.som'
+      'Class.som'
+      'Dictionary.som'
+      'Double.som'
+      'False.som'
+      'HashEntry.som'
+      'Hashtable.som'
+      'Integer.som'
+      'Metaclass.som'
+      "'Method.som'"
+      'Nil.som'
+      "'Object.som'"
+      'Pair.som'
+      'Primitive.som'
+      'Set.som'
+      "'String.som'"
+      'Symbol.som'
+      'System.som'
+      'True.som'
+      'Vector.som' ).
+
+    files do: [:f |
+      | cgenc parser u |
+      u := Universe new.
+      f println.
+      parser := Parser load: 'Smalltalk/' + f in: u.
+      self deny: parser isNil.
+      cgenc := parser classdef ].
+  )
 )

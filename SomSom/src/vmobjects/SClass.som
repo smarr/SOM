@@ -72,7 +72,7 @@ SClass = SObject (
     "Lookup invokable with given signature in array of instance invokables"
     1 to: instanceInvokables numberOfIndexableFields do: [:i |
       "Get the next invokable in the instance invokable array"
-      invokable := instanceInvokable indexableField: i.
+      invokable := instanceInvokables indexableField: i.
 
       "Return the invokable if the signature matches"
       invokable signature == signature ifTrue: [

@@ -1,8 +1,17 @@
 Interpreter = (
-  | universe |
+  | universe frame |
 
   initializeWith: aUniverse = (
     universe := aUniverse
+  )
+
+  pushNewFrame: method with: contextFrame = (
+    frame := universe newFrame: frame with: method with: contextFrame.
+    ^ frame
+  )
+
+  pushNewFrame: method = (
+    ^ self pushNewFrame: method with: nil
   )
 
   ----

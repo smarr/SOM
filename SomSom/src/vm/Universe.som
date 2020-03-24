@@ -1,6 +1,8 @@
 Universe = (
   | symbolTable globals classPath dumpBytecodes interpreter
 
+    avoidExit
+
     nilObject
     trueObject
     falseObject
@@ -29,6 +31,12 @@ Universe = (
     globals := Dictionary new.
     interpreter := Interpreter new: self.
     dumpBytecodes := false.
+    avoidExit := false
+  )
+
+  initialize: aBool = (
+    self initialize.
+    avoidExit := aBool
   )
 
   nilObject   = ( ^ nilObject )
@@ -59,7 +67,7 @@ Universe = (
     clazz := self loadClass: (self symbolFor: className).
 
     "Lookup the initialize invokable on the system class"
-    initialize := (clazz somClass: self) lookupInvokable: (self symbolFor: selector).
+    initialize := (clazz somClassIn: self) lookupInvokable: (self symbolFor: selector).
 
     initialize == nil ifTrue: [
       self error: 'Lookup of ' + className + '>>#' + selector + ' failed' ].
@@ -232,6 +240,25 @@ Universe = (
     ^ result
   )
 
+  newFrame: previousFrame with: method with: contextFrame = (
+    | length result |
+    "Compute the maximum number of stack locations (including arguments,
+     locals and extra buffer to support doesNotUnderstand) and set the number
+     of indexable fields accordingly"
+    length := method numberOfArguments
+        + method numberOfLocals
+        + method maximumNumberOfStackElements + 2.
+
+    result := Frame new: nilObject previous: previousFrame context: contextFrame method: method maxStack: length.
+
+    "Reset the stack pointer and the bytecode index"
+    result resetStackPointer.
+    result bytecodeIndex: 1.
+
+    "Return the freshly allocated frame"
+    ^ result
+  )
+
   newSymbol: aString = (
     | result |
     result := SSymbol new: aString.
@@ -390,6 +417,10 @@ Universe = (
 
   new = (
     ^ super new initialize
+  )
+
+  new: avoidExit = (
+    ^ super new initialize: avoidExit
   )
 
   errorPrint: msg = (

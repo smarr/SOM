@@ -19,8 +19,7 @@ Parser = (
   )
 
   classdef = (
-    | name |
-    name := universe symbolFor: text.
+    cgenc name: (universe symbolFor: text).
     self expect: #identifier.
     self expect: #equal.
 
@@ -63,14 +62,12 @@ Parser = (
   )
 
   initializeFromSuperClass: superName = (
-    'TODO once parser complete' println.
-    "TODO
     | superClass |
     superClass := universe loadClass: superName.
     superClass == nil ifTrue: [
-      self error: 'Was not able to load super class: ' + superName ].
+      self error: 'Was not able to load super class: ' + superName string + ' in ' + filename ].
     cgenc instanceFieldsOfSuper: superClass instanceFields.
-    cgenc classFieldsOfSuper: superClass somClass instanceFields."
+    cgenc classFieldsOfSuper: superClass somClass instanceFields.
   )
 
   fields = (
@@ -444,7 +441,7 @@ Parser = (
 
     "if no return has been generated, we can be sure that the last expression
      in the block was not terminated by ., and can generate a return"
-    mgenc isFinished ifTrue: [
+    mgenc isFinished ifFalse: [
       bcGen emitReturnLocal: mgenc.
       mgenc markAsFinished ].
 

@@ -1,0 +1,13 @@
+Interpreter = (
+  | universe |
+
+  initializeWith: aUniverse = (
+    universe := aUniverse
+  )
+
+  ----
+
+  new: universe = (
+    ^ self new initializeWith: universe
+  )
+)

@@ -25,6 +25,14 @@ SSymbol = SString (
     ^ true
   )
 
+  numberOfSignatureArguments = (
+    ^ numSignatureArguments
+  )
+
+  somClassIn: universe = (
+    ^ universe symbolClass
+  )
+
   ----
 
   new: aString = (

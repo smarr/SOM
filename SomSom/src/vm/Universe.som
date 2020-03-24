@@ -1,7 +1,199 @@
 Universe = (
-  | symbolTable |
+  | symbolTable globals classPath dumpBytecodes interpreter
+
+    nilObject
+    trueObject
+    falseObject
+
+    objectClass
+    classClass
+    metaclassClass
+
+    nilClass
+    integerClass
+    arrayClass
+    methodClass
+    symbolClass
+    primClass
+    stringClass
+    systemClass
+    blockClass
+    doubleClass
+
+    trueClass
+    falseClass
+  |
+
   initialize = (
     symbolTable := Dictionary new.
+    globals := Dictionary new.
+    interpreter := Interpreter new: self.
+    dumpBytecodes := false.
+  )
+
+  nilObject   = ( ^ nilObject )
+  trueObject  = ( ^ trueObject )
+  falseObject = ( ^ falseObject )
+  metaclassClass = ( ^ metaclassClass )
+
+  defaultClassPath = (
+    ^ #('.')
+  )
+
+  setupClassPath: cp = (
+    | paths cps |
+    "Create a new tokenizer to split up the string of directories"
+    paths := cp split: ':'.
+
+    cps := Vector new.
+    cps appendAll: self defaultClassPath.
+    cps appendAll: paths.
+
+    classPath := cps asArray
+  )
+
+  interpret: className with: selector = (
+    | clazz initialize |
+    self initializeObjectSystem.
+
+    clazz := self loadClass: (self symbolFor: className).
+
+    "Lookup the initialize invokable on the system class"
+    initialize := (clazz somClass: self) lookupInvokable: (self symbolFor: selector).
+
+    initialize == nil ifTrue: [
+      self error: 'Lookup of ' + className + '>>#' + selector + ' failed' ].
+
+    ^ self interpret: initialize in: clazz with: nil
+  )
+
+  initialize: arguments = (
+    | systemObject initialize argumentsArray |
+    systemObject := self initializeObjectSystem.
+
+    "Start the shell if no filename is given"
+    arguments size == 0 ifTrue: [
+      | shell |
+      shell := Shell for: self using: interpreter.
+      shell bootstrapMethod: self createBootstrapMethod.
+      ^ shell start ].
+
+    "Lookup the initialize invokable on the system class"
+    initialize := systemClass lookupInvokable: (self symbolFor: 'initialize:').
+
+    "Convert the arguments into an array"
+    argumentsArray := self newArray: arguments.
+
+    ^ self interpret: initialize in: systemObject with: argumentsArray
+  )
+
+  createBootstrapMethod = (
+    | bootstrapMethod |
+    "Create a fake bootstrap method to simplify later frame traversal"
+    bootstrapMethod := self newMethod: (self symbolFor: 'bootstrap')
+      bc: #(#halt) literals: #() numLocals: 0 maxStack: 2.
+
+    bootstrapMethod holder: systemClass.
+    ^ bootstrapMethod
+  )
+
+  interpret: invokable in: receiver with: arguments = (
+    | bootstrapMethod bootstrapFrame |
+    bootstrapMethod := self createBootstrapMethod.
+
+    "Create a fake bootstrap frame with the system object on the stack"
+    bootstrapFrame := interpreter pushNewFrame: bootstrapMethod.
+    bootstrapFrame push: receiver.
+
+    arguments ~= nil ifTrue: [
+      bootstrapFrame push: arguments ].
+
+    "Invoke the initialize invokable"
+    invokable invoke: bootstrapFrame using: interpreter.
+
+    "Start the interpreter"
+    ^ interpreter start
+  )
+
+  initializeObjectSystem = (
+    | trueSymbol falseSymbol systemObject |
+
+    "Allocate the nil object"
+    nilObject := SObject new.
+
+    "Allocate the Metaclass classes"
+    metaclassClass := self newMetaclassClass.
+
+    "Allocate the rest of the system classes"
+    objectClass := self newSystemClass.
+    nilClass := self newSystemClass.
+    classClass := self newSystemClass.
+    arrayClass := self newSystemClass.
+    symbolClass := self newSystemClass.
+    methodClass := self newSystemClass.
+    integerClass := self newSystemClass.
+    primClass := self newSystemClass.
+    stringClass := self newSystemClass.
+    doubleClass := self newSystemClass.
+
+    "Setup the class reference for the nil object"
+    nilObject somClass: nilClass.
+
+    "Initialize the system classes."
+    self initializeSystemClass: objectClass superClass: nil name: 'Object'.
+    self initializeSystemClass: classClass superClass: objectClass name: 'Class'.
+    self initializeSystemClass: metaclassClass superClass: classClass name: 'Metaclass'.
+    self initializeSystemClass: nilClass superClass: objectClass name: 'Nil'.
+    self initializeSystemClass: arrayClass superClass: objectClass name: 'Array'.
+    self initializeSystemClass: methodClass superClass: arrayClass name: 'Method'.
+    self initializeSystemClass: stringClass superClass: objectClass name: 'String'.
+    self initializeSystemClass: symbolClass superClass: stringClass name: 'Symbol'.
+    self initializeSystemClass: integerClass superClass: objectClass name: 'Integer'.
+    self initializeSystemClass: primClass superClass: objectClass name: 'Primitive'.
+    self initializeSystemClass: doubleClass superClass: objectClass name: 'Double'.
+
+    "Load methods and fields into the system classes"
+    self loadSystemClass: objectClass.
+    self loadSystemClass: classClass.
+    self loadSystemClass: metaclassClass.
+    self loadSystemClass: nilClass.
+    self loadSystemClass: arrayClass.
+    self loadSystemClass: methodClass.
+    self loadSystemClass: symbolClass.
+    self loadSystemClass: integerClass.
+    self loadSystemClass: primClass.
+    self loadSystemClass: stringClass.
+    self loadSystemClass: doubleClass.
+
+    "Fix up objectClass"
+    objectClass superClass: nilObject.
+
+    "Load the generic block class"
+    blockClass := self loadClass: (self symbolFor: 'Block').
+
+    "Setup the true and false objects"
+    trueSymbol := self symbolFor: 'True'.
+    trueClass := self loadClass: trueSymbol.
+    trueObject := self newInstance: trueClass.
+
+    falseSymbol := self symbolFor: 'False'.
+    falseClass := self loadClass: falseSymbol.
+    falseObject := self newInstance: falseClass.
+
+    "Load the system class and create an instance of it"
+    systemClass := self loadClass: (self symbolFor: 'System').
+    systemObject := self newInstance: systemClass.
+
+    "Put special objects and classes into the dictionary of globals"
+    self global: (self symbolFor: 'nil') put: nilObject.
+    self global: (self symbolFor: 'true') put: trueObject.
+    self global: (self symbolFor: 'false') put: falseObject.
+    self global: (self symbolFor: 'system') put: systemObject.
+    self global: (self symbolFor: 'System') put: systemClass.
+    self global: (self symbolFor: 'Block') put: blockClass.
+    self global: trueSymbol  put: trueClass.
+    self global: falseSymbol put: falseClass.
+    ^ systemObject
   )
 
   symbolFor: aString = (
@@ -13,10 +205,45 @@ Universe = (
     ^ self newSymbol: aString
   )
 
+  newArray: size = (
+    ^ SArray new: size with: nilObject
+  )
+
+  newArrayFromVector: vector = (
+    | result |
+    "Allocate a new array with the same length as the list"
+    result := self newArray: vector size.
+
+    "Copy all elements from the list into the array"
+    vector doIndexes: [:i |
+      result indexableField: i put: (vector at: i) ].
+
+    "Return the allocated and initialized array"
+    ^ result
+  )
+
+  newClass: classClass = (
+    | result |
+    "Allocate a new class and set its class to be the given class class"
+    result := SClass new: classClass numberOfInstanceFields in: self.
+    result somClass: classClass.
+
+    "Return the freshly allocated class"
+    ^ result
+  )
+
   newSymbol: aString = (
     | result |
     result := SSymbol new: aString.
     symbolTable at: aString put: result.
+    ^ result
+  )
+
+  newInstance: instanceClass = (
+    | result |
+    result := SObject new: instanceClass numberOfInstanceFields with: nilObject.
+    result somClass: instanceClass.
+
     ^ result
   )
 
@@ -28,13 +255,164 @@ Universe = (
     ^ SDouble for: aDouble
   )
 
+  newMetaclassClass = (
+    | result |
+    "Allocate the metaclass classes"
+    result := SClass new: self.
+    result somClass: (SClass new: self).
+
+    "Setup the metaclass hierarchy"
+    result somClass somClass: result.
+
+    "Return the freshly allocated metaclass class"
+    ^ result
+  )
+
+  newMethod: aSSymbol bc: bcArray literals: literalsArray numLocals: numLocals maxStack: maxStack = (
+    ^ SMethod new: aSSymbol bc: bcArray literals: literalsArray numLocals: numLocals maxStack: maxStack
+  )
+
   newString: aString = (
     ^ SString new: aString
+  )
+
+  newSystemClass = (
+    | symbolClass |
+    "Allocate the new system class"
+    systemClass := SClass new: self.
+
+    "Setup the metaclass hierarchy"
+    systemClass somClass: (SClass new: self).
+    systemClass somClass somClass: metaclassClass.
+
+    "Return the freshly allocated system class"
+    ^ systemClass
+  )
+
+  initializeSystemClass: systemClass superClass: superClass name: name = (
+    "Initialize the superclass hierarchy"
+    superClass ~= nil
+      ifTrue: [
+        systemClass superClass: superClass.
+        systemClass somClass superClass: (superClass somClass) ]
+      ifFalse: [
+        systemClass somClass superClass: classClass ].
+
+    "Initialize the array of instance fields"
+    systemClass instanceFields: (self newArray: 0).
+    systemClass somClass instanceFields: (self newArray: 0).
+
+    "Initialize the array of instance invokables"
+    systemClass instanceInvokables: (self newArray: 0).
+    systemClass somClass instanceInvokables: (self newArray: 0).
+
+    "Initialize the name of the system class"
+    systemClass name: (self symbolFor: name).
+    systemClass somClass name: (self symbolFor: name + ' class').
+
+    "Insert the system class into the dictionary of globals"
+    self global: systemClass name put: systemClass.
+  )
+
+  global: aSSymbol = (
+    "Return the global with the given name if it's in the dictionary of globals"
+    (self hasGlobal: aSSymbol) ifTrue: [
+      ^ globals at: aSSymbol ].
+
+    "Global not found"
+    ^ nil
+  )
+
+  global: aSSymbol put: aSAbstractObject = (
+    "Insert the given value into the dictionary of globals"
+    globals at: aSSymbol put: aSAbstractObject
+  )
+
+  hasGlobal: aSSymbol = (
+    "Returns if the universe has a value for the global of the given name"
+    ^ globals containsKey: aSSymbol
+  )
+
+  loadClass: name = (
+    | result |
+    "Check if the requested class is already in the dictionary of globals"
+    (self hasGlobal: name) ifTrue: [
+      ^ self global: name ].
+
+    "Load the class"
+    result := self loadClass: name into: nil.
+
+    "Load primitives (if necessary) and return the resulting class"
+    (result ~= nil and: [result hasPrimitives]) ifTrue: [
+      result loadPrimitives ].
+
+    self global: name put: result.
+    ^ result
+  )
+
+  loadSystemClass: systemClass = (
+    | result |
+    "Load the system class"
+    result := self loadClass: systemClass name into: systemClass.
+
+    "Load primitives if necessary"
+    result hasPrimitives ifTrue: [
+      result loadPrimitives ].
+  )
+
+  loadClass: name into: systemClass = (
+    "Try loading the class from all different paths"
+    classPath do: [:cpEntry |
+      | result |
+      "Load the class from a file and return the loaded class"
+      result := SourcecodeCompiler compileClass: cpEntry name: name string into: systemClass in: self.
+
+      (result notNil and: dumpBytecodes) ifTrue: [
+        Disassembler dump: result somClass.
+        Disassembler dump: result ].
+
+      result ifNotNil: [ ^ result ] ].
+
+    "The class could not be found."
+    ^ nil
+  )
+
+  loadShellClass: stmt = (
+    | result |
+    "Load the class from a stream and return the loaded class"
+    result := SourcecodeCompiler compileClass: stmt into: nil in: self.
+    dumpBytecodes ifTrue: [
+      Disassembler dump: result ].
+    ^ result
   )
 
   ----
 
   new = (
     ^ super new initialize
+  )
+
+  errorPrint: msg = (
+    system errorPrint: msg
+  )
+
+  errorPrintln: msg = (
+    system errorPrintln: msg
+  )
+
+  errorPrintln = (
+    system errorPrintln: ''
+  )
+
+  print: msg = (
+    system errorPrint: msg
+  )
+
+  println: msg = (
+    system errorPrintln: msg
+  )
+
+  println = (
+    system errorPrintln
   )
 )

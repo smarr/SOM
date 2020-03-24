@@ -1,0 +1,17 @@
+ArrayPrimitives = Primitives (
+
+  installPrimitives = (
+    self installInstancePrimitive: (
+      SPrimitive new: 'at:' in: universe with: [:frame :interp |
+        | idx |
+        idx := frame pop.
+        self := frame pop.
+        frame push: (self indexableField: index integer)])
+  )
+
+  ----
+
+  new: universe = (
+    ^ self new initialize: universe
+  )
+)

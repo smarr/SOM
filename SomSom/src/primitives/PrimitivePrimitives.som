@@ -1,0 +1,12 @@
+PrimitivePrimitives = Primitives (
+
+  installPrimitives = (
+
+  )
+
+  ----
+
+  new: universe = (
+    ^ self new initialize: universe
+  )
+)

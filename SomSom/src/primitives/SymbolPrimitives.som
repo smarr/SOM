@@ -1,0 +1,12 @@
+SymbolPrimitives = Primitives (
+
+  installPrimitives = (
+
+  )
+
+  ----
+
+  new: universe = (
+    ^ self new initialize: universe
+  )
+)

@@ -230,6 +230,10 @@ Universe = (
     ^ result
   )
 
+  newBlock: method with: context numArgs: arguments = (
+    ^ SBlock new: method with: context numArgs: (self blockClass: arguments)
+  )
+
   newClass: classClass = (
     | result |
     "Allocate a new class and set its class to be the given class class"

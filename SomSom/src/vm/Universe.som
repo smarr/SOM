@@ -403,8 +403,8 @@ Universe = (
       result := SourcecodeCompiler compileClass: cpEntry name: name string into: systemClass in: self.
 
       (result notNil and: dumpBytecodes) ifTrue: [
-        Disassembler dump: result somClass.
-        Disassembler dump: result ].
+        Disassembler dump: result somClass in: self.
+        Disassembler dump: result in: self ].
 
       result ifNotNil: [ ^ result ] ].
 
@@ -417,7 +417,7 @@ Universe = (
     "Load the class from a stream and return the loaded class"
     result := SourcecodeCompiler compileClass: stmt into: nil in: self.
     dumpBytecodes ifTrue: [
-      Disassembler dump: result ].
+      Disassembler dump: result in: self ].
     ^ result
   )
 

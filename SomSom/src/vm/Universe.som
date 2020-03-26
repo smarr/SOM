@@ -45,6 +45,7 @@ Universe = (
   metaclassClass = ( ^ metaclassClass )
 
   arrayClass  = ( ^ arrayClass )
+  blockClass  = ( ^ blockClass )
   doubleClass = ( ^ doubleClass )
   integerClass = ( ^ integerClass )
   methodClass = ( ^ methodClass )
@@ -239,7 +240,7 @@ Universe = (
   )
 
   newBlock: method with: context numArgs: arguments = (
-    ^ SBlock new: method with: context numArgs: (self blockClass: arguments)
+    ^ SBlock new: method in: context with: (self blockClass: arguments)
   )
 
   newClass: classClass = (
@@ -366,6 +367,25 @@ Universe = (
   hasGlobal: aSSymbol = (
     "Returns if the universe has a value for the global of the given name"
     ^ globals containsKey: aSSymbol
+  )
+
+  blockClass: numberOfArguments = (
+    | name result |
+    "Determine the name of the block class with the given number of arguments"
+    name := self symbolFor: 'Block' + numberOfArguments.
+
+    "Lookup the block class in the dictionary of globals and return it"
+    (self hasGlobal: name) ifTrue: [
+      ^ self global: name ].
+
+    result := self loadClass: name into: nil.
+
+    "Add the appropriate value primitive to the block class"
+    result addInstancePrimitive:
+      (SBlock evaluationPrimitive: numberOfArguments in: self).
+
+    self global: name put: result.
+    ^ result
   )
 
   loadClass: name = (

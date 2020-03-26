@@ -1,0 +1,59 @@
+BasicInterpreterTests = TestCase (
+  | testClass testSelector
+    expectedResult resultType |
+
+  testBasicInterpreter = (
+    self c: 'MethodCall'  t: 'test' e: 42 t: SInteger.
+    self c: 'MethodCall'  t: 'test2' e: 42 t: SInteger.
+
+    self c: 'NonLocalReturn'  t: 'test1' e: 42 t: SInteger.
+    self c: 'NonLocalReturn'  t: 'test2' e: 43 t: SInteger.
+    self c: 'NonLocalReturn'  t: 'test3' e:  3 t: SInteger.
+    self c: 'NonLocalReturn'  t: 'test4' e: 42 t: SInteger.
+    self c: 'NonLocalReturn'  t: 'test5' e: 22 t: SInteger.
+  )
+
+  c: className t: testName e: value t: resultClass = (
+    testClass := className.
+    testSelector := testName.
+    expectedResult := value.
+    resultType := resultClass.
+
+    self doBasicInterpreterBehavior.
+  )
+
+  doBasicInterpreterBehavior = (
+    | u actualResult |
+    u := Universe new: true.
+    u setupClassPath: 'Smalltalk:TestSuite/BasicInterpreterTests'.
+
+    actualResult := u interpret: testClass with: testSelector.
+
+    'TTT: ' print.
+    actualResult println.
+    (actualResult somClassIn: u) name string println.
+
+    self assertExpectedEqualsSOMValue: actualResult.
+  )
+
+  assertExpectedEqualsSOMValue: actualResult = (
+    resultType == SInteger ifTrue: [
+      self assert: expectedResult equals: actualResult integer.
+      ^ self ].
+
+    resultType == SDouble ifTrue: [
+      "TODO: allow for small errors/inaccuracies"
+      self assert: expectedResult equals: actualResult integer.
+      ^ self ].
+
+    resultType == SClass ifTrue: [
+      self assert: expectedResult equals: actualResult name string.
+      ^ self ].
+
+    resultType == SSymbol ifTrue: [
+      self assert: expectedResult equals: actualResult string.
+      ^ self ].
+
+    self signalFailure: 'resultType not currently supported: ' + resultType name string
+  )
+)

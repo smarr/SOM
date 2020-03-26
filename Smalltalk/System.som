@@ -88,6 +88,8 @@ System = (
     errorPrintln: string = primitive
     errorPrint: string  = primitive
 
+    printStackTrace = primitive
+
     "Time"
     time  = primitive
     ticks = primitive      "returns the microseconds since start"

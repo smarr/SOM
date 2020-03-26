@@ -44,6 +44,14 @@ Universe = (
   falseObject = ( ^ falseObject )
   metaclassClass = ( ^ metaclassClass )
 
+  arrayClass  = ( ^ arrayClass )
+  doubleClass = ( ^ doubleClass )
+  integerClass = ( ^ integerClass )
+  methodClass = ( ^ methodClass )
+  primClass = ( ^ primClass )
+  stringClass = ( ^ stringClass )
+  symbolClass = ( ^ symbolClass )
+
   defaultClassPath = (
     ^ #('.')
   )

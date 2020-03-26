@@ -255,10 +255,6 @@ Universe = (
 
     result := Frame new: nilObject previous: previousFrame context: contextFrame method: method maxStack: length.
 
-    "Reset the stack pointer and the bytecode index"
-    result resetStackPointer.
-    result bytecodeIndex: 1.
-
     "Return the freshly allocated frame"
     ^ result
   )

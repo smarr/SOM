@@ -102,7 +102,7 @@ Interpreter = (
     invokable ~= nil
       ifTrue: [
         "Invoke the invokable in the current frame"
-        invokable invoke: frame with: this ]
+        invokable invoke: frame using: this ]
       ifFalse: [
         | numberOfArguments receiver |
         numberOfArguments := signature numberOfSignatureArguments.
@@ -170,7 +170,7 @@ Interpreter = (
 
   dispatch: bytecode idx: bytecodeIndex = (
     bytecode == #halt ifTrue: [
-      ^ frame stackElement: 1 ].
+      ^ frame stackElement: 0 ].
 
     bytecode == #dup ifTrue: [
       self doDup.
@@ -225,11 +225,11 @@ Interpreter = (
       ^ nil ].
 
     bytecode == #returnLocal ifTrue: [
-      self doReturnLocal: bytecodeIndex.
+      self doReturnLocal.
       ^ nil ].
 
     bytecode == #returnNonLocal ifTrue: [
-      self doReturnNonLocal: bytecodeIndex.
+      self doReturnNonLocal.
       ^ nil ].
 
     self error: 'Unknown bytecode' + bytecode asString
@@ -242,6 +242,63 @@ Interpreter = (
 
   pushNewFrame: method = (
     ^ self pushNewFrame: method with: nil
+  )
+
+  frame = (
+    ^ frame
+  )
+
+  method = (
+    ^ frame method
+  )
+
+  getSelf = (
+    "Get the self object from the interpreter"
+    ^ frame outerContext argument: 1 at: 1
+  )
+
+  send: selector rcvrClass: receiverClass bc: bytecodeIndex = (
+    | invokable |
+    invokable := receiverClass lookupInvokable: selector.
+    invokable ~= nil
+      ifTrue: [
+        "Invoke the invokable in the current frame"
+        invokable invoke: frame using: self ]
+      ifFalse: [
+        | numberOfArguments receiver |
+        numberOfArguments := selector numberOfSignatureArguments.
+
+        "Compute the receiver"
+        receiver := frame stackElement: numberOfArguments - 1.
+        receiver sendDoesNotUnderstand: selector in: universe with: self ]
+  )
+
+  popFrame = (
+    | result |
+    "Save a reference to the top frame"
+    result := frame.
+
+    "Pop the top frame from the frame stack"
+    frame := frame previousFrame.
+
+    "Destroy the previous pointer on the old top frame"
+    result clearPreviousFrame.
+
+    "Return the popped frame"
+    ^ result
+  )
+
+  popFrameAndPushResult: result = (
+    | numberOfArguments |
+    "Pop the top frame from the interpreter frame stack and
+     get the number of arguments"
+    numberOfArguments := self popFrame method numberOfArguments.
+
+    "Pop the arguments"
+    numberOfArguments
+      timesRepeat: [ frame pop ].
+
+    frame push: result
   )
 
   ----

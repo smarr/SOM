@@ -1,6 +1,7 @@
 SomSomTests = TestHarness (
   tests = (
     ^ EmptyTest,
+      FrameTests,
       LexerTests,
       ParserTests
   )

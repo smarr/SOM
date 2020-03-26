@@ -2,7 +2,7 @@ Frame = (
 "
 Frame layout:
 +-----------------+
-| Arguments       | 0
+| Arguments       | 1
 +-----------------+
 | Local Variables | <-- localOffset
 +-----------------+
@@ -11,7 +11,7 @@ Frame layout:
 +-----------------+
 "
 |
-  "Private variables holding the stack pointer and the bytecode index"
+  "Points at the top element"
   stackPointer
   bytecodeIndex
 
@@ -27,7 +27,11 @@ Frame layout:
     previousFrame := prevFrame.
     context := contextFrame.
     method := aSMethod.
-    stack := Array new: stackElements withAll: nilObject
+    stack := Array new: stackElements withAll: nilObject.
+
+    "Reset the stack pointer and the bytecode index"
+    self resetStackPointer.
+    bytecodeIndex := 1.
   )
 
   previousFrame = (
@@ -91,7 +95,7 @@ Frame layout:
     "Pop an object from the expression stack and return it"
     sp := stackPointer.
     stackPointer := stackPointer - 1.
-    ^ stack at: stackPointer
+    ^ stack at: sp.
   )
 
   push: aSAbstractObject = (
@@ -104,7 +108,7 @@ Frame layout:
 
   resetStackPointer = (
     "arguments are stored in front of local variables"
-    localOffset := method numberOfArguments.
+    localOffset := method numberOfArguments + 1.
 
     "Set the stack pointer to its initial value thereby clearing the stack"
     stackPointer := localOffset + method numberOfLocals - 1
@@ -133,11 +137,11 @@ Frame layout:
   )
 
   local: index = (
-    ^ stack at: localOffset + index
+    ^ stack at: localOffset + index - 1
   )
 
   local: index put: value = (
-    stack at: localOffset + index put: value
+    stack at: localOffset + index - 1 put: value
   )
 
   local: index at: contextLevel = (
@@ -182,8 +186,8 @@ Frame layout:
      - arguments are at the top of the stack of frame.
      - copy them into the argument area of the current frame"
     numArgs := method numberOfArguments.
-    1 to: numArgs do: [:i |
-      stack at: i put: (frame stackElement: numArgs - 1 - i) ]
+    0 to: numArgs - 1 do: [:i |
+      stack at: i + 1 put: (frame stackElement: numArgs - 1 - i) ]
   )
 
   printStackTrace = (

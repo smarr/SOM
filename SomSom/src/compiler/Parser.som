@@ -133,7 +133,7 @@ Parser = (
       popped off the stack and a ^self be generated "
     mgenc isFinished ifFalse: [
       bcGen emitPop: mgenc.
-      bcGen emit: mgenc pushArgument: 0 in: 0.
+      bcGen emit: mgenc pushArgument: 1 in: 0.
       bcGen emitReturnLocal: mgenc.
       mgenc markAsFinished ].
 
@@ -170,7 +170,7 @@ Parser = (
       "it does not matter whether a period has been seen, as the end of
        the method has been found (EndTerm) - so it is safe to emit a
        'return self'"
-      bcGen emit: mgenc pushArgument: 0 in: 0.
+      bcGen emit: mgenc pushArgument: 1 in: 0.
       bcGen emitReturnLocal: mgenc.
       mgenc markAsFinished.
       ^ self ].

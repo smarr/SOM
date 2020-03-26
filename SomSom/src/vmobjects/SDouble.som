@@ -2,7 +2,13 @@ SDouble = SAbstractObject (
   | value |
 
   initialize: aDouble = (
-    ^ value
+    value := aDouble
+  )
+
+  double = ( ^ value )
+
+  somClassIn: universe = (
+    ^ universe doubleClass
   )
 
   ----

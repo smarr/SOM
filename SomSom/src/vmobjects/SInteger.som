@@ -2,7 +2,13 @@ SInteger = SAbstractObject (
   | value |
 
   initialize: anInteger = (
-    ^ value
+    value := anInteger
+  )
+
+  integer = ( ^ value )
+
+  somClassIn: universe = (
+    ^ universe integerClass
   )
 
   ----

@@ -33,6 +33,9 @@ SSymbol = SString (
     ^ universe symbolClass
   )
 
+  "For using in debugging tools such as the Diassembler"
+  debugString = ( ^ 'SSymbol(' + string + ')' )
+
   ----
 
   new: aString = (

@@ -19,6 +19,9 @@ SBlock = SAbstractObject (
     ^ blockClass
   )
 
+  "For using in debugging tools such as the Diassembler"
+  debugString = ( ^ 'SBlock(' + method asString + ')' )
+
   ----
 
   new: aSMethod in: aContext with: aBlockClass = (

@@ -11,6 +11,9 @@ SString = SAbstractObject (
     ^ universe stringClass
   )
 
+  "For using in debugging tools such as the Diassembler"
+  debugString = ( ^ 'SString(' + string + ')' )
+
   ----
 
   new: aString = (

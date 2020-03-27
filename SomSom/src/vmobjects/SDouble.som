@@ -11,6 +11,9 @@ SDouble = SAbstractObject (
     ^ universe doubleClass
   )
 
+  "For using in debugging tools such as the Diassembler"
+  debugString = ( ^ 'SDouble(' + value asString + ')' )
+
   ----
 
   for: aDouble = (

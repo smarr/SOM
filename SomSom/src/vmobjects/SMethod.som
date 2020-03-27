@@ -74,6 +74,9 @@ SMethod = SAbstractObject (
     ^ universe methodClass
   )
 
+  "For using in debugging tools such as the Diassembler"
+  debugString = ( ^ 'SMethod(' + holder name + '>>#' + signature string + ')' )
+
   ----
 
   new: aSSymbol bc: bcArray literals: literalsArray numLocals: numLocals maxStack: maxStack = (

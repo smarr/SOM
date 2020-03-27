@@ -11,6 +11,9 @@ SInteger = SAbstractObject (
     ^ universe integerClass
   )
 
+  "For using in debugging tools such as the Diassembler"
+  debugString = ( ^ 'SInteger(' + value asString + ')' )
+
   ----
 
   "TODO: see whether it makes sense to have a cache"

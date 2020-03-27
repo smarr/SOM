@@ -42,6 +42,9 @@ SObject = SAbstractObject (
     fields at: index put: value
   )
 
+  "For using in debugging tools such as the Diassembler"
+  debugString = ( ^ 'SObject(' + clazz name string + ')' )
+
   ----
 
   new: numberOfFields with: nilObject = (

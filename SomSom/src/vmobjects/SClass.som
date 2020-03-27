@@ -176,6 +176,10 @@ SClass = SObject (
         Universe println: 'Primitives class ' + className + ' not found' ]
   )
 
+
+  "For using in debugging tools such as the Diassembler"
+  debugString = ( ^ 'SClass(' + name string + ')' )
+
   ----
 
   new: universe = (

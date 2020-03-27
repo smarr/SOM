@@ -37,6 +37,15 @@ SArray = SAbstractObject (
       destination indexableField: i put: (indexableFields at: i) ]
   )
 
+  "For using in debugging tools such as the Diassembler"
+  debugString = (
+    | elems |
+    elems := ''.
+    indexableFields do: [:e |
+      elems = '' ifTrue: [elems := e debugString]
+                 ifFalse: [ elems := elems + ', ' + e debugString] ].
+     ^ 'SArray(' + indexableFields length + '; ' + elems + ')' )
+
   ----
 
   new: length with: nilObject = (

@@ -46,6 +46,9 @@ SPrimitive = SAbstractObject (
     ^ universe primClass
   )
 
+  "For using in debugging tools such as the Diassembler"
+  debugString = ( ^ 'SPrimitive(' + holder name string + '>>#' + signature string + ')' )
+
   ----
 
   new: signatureString in: universe with: aBlock = (

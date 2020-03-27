@@ -13,7 +13,7 @@ SAbstractObject = (
     invokable invoke: interpreter frame using: interpreter
   )
 
-  sendDoesNotUnderstand: selector in: universe with: interpreter = (
+  sendDoesNotUnderstand: selector in: universe using: interpreter = (
     | numberOfArguments frame argumentsArray args |
     '++dnu: ' print.
     self somClass name string print.

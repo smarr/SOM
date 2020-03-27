@@ -55,7 +55,7 @@ Interpreter = (
       ifTrue: [ frame push: global  ]
       ifFalse: [
         "Send 'unknownGlobal:' to self"
-        self getSelf sendUnknownGlobal: globalName in: universe with: this ]
+        self getSelf sendUnknownGlobal: globalName in: universe using: self ]
   )
 
   doPop = (
@@ -102,12 +102,12 @@ Interpreter = (
     invokable ~= nil
       ifTrue: [
         "Invoke the invokable in the current frame"
-        invokable invoke: frame using: this ]
+        invokable invoke: frame using: self ]
       ifFalse: [
         | numberOfArguments receiver |
         numberOfArguments := signature numberOfSignatureArguments.
         receiver := frame stackElement: numberOfArguments - 1.
-        receiver sendDoesNotUnderstand: signature in: universe with: this ]
+        receiver sendDoesNotUnderstand: signature in: universe using: self ]
   )
 
   doReturnLocal = (
@@ -144,7 +144,7 @@ Interpreter = (
       numArgs timesRepeat: [ frame pop ].
 
       "... and execute the escapedBlock message instead"
-      sender sendEscapedBlock: block in: universe with: this.
+      sender sendEscapedBlock: block in: universe using: self.
       ^ self ].
 
     "Unwind the frames"
@@ -270,7 +270,7 @@ Interpreter = (
 
         "Compute the receiver"
         receiver := frame stackElement: numberOfArguments - 1.
-        receiver sendDoesNotUnderstand: selector in: universe with: self ]
+        receiver sendDoesNotUnderstand: selector in: universe using: self ]
   )
 
   popFrame = (

@@ -494,7 +494,7 @@ Parser = (
 
     "create empty array"
     bcGen emit: mgenc pushGlobal: arrayClassName.
-    bcGen emit: mgenc pushConstant: arraySizeLiteralIndex.
+    bcGen emit: mgenc pushConstantIdx: arraySizeLiteralIndex.
     bcGen emit: mgenc send: newMessage.
 
     i := 1.

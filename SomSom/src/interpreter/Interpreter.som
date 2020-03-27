@@ -6,7 +6,7 @@ Interpreter = (
   )
 
   doDup = (
-    frame push: (frame stackElement: 1)
+    frame push: (frame stackElement: 0)
   )
 
   doPushLocal: bytecodeIndex = (
@@ -126,14 +126,14 @@ Interpreter = (
     context := frame outerContext.
 
     "Make sure the block context is still on the stack"
-    context hasPreviousFrame not ifTrue: [
+    context hasPreviousFrame ifFalse: [
       | block sender method numArgs |
       "Try to recover by sending 'escapedBlock:' to the sending object
        this can get a bit nasty when using nested blocks. In this case
        the 'sender' will be the surrounding block and not the object
        that actually sent the 'value' message."
-      block := frame argument: 1 at: 1.
-      sender := frame previousFrame outerContext argument: 1 at: 1.
+      block := frame argument: 1 at: 0.
+      sender := frame previousFrame outerContext argument: 1 at: 0.
 
       "pop the frame of the currently executing block..."
       self popFrame.
@@ -254,7 +254,7 @@ Interpreter = (
 
   getSelf = (
     "Get the self object from the interpreter"
-    ^ frame outerContext argument: 1 at: 1
+    ^ frame outerContext argument: 1 at: 0
   )
 
   send: selector rcvrClass: receiverClass bc: bytecodeIndex = (

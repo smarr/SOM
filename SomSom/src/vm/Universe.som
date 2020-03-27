@@ -2,6 +2,7 @@ Universe = (
   | symbolTable globals classPath dumpBytecodes interpreter
 
     avoidExit
+    lastExitCode
 
     nilObject
     trueObject
@@ -37,6 +38,22 @@ Universe = (
   initialize: aBool = (
     self initialize.
     avoidExit := aBool
+  )
+
+  exit: errorCode = (
+    "Exit from the Java system"
+    avoidExit
+      ifTrue: [lastExitCode := errorCode]
+      ifFalse: [system exit: errorCode]
+  )
+
+  lastExitCode = (
+    ^ lastExitCode
+  )
+
+  errorExit: message = (
+    Universe errorPrintln: 'Runtime Error: ' + message.
+    self exit: 1
   )
 
   nilObject   = ( ^ nilObject )

@@ -86,6 +86,61 @@ Universe = (
     classPath := cps asArray
   )
 
+  handleArguments: args = (
+    | gotClasspath remainingArgs cnt i |
+    gotClasspath := false.
+    remainingArgs := Vector new.
+
+    i := 1.
+
+    [i <= args length] whileTrue: [
+      (args at: i) = '-cp'
+        ifTrue: [
+          i + 1 > args length ifTrue: [
+            self printUsageAndExit ].
+          self setupClassPath: (args at: i + 1).
+          i := i + 1.
+          gotClasspath := true ]
+        ifFalse: [
+          (args at: i) = '-d'
+            ifTrue: [ dumpBytecodes := true ]
+            ifFalse: [ remainingArgs append: (args at: i) ] ].
+        i := i + 1 ].
+
+    gotClasspath ifFalse: [
+      classPath := self defaultClassPath ].
+
+    remainingArgs doIndexes: [:i |
+      | split |
+      split := self pathClassExtension: (remainingArgs at: i).
+      (split at: 1) = '' ifFalse: [
+        classPath := classPath extendedWith: (split at: 1) ].
+      remainingArgs at: i put: (split at: 2) ].
+
+    ^ remainingArgs asArray
+  )
+
+  pathClassExtension: str = (
+    | pathElements fileName parentPath nameParts |
+    pathElements := str split: '/'.
+    fileName := pathElements last.
+
+    parentPath := ''.
+    1 to: pathElements length - 1 do: [:i |
+      parentPath = '' ifFalse: [
+        parentPath := parentPath + '/' ].
+      parentPath := parentPath + (pathElements at: i) ].
+
+    nameParts := fileName split: '.'.
+    ^ Array with: parentPath with: (nameParts at: 1)
+  )
+
+  interpret: args = (
+    | remainingArgs |
+    remainingArgs := self handleArguments: args.
+    ^ self initializeInterpreter: remainingArgs.
+  )
+
   interpret: className with: selector = (
     | clazz initialize |
     self initializeObjectSystem.
@@ -101,12 +156,12 @@ Universe = (
     ^ self interpret: initialize in: clazz with: nil
   )
 
-  initialize: arguments = (
+  initializeInterpreter: arguments = (
     | systemObject initialize argumentsArray |
     systemObject := self initializeObjectSystem.
 
     "Start the shell if no filename is given"
-    arguments size == 0 ifTrue: [
+    arguments length == 0 ifTrue: [
       | shell |
       shell := Shell for: self using: interpreter.
       shell bootstrapMethod: self createBootstrapMethod.
@@ -116,7 +171,7 @@ Universe = (
     initialize := systemClass lookupInvokable: (self symbolFor: 'initialize:').
 
     "Convert the arguments into an array"
-    argumentsArray := self newArray: arguments.
+    argumentsArray := self newArrayFromStrings: arguments.
 
     ^ self interpret: initialize in: systemObject with: argumentsArray
   )
@@ -241,6 +296,14 @@ Universe = (
 
   newArray: size = (
     ^ SArray new: size with: nilObject
+  )
+
+  newArrayFromStrings: strArray = (
+    | sArr |
+    sArr := self newArray: strArray length.
+    1 to: strArray length do: [:i |
+      sArr indexableField: i put: (self newString: (strArray at: i))].
+    ^ sArr
   )
 
   newArrayFromVector: vector = (

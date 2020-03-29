@@ -136,9 +136,12 @@ Universe = (
   )
 
   interpret: args = (
-    | remainingArgs |
+    | remainingArgs result |
     remainingArgs := self handleArguments: args.
-    ^ self initializeInterpreter: remainingArgs.
+    result := self initializeInterpreter: remainingArgs.
+    result class == SInteger
+      ifTrue: [ ^ result integer ]
+      ifFalse: [ ^ 1 ]
   )
 
   interpret: className with: selector = (

@@ -3,6 +3,7 @@ Universe = (
 
     avoidExit
     lastExitCode
+    exitBlock
 
     nilObject
     trueObject
@@ -43,7 +44,9 @@ Universe = (
   exit: errorCode = (
     "Exit from the Java system"
     avoidExit
-      ifTrue: [lastExitCode := errorCode]
+      ifTrue: [
+        lastExitCode := errorCode.
+        exitBlock value: errorCode ]
       ifFalse: [system exit: errorCode]
   )
 
@@ -191,6 +194,8 @@ Universe = (
 
   interpret: invokable in: receiver with: arguments = (
     | bootstrapMethod bootstrapFrame |
+    exitBlock := [:errorCode | ^ errorCode ].
+
     bootstrapMethod := self createBootstrapMethod.
 
     "Create a fake bootstrap frame with the system object on the stack"

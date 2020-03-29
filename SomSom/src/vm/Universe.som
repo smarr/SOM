@@ -90,14 +90,17 @@ Universe = (
   )
 
   handleArguments: args = (
-    | gotClasspath remainingArgs cnt i |
+    | gotClasspath remainingArgs cnt i sawOthers |
     gotClasspath := false.
     remainingArgs := Vector new.
+
+    "read dash arguments only while we haven't seen other kind of arguments"
+    sawOthers := false.
 
     i := 1.
 
     [i <= args length] whileTrue: [
-      (args at: i) = '-cp'
+      ((args at: i) = '-cp' and: sawOthers not)
         ifTrue: [
           i + 1 > args length ifTrue: [
             self printUsageAndExit ].
@@ -105,20 +108,22 @@ Universe = (
           i := i + 1.
           gotClasspath := true ]
         ifFalse: [
-          (args at: i) = '-d'
+          ((args at: i) = '-d' and: sawOthers not)
             ifTrue: [ dumpBytecodes := true ]
-            ifFalse: [ remainingArgs append: (args at: i) ] ].
+            ifFalse: [
+              sawOthers := true.
+              remainingArgs append: (args at: i) ] ].
         i := i + 1 ].
 
     gotClasspath ifFalse: [
       classPath := self defaultClassPath ].
 
-    remainingArgs doIndexes: [:i |
+    remainingArgs isEmpty ifFalse: [
       | split |
-      split := self pathClassExtension: (remainingArgs at: i).
+      split := self pathClassExtension: (remainingArgs at: 1).
       (split at: 1) = '' ifFalse: [
-        classPath := classPath extendedWith: (split at: 1) ].
-      remainingArgs at: i put: (split at: 2) ].
+        classPath := classPath prependedWith: (split at: 1) ].
+      remainingArgs at: 1 put: (split at: 2) ].
 
     ^ remainingArgs asArray
   )

@@ -116,6 +116,18 @@ IntegerPrimitives = Primitives (
                 ifFalse: [ false ] ])) ]).
 
     self installInstancePrimitive: (
+      SPrimitive new: '==' in: universe with: [:frame :interp |
+        | argument rcvr left |
+        argument := frame pop.
+        rcvr := frame pop.
+        left := rcvr integer.
+
+        frame push: (self somBool: (
+          argument class == SInteger
+            ifTrue: [left = argument integer]
+            ifFalse: [ false ] )) ]) dontWarn: true.
+
+    self installInstancePrimitive: (
       SPrimitive new: '<<' in: universe with: [:frame :interp |
         | argument rcvr |
         argument := frame pop.

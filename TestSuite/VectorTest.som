@@ -44,6 +44,34 @@ VectorTest = TestCase (
     self assert:     23 equals: (a at: 3).
   )
 
+  testFirst = (
+    | v |
+    self assert: 'hello' equals: a first.
+
+    v := Vector new.
+    1 to: 10 do: [:i |
+      v append: i.
+      self assert: 1 equals: v first ].
+
+    1 to: 10 do: [:i |
+      self assert: 1 equals: v first.
+      v removeFirst ]
+  )
+
+  testLast = (
+    | v |
+    self assert: 23 equals: a last.
+
+    v := Vector new.
+    1 to: 10 do: [:i |
+      v append: i.
+      self assert: i equals: v last ].
+
+    10 downTo: 1 do: [:i |
+      self assert: i equals: v last.
+      v remove ]
+  )
+
   testContains = (
     self assert: (a contains: 23).
   )

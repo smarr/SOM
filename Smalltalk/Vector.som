@@ -37,6 +37,7 @@ Vector = (
     )
 
     first = ( ^ (self size > 0) ifTrue: [storage at: 1] ifFalse: [nil] )
+    last  = ( ^ (self size > 0) ifTrue: [storage at: last - 1] ifFalse: [nil] )
 
     "Iterating"
     do: block = (

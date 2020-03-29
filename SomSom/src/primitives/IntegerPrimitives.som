@@ -167,6 +167,7 @@ IntegerPrimitives = Primitives (
       SPrimitive new: 'fromString:' in: universe with: [:frame :interp |
         | argument |
         argument := frame pop.
+        frame pop.
         frame push: (universe newInteger: (Integer fromString: argument string)) ]).
   )
 

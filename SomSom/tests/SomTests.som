@@ -1,0 +1,45 @@
+SomTests = TestCase (
+
+  testArray          = ( self doTest: 'Array' )
+  testBlock          = ( self doTest: 'Block' )
+  testClassLoading   = ( self doTest: 'ClassLoading' )
+  testClassStructure = ( self doTest: 'ClassStructure' )
+
+  testClosure           = ( self doTest: 'Closure' )
+  testCoercion          = ( self doTest: 'Coercion' )
+  testCompilerReturn    = ( self doTest: 'CompilerReturn' )
+  testDoesNotUnderstand = ( self doTest: 'DoesNotUnderstand' )
+  testDouble            = ( self doTest: 'Double' )
+
+  testEmpty             = ( self doTest: 'Empty' )
+  testGlobal            = ( self doTest: 'Global' )
+  "testHash              = ( self doTest: 'Hash' )"
+  testInteger           = ( self doTest: 'Integer' )
+
+  testPreliminary       = ( self doTest: 'Preliminary' )
+  testReflection        = ( self doTest: 'Reflection' )
+  testSelfBlock         = ( self doTest: 'SelfBlock' )
+  testSpecialSelectorsTest = ( self doTest: 'SpecialSelectorsTest' )
+  testSuper             = ( self doTest: 'Super' )
+
+  testSet                = ( self doTest: 'Set' )
+  testString             = ( self doTest: 'String' )
+  testSymbol             = ( self doTest: 'Symbol' )
+  testSystem             = ( self doTest: 'System' )
+  testVector             = ( self doTest: 'Vector' )
+
+  doTest: testName = (
+    | args u exitCode |
+    args := Array new: 4.
+    args at: 1 put: '-cp'.
+    args at: 2 put: 'Smalltalk'.
+    args at: 3 put: 'TestSuite/TestHarness.som'.
+    args at: 4 put: testName.
+
+    u := Universe new: true.
+
+    exitCode := u interpret: args.
+
+    self assert: 0 equals: exitCode.
+  )
+)

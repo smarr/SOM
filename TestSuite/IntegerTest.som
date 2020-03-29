@@ -211,7 +211,7 @@ IntegerTest = TestCase (
   testAbsoluteValue = (
     self assert: 4 equals: -4 abs.
     self assert: 4 equals:  4 abs.
-    
+
     self assert: 9223372036854775296 equals: -9223372036854775296 abs.
     self assert: 9223372036854775296 equals:  9223372036854775296 abs.
   )
@@ -251,9 +251,20 @@ IntegerTest = TestCase (
     self assert:     1 << 10 equals: (1 << 10) as32BitSignedValue.
     self assert: -2147483648 equals: (1 << 31) as32BitSignedValue.
     self assert:           0 equals: (1 << 32) as32BitSignedValue.
-    
+
     self assert:  512 equals:  -9223372036854775296 as32BitSignedValue.
     self assert: -512 equals:   9223372036854775296 as32BitSignedValue.
+  )
+
+  testAsDouble = (
+    self assert: 0.0          equals: 0 asDouble.
+    self assert: Double       is:     0 asDouble class.
+
+    self assert: 2147483648.0 equals: 2147483648 asDouble.
+    self assert: Double       is:     2147483648 asDouble class.
+
+    self assert: -2147483648.0 equals: -2147483648 asDouble.
+    self assert: Double       is:      -2147483648 asDouble class.
   )
 
   testUnsignedRightShift = (
@@ -276,12 +287,12 @@ IntegerTest = TestCase (
     small := #(0  52 9223372036854775296 922337203685477529600
                -51 -2147483650                     1 -922337203685477580701
                -922337203685477580701).
-  
+
     big doIndexes: [:i |
       self assert: (small at: i)  equals: ((big   at: i) min: (small at: i)).
       self assert: (small at: i)  equals: ((small at: i) min: (big   at: i)) ]
   )
-  
+
   testMax = (
     "We need to test numbers that are 64bit or less, larger than 64bit,
      positive, and negative"

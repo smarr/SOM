@@ -73,6 +73,15 @@ Array = (
 
     copy = (^self copyFrom: 1)
 
+    prependedWith: val = (
+        | result |
+        result := Array new: self length + 1.
+        self doIndexes: [:i |
+            result at: i + 1 put: (self at: i)].
+        result at: 1 put: val.
+        ^ result
+    )
+
     extendedWith: val = (
         | result |
         result := Array new: self length + 1.

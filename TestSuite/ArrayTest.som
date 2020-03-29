@@ -107,6 +107,28 @@ ArrayTest = TestCase (
     self assert: 44 equals: (newArr at: 4).
   )
 
+  testPrependedWith = (
+    | arr newArr |
+    arr := Array new: 0.
+    newArr := arr prependedWith: 33.
+
+    self assert: 1 equals: newArr length.
+    self assert: 0 equals: arr length.
+    self assert: 33 equals: (newArr at: 1).
+
+    self testAt.  "confirm a is correct"
+    self testLength.
+
+    newArr := a prependedWith: 44.
+
+    self testAt.  "confirm a is correct"
+    self testLength.
+
+    self assert: 4 equals: newArr length.
+    self assert: 0 equals: arr length.
+    self assert: 44 equals: (newArr at: 1).
+  )
+
   testIndexOf = (
     | arr |
     arr := Array new: 6.

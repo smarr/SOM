@@ -16,7 +16,7 @@ SAbstractObject = (
   sendDoesNotUnderstand: selector in: universe using: interpreter = (
     | numberOfArguments frame argumentsArray args |
     '++dnu: ' print.
-    self somClass name string print.
+    (self somClassIn: universe) name string print.
     '>>#' print.
     selector string println.
     numberOfArguments := selector numberOfSignatureArguments.

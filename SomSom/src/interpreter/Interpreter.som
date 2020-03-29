@@ -87,7 +87,7 @@ Interpreter = (
     signature := frame method constant: bytecodeIndex.
     numberOfArguments := signature numberOfSignatureArguments.
     receiver := frame stackElement: numberOfArguments - 1.
-    self send: signature rcvrClass: (receiver somClassIn: universe) bc: bytecodeIndex
+    self send: signature rcvrClass: (receiver somClassIn: universe)
   )
 
   doSuperSend: bytecodeIndex = (
@@ -99,15 +99,7 @@ Interpreter = (
     holderSuper := frame method holder superClass.
     invokable := holderSuper lookupInvokable: signature.
 
-    invokable ~= nil
-      ifTrue: [
-        "Invoke the invokable in the current frame"
-        invokable invoke: frame using: self ]
-      ifFalse: [
-        | numberOfArguments receiver |
-        numberOfArguments := signature numberOfSignatureArguments.
-        receiver := frame stackElement: numberOfArguments - 1.
-        receiver sendDoesNotUnderstand: signature in: universe using: self ]
+    self activate: invokable orDnu: signature
   )
 
   doReturnLocal = (
@@ -257,20 +249,22 @@ Interpreter = (
     ^ frame outerContext argument: 1 at: 0
   )
 
-  send: selector rcvrClass: receiverClass bc: bytecodeIndex = (
+  send: selector rcvrClass: receiverClass = (
     | invokable |
     invokable := receiverClass lookupInvokable: selector.
-    invokable ~= nil
-      ifTrue: [
-        "Invoke the invokable in the current frame"
-        invokable invoke: frame using: self ]
-      ifFalse: [
-        | numberOfArguments receiver |
-        numberOfArguments := selector numberOfSignatureArguments.
+    self activate: invokable orDnu: selector
+  )
 
-        "Compute the receiver"
-        receiver := frame stackElement: numberOfArguments - 1.
-        receiver sendDoesNotUnderstand: selector in: universe using: self ]
+  activate: invokable orDnu: signature = (
+    invokable ~= nil
+        ifTrue: [
+          "Invoke the invokable in the current frame"
+          invokable invoke: frame using: self ]
+        ifFalse: [
+          | numberOfArguments receiver |
+          numberOfArguments := signature numberOfSignatureArguments.
+          receiver := frame stackElement: numberOfArguments - 1.
+          receiver sendDoesNotUnderstand: signature in: universe using: self ]
   )
 
   popFrame = (

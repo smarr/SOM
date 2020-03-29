@@ -13,7 +13,7 @@ IntegerPrimitives = Primitives (
         | rcvr result |
         rcvr := frame pop.
         result := rcvr integer sqrt.
-        result class == SInteger
+        result class == Integer
           ifTrue: [frame push: (universe newInteger: result)]
           ifFalse: [frame push: (universe newDouble: result)] ]).
 

@@ -13,7 +13,7 @@ SomTests = TestCase (
 
   testEmpty             = ( self doTest: 'Empty' )
   testGlobal            = ( self doTest: 'Global' )
-  "testHash              = ( self doTest: 'Hash' )"
+  testHash              = ( self doTest: 'Hash' )
   testInteger           = ( self doTest: 'Integer' )
 
   testPreliminary       = ( self doTest: 'Preliminary' )

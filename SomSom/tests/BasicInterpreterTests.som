@@ -112,7 +112,7 @@ BasicInterpreterTests = TestCase (
     self c: 'CompilerSimplification'  t: 'testSetField'        e: 'foo' t: SSymbol.
     self c: 'CompilerSimplification'  t: 'testGetField'        e: 40 t: SInteger.
 
-    "self c: 'Hash'  t: 'testHash'  e: 444 t: SInteger."
+    self c: 'Hash'  t: 'testHash'  e: 444 t: SInteger.
 
     self c: 'Arrays'  t: 'testEmptyToInts'  e: 3 t: SInteger.
     self c: 'Arrays'  t: 'testPutAllInt'    e: 5 t: SInteger.
@@ -141,7 +141,7 @@ BasicInterpreterTests = TestCase (
 
     self c: 'NonLocalVars'  t: 'testWriteDifferentTypes'   e: 3.75 t: SDouble.
 
-    self c: 'ObjectCreation'  t: 'test'   e: 1000000 t: SInteger.
+    "self c: 'ObjectCreation'  t: 'test'   e: 1000000 t: SInteger."
 
     self c: 'Regressions'  t: 'testSymbolEquality'   e: 1 t: SInteger.
     self c: 'Regressions'  t: 'testSymbolReferenceEquality'   e: 1 t: SInteger.

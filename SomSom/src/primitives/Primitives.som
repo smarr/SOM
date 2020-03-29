@@ -21,4 +21,10 @@ Primitives = (
   installClassPrimitive: prim = (
     holder somClass addInstancePrimitive: prim
   )
+
+  somBool: aBool = (
+    ^ aBool
+        ifTrue: [ universe trueObject ]
+        ifFalse: [ universe falseObject ]
+  )
 )

@@ -27,9 +27,9 @@ StringPrimitives = Primitives (
         argument := frame pop.
         rcvr := frame pop.
 
-        frame push: ((argument somClassIn: universe) and: [rcvr string = argument string]) == universe stringClass
-          ifTrue: [ universe trueObject ]
-          ifFalse: [ universe falseObject ] ]).
+        frame push: (self somBool:
+          ((argument somClassIn: universe) == universe stringClass
+            and: [rcvr string = argument string])) ]).
 
     self installInstancePrimitive: (
       SPrimitive new: 'primSubstringFrom:to:' in: universe with: [:frame :interp |
@@ -50,25 +50,19 @@ StringPrimitives = Primitives (
       SPrimitive new: 'isWhiteSpace' in: universe with: [:frame :interp |
         | rcvr |
         rcvr := frame pop.
-        frame push: (rcvr string isWhiteSpace
-          ifTrue: [ universe trueObject ]
-          ifFalse: [ universe falseObject ] ) ]).
+        frame push: (self somBool: rcvr string isWhiteSpace) ]).
 
     self installInstancePrimitive: (
       SPrimitive new: 'isLetters' in: universe with: [:frame :interp |
         | rcvr |
         rcvr := frame pop.
-        frame push: (rcvr string isLetters
-          ifTrue: [ universe trueObject ]
-          ifFalse: [ universe falseObject ] ) ]).
+        frame push: (self somBool: rcvr string isLetters) ]).
 
     self installInstancePrimitive: (
       SPrimitive new: 'isDigits' in: universe with: [:frame :interp |
         | rcvr |
         rcvr := frame pop.
-        frame push: (rcvr string isDigits
-          ifTrue: [ universe trueObject ]
-          ifFalse: [ universe falseObject ] ) ]).
+        frame push: (self somBool: rcvr string isDigits) ]).
   )
 
   ----

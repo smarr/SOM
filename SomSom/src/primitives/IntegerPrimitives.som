@@ -107,15 +107,13 @@ IntegerPrimitives = Primitives (
         rcvr := frame pop.
         left := rcvr integer.
 
-        frame push: ((
+        frame push: (self somBool: (
           (argument class == SDouble)
             ifTrue: [left = argument double]
             ifFalse: [
               argument class == SInteger
                 ifTrue: [left = argument integer]
-                ifFalse: [ false ] ])
-            ifTrue: [universe trueObject]
-            ifFalse: [universe falseObject] ) ]).
+                ifFalse: [ false ] ])) ]).
 
     self installInstancePrimitive: (
       SPrimitive new: '<<' in: universe with: [:frame :interp |
@@ -131,15 +129,13 @@ IntegerPrimitives = Primitives (
         rcvr := frame pop.
         left := rcvr integer.
 
-        frame push: ((
+        frame push: (self somBool: (
           (argument class == SDouble)
             ifTrue: [left < argument double]
             ifFalse: [
               argument class == SInteger
                 ifTrue: [left < argument integer]
-                ifFalse: [ false ] ])
-            ifTrue: [universe trueObject]
-            ifFalse: [universe falseObject] ) ]).
+                ifFalse: [ false ] ])) ]).
 
     self installInstancePrimitive: (
       SPrimitive new: 'bitXor:' in: universe with: [:frame :interp |

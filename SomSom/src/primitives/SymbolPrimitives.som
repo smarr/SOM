@@ -14,9 +14,7 @@ SymbolPrimitives = Primitives (
         arg := frame pop.
         rcvr := frame pop.
 
-        frame push: (rcvr == arg
-          ifTrue: [universe trueObject]
-          ifFalse: [universe falseObject]) ] ) dontWarn: true.
+        frame push: (self somBool: rcvr == arg) ] ) dontWarn: true.
   )
 
   ----

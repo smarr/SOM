@@ -7,9 +7,7 @@ ObjectPrimitives = Primitives (
         op1 := frame pop.
         op2 := frame pop.
 
-        frame push: (op1 == op2
-          ifTrue: [ universe trueObject ]
-          ifFalse: [ universe falseObject ]) ]).
+        frame push: (self somBool: op1 == op2) ]).
 
     self installInstancePrimitive: (
       SPrimitive new: 'hashcode' in: universe with: [:frame :interp |

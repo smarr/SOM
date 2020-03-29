@@ -122,6 +122,7 @@ SClass = SObject (
   )
 
   addInstancePrimitive: value dontWarn: suppressWarning = (
+    value holder: self.
     ((self addInstanceInvokable: value) and: [suppressWarning not]) ifTrue: [
       Universe print: 'Warning: Primitive ' + value signature string.
       Universe println: ' is not in class definition for class ' + name string ]

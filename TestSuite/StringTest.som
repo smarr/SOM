@@ -170,7 +170,7 @@ StringTest = TestCase (
   testLetters = (
     self assert: 'a' isLetters.
     self assert: 'all' isLetters.
-    self expect: 'aOoöéÉíä' isLetters.
+    self expect: 'aOoöéÉíä' isLetters description: 'Does not support Unicode'.
 
     self deny: '' isLetters.
     self deny: ' ' isLetters.

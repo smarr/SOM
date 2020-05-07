@@ -1,5 +1,5 @@
 "
-Copyright (c) 2019 see AUTHORS file
+Copyright (c) 2001-2013 see AUTHORS file
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the 'Software'), to deal
@@ -20,11 +20,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 "
 
-NumberOfTests = (
-    
+BinaryOperation = (
+
     ----
-    
-    "Return the known number of tests,
-     should be used in basic interpreter test harness to confirm completeness"
-    numberOfTests = ( ^ 52 )
+
+    test = (
+        ^ (self foo: 1) + (self foo2: 2)
+    )
+
+    foo: aNumber = (
+        ^ 3
+    )
+
+    foo2: aNumber = (
+        ^ 8
+    )
+
+
 )

@@ -55,7 +55,8 @@ GraphSearch = Benchmark (
   innerBenchmarkLoop: innerIterations = (
     | noOfNodes |
     JenkinsRandom seed: 49734321.
-    noOfNodes := GraphSearch ExpectedNoOfNodes / 1000 * innerIterations.
+    
+    noOfNodes := GraphSearch ExpectedNoOfNodes / 900000 * innerIterations * innerIterations * innerIterations.
 
     self initializeGraph: noOfNodes.
     self breadthFirstSearch: noOfNodes.
@@ -97,7 +98,7 @@ GraphSearch = Benchmark (
 
   verify: result inner: innerIterations = (
     | totalCost |
-    cost length = (GraphSearch ExpectedNoOfNodes / 1000 * innerIterations)
+    cost length = (GraphSearch ExpectedNoOfNodes / 900000 * innerIterations * innerIterations * innerIterations)
       ifFalse: [ ^ false ].
 
     totalCost := 0.    
@@ -125,8 +126,6 @@ GraphSearch = Benchmark (
   
   ----
   
-  MinNodes = ( ^ 20 )
-  MaxNodes = ( ^ 1 << 31 )
   MinEdges = ( ^ 2 )
   MaxInitEdges = ( ^ 4 )
   MinWeight = ( ^ 1 )

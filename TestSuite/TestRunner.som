@@ -12,6 +12,7 @@ TestRunner = (
   hasInefficacies = ( ^ inefficacies size > 0 )
   hasFailures     = ( ^ failures size > 0 )
   
+  actualInefficacies = ( ^ inefficacies size )
   expectedPasses = ( ^ suite tests size )
   actualPasses   = ( ^ passes size )
 

@@ -1,17 +1,19 @@
 TestRunner = (
-  | suite passes inefficacies failures |
+  | suite passes inefficacies failures numAsserts |
 
   initializeOn: aSuite = (
     suite := aSuite.
-    
+
     passes       := Vector new.
     inefficacies := Vector new.
     failures     := Vector new.
+
+    numAsserts := 0.
   )
-  
+
   hasInefficacies = ( ^ inefficacies size > 0 )
   hasFailures     = ( ^ failures size > 0 )
-  
+
   actualInefficacies = ( ^ inefficacies size )
   expectedPasses = ( ^ suite tests size )
   actualPasses   = ( ^ passes size )
@@ -22,12 +24,20 @@ TestRunner = (
     self reportPostRun.
     self overviewReport.
   )
-  
+
+  countAssert = (
+    numAsserts := numAsserts + 1.
+  )
+
+  numAsserts = (
+    ^ numAsserts
+  )
+
   reportPreRun = (
     ('TestSuite ' + suite name + ':') println.
     ('Tests: ' + suite tests size asString) println.
   )
-  
+
   reportPostRun = (
     self hasInefficacies ifTrue: [
       ('Inefficacies: ' + inefficacies size asString) println
@@ -41,20 +51,20 @@ TestRunner = (
     suite tests do: [ :each |
         each run: self ].
   )
-  
+
   overviewReport = (
     ('Tests passed: ' + passes size asString) println.
-    
+
     (self hasFailures or: [self hasInefficacies]) ifTrue: [
         '------------------------------' println ].
-    
+
     self hasInefficacies ifTrue: [
       ('Inefficacies: ' + inefficacies size asString) println.
       inefficacies do: [:each |
         ('    ' + each key asString) println.
         ('        ' + each value asString) println ].
     ].
-    
+
     self hasFailures ifTrue: [
       ('Failures: ' + failures size asString) println.
       failures do: [:each |
@@ -62,19 +72,19 @@ TestRunner = (
         ('        ' + each value asString) println ].
     ].
   )
-  
+
   fail: aSignature because: aReason = (
     | pair |
     pair := Pair withKey: aSignature andValue: aReason.
     failures append: pair.
   )
-  
+
   unsatisfied: aSignature because: aReason = (
     | pair |
     pair := Pair withKey: aSignature andValue: aReason.
     inefficacies append: pair.
   )
-  
+
   passed: aSignature = (
     passes append: aSignature
   )

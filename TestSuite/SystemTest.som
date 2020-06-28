@@ -5,7 +5,7 @@ SystemTest = TestCase (
      to indicate the a GC was done."
     self optional: #fullGCWithEffect assert: system fullGC description: '#fullGC is not supported or has not immediate effect.'
   )
-  
+
   testTicks = (
     | ticks |
     ticks := system ticks.

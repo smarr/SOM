@@ -135,8 +135,8 @@ StringTest = TestCase (
     self assert: 1 equals: '\\' length.
 
     self assert: '\0' equals: '\0'.
-    self expect: 1 equals: '\0' length.
-    self expect: 5 equals: '\0rest' length.
+    self assert: 1 equals: '\0' length.
+    self assert: 5 equals: '\0rest' length.
   )
 
   testHash = (
@@ -170,7 +170,7 @@ StringTest = TestCase (
   testLetters = (
     self assert: 'a' isLetters.
     self assert: 'all' isLetters.
-    self expect: 'aOoöéÉíä' isLetters description: 'Does not support Unicode'.
+    self optional: #unicode assert: 'aOoöéÉíä' isLetters description: 'Does not support Unicode'.
 
     self deny: '' isLetters.
     self deny: ' ' isLetters.

@@ -24,7 +24,7 @@ THE SOFTWARE.
 "
 
 TestHarness = (
-    | failOnInefficacies |
+    | failOnUnsupportedOptionals |
 
 
     tests = ( "Now ordered by alphabetical order to improve maintainability"
@@ -55,9 +55,9 @@ TestHarness = (
 
 
     runAllSuites = (
-      | totalTestNum successfulTestNum inefficaciousTestNum totalAssertionNum |
+      | totalTestNum successfulTestNum unsupportedTestNum totalAssertionNum |
       totalTestNum := 0.
-      inefficaciousTestNum := 0.
+      unsupportedTestNum := 0.
       successfulTestNum := 0.
       totalAssertionNum := 0.
 
@@ -66,31 +66,32 @@ TestHarness = (
         runner := TestRunner new.
         runner initializeOn: test.
         runner runAllTests.
-        ((runner hasInefficacies) or: [runner hasFailures])
-        ifTrue: [
-          'Test Suite: ' print.
-          test name println.
-          runner overviewReport.
-          '' println.
-        ].
+        (runner hasUnsupported or: [runner hasFailures])
+          ifTrue: [
+            'Test Suite: ' print.
+            test name println.
+            runner overviewReport.
+            '' println ].
 
-        totalTestNum      := totalTestNum + runner expectedPasses.
-        inefficaciousTestNum := inefficaciousTestNum + runner actualInefficacies.
-        successfulTestNum := successfulTestNum + runner actualPasses.
-        totalAssertionNum := totalAssertionNum + runner numAsserts.
+        totalTestNum       := totalTestNum + runner expectedPasses.
+        unsupportedTestNum := unsupportedTestNum + runner actualUnsupported.
+        successfulTestNum  := successfulTestNum + runner actualPasses.
+        totalAssertionNum  := totalAssertionNum + runner numAsserts.
       ].
 
-      'Total Number of Tests:      ' print.
+      'Total number of tests:           ' print.
       totalTestNum println.
-      'Number of Inefficacious Tests: ' print.
-      inefficaciousTestNum println.
-      'Number of Successful Tests: ' print.
+      'Number of unsupported optionals: ' print.
+      unsupportedTestNum println.
+      'Number of successful tests:      ' print.
       successfulTestNum println.
-      'Number of assertions tested: ' print.
+      'Number of assertions tested:     ' print.
       totalAssertionNum println.
-      (failOnInefficacies and: [inefficaciousTestNum > 0])
+
+      (failOnUnsupportedOptionals and: [unsupportedTestNum > 0])
         ifTrue: [system exit: 1].
-      totalTestNum = successfulTestNum ifFalse: [ system exit: 1].
+      totalTestNum = successfulTestNum
+        ifFalse: [system exit: 1].
     )
 
     runOneSuite: name = (
@@ -106,17 +107,18 @@ TestHarness = (
     )
 
     run: args = (
-        failOnInefficacies := false.
+        failOnUnsupportedOptionals := false.
 
         args length = 1 ifTrue:  [ self runAllSuites. ].
         args length = 2 ifTrue:  [
           ((args at: 2) beginsWith: '--') ifTrue: [
             (args at: 2) = '--help' ifTrue: [
-              'TestHarness.som [--help] [--fail-on-inefficacies] [TestSuiteName]' println.
-              system exit: 0.
-            ].
-            (args at: 2) = '--fail-on-inefficacies' ifTrue: [
-              failOnInefficacies := true.].
+              'TestHarness.som [--help] [--fail-on-optionals] [TestSuiteName]' println.
+              system exit: 0 ].
+
+            (args at: 2) = '--fail-on-optionals' ifTrue: [
+              failOnUnsupportedOptionals := true ].
+
             self runAllSuites
           ] ifFalse: [
             self runOneSuite: (args at: 2) ]].

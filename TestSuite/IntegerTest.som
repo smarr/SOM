@@ -38,19 +38,19 @@ IntegerTest = TestCase (
     "Sometimes it can be hard to implement efficiently, but it SHOULD really
      be true for all values of integers."
     a := 1 << 30.  b := 1 << 30.
-    self expect: a is: b.
-    
+    self optional: #integerIdentity assert: a is: b.
+
     a := 1 << 32.  b := 1 << 32.
-    self expect: a is: b.
-    
+    self optional: #integerIdentity assert: a is: b.
+
     a := 1 << 60.  b := 1 << 60.
-    self expect: a is: b.
-    
+    self optional: #integerIdentity assert: a is: b.
+
     a := 1 << 70.  b := 1 << 70.
-    self expect: a is: b.
-    
+    self optional: #integerIdentity assert: a is: b.
+
     a := 1 << 100.  b := 1 << 100.
-    self expect: a is: b.
+    self optional: #integerIdentity assert: a is: b.
   )
     
   testClassAndValueRanges = (
@@ -80,8 +80,8 @@ IntegerTest = TestCase (
     i := 1 << 70.
     self assert: Integer equals: i class.
     self assert: i > 0 description: 'should not overflow'.
-    self expect: '1180591620717411303424' equals: i asString.
-    
+    self optional: #bigIntShifts assert: '1180591620717411303424' equals: i asString.
+
     i := -1 << 30.
     self assert: Integer equals: i class.
     self assert: i < 0 description: 'should not underflow'.
@@ -100,7 +100,7 @@ IntegerTest = TestCase (
     i := -1 << 70.
     self assert: Integer equals: i class.
     self assert: i < 0 description: 'should not underflow'.
-    self expect: '-1180591620717411303424' equals: i asString.
+    self optional: #bigIntShifts assert: '-1180591620717411303424' equals: i asString.
   )
             
   testStringConversion = (
@@ -252,7 +252,7 @@ IntegerTest = TestCase (
     self assert: 127 equals: 1023 >>> 3.
     
     "not sure whether we should really insist on this"
-    self expect: 9223372036854775807 equals:    -1 >>> 1.
-    self expect: 9223372036854775296 equals: -1024 >>> 1.
+    self optional: #toBeSpecified assert: 9223372036854775807 equals:    -1 >>> 1.
+    self optional: #toBeSpecified assert: 9223372036854775296 equals: -1024 >>> 1.
   )
 )

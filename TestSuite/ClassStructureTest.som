@@ -26,13 +26,13 @@ ClassStructureTest = TestCase (
      Index needs to be adapted with changing Class definition."
     m := Object methods at: 1. 
     "self expect: #class equals: m signature."
-    
-    self expect: Primitive equals: m class. "Class>>#name should be a primitive."
-        
+
+    self optional: #invokableTypes assert: Primitive equals: m class. "Class>>#name should be a primitive."
+
     m := Object methods at: 7.
     "self expect: #asString equals: m signature."
 
-    self expect: Method equals: m class. "Class>>#asString should be a normal method."
+    self optional: #invokableTypes assert: Method equals: m class. "Class>>#asString should be a normal method."
   )
     
   testAccessToInstanceFields = (

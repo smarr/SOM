@@ -27,25 +27,27 @@ TestCase = (
              description: [self comparingStringBetween: expected and: actual]
     )
 
-    expect: aBoolean = (
+    optional: aSymbol assert: aBoolean = (
         runner countAssert.
         aBoolean ifFalse: [
-            self signalInefficacy: 'Expectation unsatisfied' ] )
+            self signalUnsupported: aSymbol description: nil ] )
 
-    expect: expected equals: actual = (
-        self expect: (expected = actual)
+    optional: aSymbol assert: expected equals: actual = (
+        self optional: aSymbol
+             assert: (expected = actual)
              description: [self comparingStringBetween: expected and: actual]
     )
 
-    expect: expected is: actual = (
-        self expect: (expected == actual)
+    optional: aSymbol assert: expected is: actual = (
+        self optional: aSymbol
+             assert: (expected == actual)
              description: [self comparingStringBetween: expected and: actual]
     )
 
-    expect: aBoolean description: aStringOrBlock = (
+    optional: aSymbol assert: aBoolean description: aStringOrBlock = (
         runner countAssert.
         aBoolean ifFalse: [
-            self signalInefficacy: aStringOrBlock value ] )
+            self signalUnsupported: aSymbol description: aStringOrBlock value ] )
 
     deny: aBoolean = (
         self assert: aBoolean not
@@ -55,15 +57,24 @@ TestCase = (
         self assert: aBooleanOrBlock value not description: aString
     )
 
+    optional: aSymbol deny: aBoolean = (
+        self optional: aSymbol assert: aBoolean not
+    )
+
+    optional: aSymbol deny: aBooleanOrBlock description: aString = (
+        self optional: aSymbol assert: aBooleanOrBlock value not description: aString
+    )
+
     signalFailure: aString = (
         failed := true.
         runner fail: self class name + '>>#' + testSelector
             because: aString.
     )
 
-    signalInefficacy: aString = (
-        runner unsatisfied: self class name + '>>#' + testSelector
-                   because: aString.
+    signalUnsupported: aSymbol description: aDescription = (
+        runner unsupported: aSymbol
+                      test: self class name + '>>#' + testSelector
+                   because: aDescription.
     )
 
     comparingStringBetween: expected and: actual = (

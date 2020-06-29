@@ -38,21 +38,21 @@ IntegerTest = TestCase (
     "Sometimes it can be hard to implement efficiently, but it SHOULD really
      be true for all values of integers."
     a := 1 << 30.  b := 1 << 30.
-    self expect: a is: b.
-    
+    self optional: #integerIdentity assert: a is: b.
+
     a := 1 << 32.  b := 1 << 32.
-    self expect: a is: b.
-    
+    self optional: #integerIdentity assert: a is: b.
+
     a := 1 << 60.  b := 1 << 60.
-    self expect: a is: b.
-    
+    self optional: #integerIdentity assert: a is: b.
+
     a := 1 << 70.  b := 1 << 70.
-    self expect: a is: b.
-    
+    self optional: #integerIdentity assert: a is: b.
+
     a := 1 << 100.  b := 1 << 100.
-    self expect: a is: b.
+    self optional: #integerIdentity assert: a is: b.
   )
-    
+
   testClassAndValueRanges = (
     | i |
     self assert: Integer equals: -42 class.
@@ -60,64 +60,64 @@ IntegerTest = TestCase (
     self assert: Integer equals:  23 class.
     self assert: Integer equals:  1073741823 class.
     self assert: Integer equals:  1073741824 class.
-    
+
     "Let's test for size behavior and corresponding class"
     i := 1 << 30.
     self assert: Integer equals: i class.
     self assert: i > 0 description: 'should not overflow'.
     self assert: '1073741824' equals: i asString.
-    
+
     i := 1 << 32.
     self assert: Integer equals: i class.
     self assert: i > 0 description: 'should not overflow'.
     self assert: '4294967296' equals: i asString.
-    
+
     i := 1 << 60.
     self assert: Integer equals: i class.
     self assert: i > 0 description: 'should not overflow'.
     self assert: '1152921504606846976' equals: i asString.
-    
+
     i := 1 << 70.
     self assert: Integer equals: i class.
     self assert: i > 0 description: 'should not overflow'.
-    self expect: '1180591620717411303424' equals: i asString.
-    
+    self optional: #bigIntShifts assert: '1180591620717411303424' equals: i asString.
+
     i := -1 << 30.
     self assert: Integer equals: i class.
     self assert: i < 0 description: 'should not underflow'.
     self assert: '-1073741824' equals: i asString.
-    
+
     i := -1 << 32.
     self assert: Integer equals: i class.
     self assert: i < 0 description: 'should not underflow'.
     self assert: '-4294967296' equals: i asString.
-    
+
     i := -1 << 60.
     self assert: Integer equals: i class.
     self assert: i < 0 description: 'should not underflow'.
     self assert: '-1152921504606846976' equals: i asString.
-    
+
     i := -1 << 70.
     self assert: Integer equals: i class.
     self assert: i < 0 description: 'should not underflow'.
-    self expect: '-1180591620717411303424' equals: i asString.
+    self optional: #bigIntShifts assert: '-1180591620717411303424' equals: i asString.
   )
-            
+
   testStringConversion = (
     self assert:  '0' equals: ( 0 asString).
     self assert:  '1' equals: ( 1 asString).
     self assert:  '2' equals: ( 2 asString).
     self assert: '-1' equals: (-1 asString).
     self assert: '-2' equals: (-2 asString).
-    
+
     self assert:  1 equals: (Integer fromString:  '1').
     self assert: -1 equals: (Integer fromString: '-1').
     self assert: 42 equals: (Integer fromString: '42').
-    
+
     self assert: 42 equals: '42' asInteger.
     self assert: -2 equals: '-2' asInteger.
   )
-          
+
   testRangeBorders = (
     self assert:   '536870911' equals:   536870911 asString.
     self assert:   '536870912' equals:   536870912 asString.
@@ -135,7 +135,7 @@ IntegerTest = TestCase (
     self assert: '-2147483647' equals: -2147483647 asString.
     self assert: '-2147483648' equals: -2147483648 asString.
   )
-          
+
   testComparisons = (
     self assert: ( 9 =  9).
     self deny:   ( 1 =  2).
@@ -173,18 +173,18 @@ IntegerTest = TestCase (
   )
 
   testMultiplication = (
-    self assert:   0 equals: ( 1*  0).                     
-    self assert:  -1 equals: (-1*  1).                   
-    self assert: -25 equals: ( 5* -5).                    
+    self assert:   0 equals: ( 1*  0).
+    self assert:  -1 equals: (-1*  1).
+    self assert: -25 equals: ( 5* -5).
     self assert:  12 equals: (-3* -4).
   )
 
   testDivision = (
-    self assert:  1 equals: (  1/  1).                       
-    self assert:  1 equals: (  3/  2).   
-    self assert: -2 equals: (  4/ -2).      
-    self assert: -2 equals: ( -6/  3).      
-    self assert:  3 equals: (-12/ -4).      
+    self assert:  1 equals: (  1/  1).
+    self assert:  1 equals: (  3/  2).
+    self assert: -2 equals: (  4/ -2).
+    self assert: -2 equals: ( -6/  3).
+    self assert:  3 equals: (-12/ -4).
   )
 
   testDouble = (
@@ -193,13 +193,13 @@ IntegerTest = TestCase (
     self assert: -4 equals: ( 20// -5).
     self assert:  1 equals: ( -5// -5).
   )
-          
+
   testModulo = (
     self assert:  1 equals: ( 10 %  3).
     self assert: -2 equals: ( 10 % -3).
     self assert:  2 equals: (-10 %  3).
     self assert: -1 equals: (-10 % -3).
-    
+
     self assert:  1 equals: ( 10 rem:  3).
     self assert:  1 equals: ( 10 rem: -3).
     self assert: -1 equals: (-10 rem:  3).
@@ -225,12 +225,12 @@ IntegerTest = TestCase (
     self assert: 0 equals: (2 & 1).
     self assert: 2 equals: (2 & 2).
   )
-  
+
   testBitXor = (
     self assert: 0 equals: (1 bitXor: 1).
     self assert: 3 equals: (2 bitXor: 1).
   )
-  
+
   testAs32BitUnsignedValue = (
     self assert: 1 <<  1 equals: (1 <<  1) as32BitUnsignedValue.
     self assert: 1 << 10 equals: (1 << 10) as32BitUnsignedValue.
@@ -245,14 +245,14 @@ IntegerTest = TestCase (
     self assert: -2147483648 equals: (1 << 31) as32BitSignedValue.
     self assert:           0 equals: (1 << 32) as32BitSignedValue.
   )
-  
+
   testUnsignedRightShift = (
     self assert: 0   equals:    1 >>> 1.
     self assert: 512 equals: 1024 >>> 1.
     self assert: 127 equals: 1023 >>> 3.
-    
+
     "not sure whether we should really insist on this"
-    self expect: 9223372036854775807 equals:    -1 >>> 1.
-    self expect: 9223372036854775296 equals: -1024 >>> 1.
+    self optional: #toBeSpecified assert: 9223372036854775807 equals:    -1 >>> 1.
+    self optional: #toBeSpecified assert: 9223372036854775296 equals: -1024 >>> 1.
   )
 )

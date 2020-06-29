@@ -37,28 +37,28 @@ SuperTest = SuperTestSuperClass (
   blockGive42 = (
     ^[ super give42 ] value
   )
-  
+
   something = (
     ^ #sub
   )
-  
+
   "Note: testing assigning self was moved to basic interpreter tests"
-  
+
   testGlobalSelfDoesNotShadowKeyword = (
     | that |
     that := self.
     system global: #self put: 42.
-    that expect: that is: self.
-    
+    that optional: #selfSuperBug assert: that is: self.
+
     self assert: 42 equals: (system global: #self)
   )
-  
+
   testGlobalSuperDoesNotShadowKeyword = (
     | that |
     that := super.
     system global: #super put: 42.
-    that expect: that is: super.
-    
+    that optional: #selfSuperBug assert: that is: super.
+
     self assert: 42 equals: (system global: #super)
   )
 )

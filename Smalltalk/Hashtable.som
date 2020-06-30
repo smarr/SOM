@@ -70,14 +70,14 @@ Hashtable = (
     
     "Enumerate"
     keys = ( | vec |
-        vec = Vector new.
+        vec := Vector new.
         table do: [ :ent | 
             ent isNil ifFalse: [ ent keys do: [ :k | vec append: k ] ] ].
         ^vec.
     )
     
     values = ( | vec |
-        vec = Vector new.
+        vec := Vector new.
         table do: [ :ent | 
             ent isNil ifFalse: [ ent values do: [ :v | vec append: v ] ] ].
         ^vec.

@@ -26,13 +26,29 @@ THE SOFTWARE.
 "
 
 SuperTestSuperClass = TestCase (
+    | record |
+
+    yourself = (
+        record := record + 1.
+        ^ self
+    )
 
     give42 = (
-        ^42
+        ^ 42
     )
 
     something = (
         ^ #super
     )
+
+    number = (
+        ^ 1
+    )
+
+    key: a key: b = (
+        ^ self
+    )
+
+    @ o = ( ^ self )
 )
 

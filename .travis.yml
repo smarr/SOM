@@ -51,7 +51,7 @@ jobs:
 
     - language: java
       dist: trusty
-      env: SOM=TruffleSOM  REPO=TruffleSOM.git  BUILD=ant    SOM="./som -G"
+      env: SOM=TruffleSOM  REPO=TruffleSOM.git  BUILD="ant jar"    SOM="./som -G"
       jdk: [oraclejdk8]
       addons: {apt: {packages: [libc6-dev-i386]}}
 

@@ -33,4 +33,16 @@ Regressions = (
       'foo:' asSymbol == #foo: ifTrue: [ ^ 1 ].
       ^ 2
     )
+    
+    testUninitializedLocal = (
+      | local |
+      local == nil ifTrue: [ ^ 1 ].
+      ^ 2
+    )
+    
+    testUninitializedLocalInBlock = (
+      [ | local |
+        local == nil ifTrue: [ ^ 1 ] ] value.
+      ^ 2
+    )
 )

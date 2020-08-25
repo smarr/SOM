@@ -40,4 +40,19 @@ Blocks = (
         methodLocal := 3.
         a + methodLocal] value: 5)
     )
+    
+    testEmptyZeroArg = (
+      [] value == nil ifTrue: [ ^ 1 ].
+      ^ 2
+    )
+    
+    testEmptyOneArg = (
+      ([:x | ] value: 4) == nil ifTrue: [ ^ 1 ].
+      ^ 2
+    )
+    
+    testEmptyTwoArg = (
+      ([:x :y | ] value: 4 with: 5) == nil ifTrue: [ ^ 1 ].
+      ^ 2
+    )
 )

@@ -26,5 +26,5 @@ NumberOfTests = (
     
     "Return the known number of tests,
      should be used in basic interpreter test harness to confirm completeness"
-    numberOfTests = ( ^ 52 )
+    numberOfTests = ( ^ 57 )
 )

@@ -5,22 +5,26 @@ jobs:
   include:
     - language: cpp
       addons: {apt: {packages: [cmake, libcppunit-dev]}}
-      env: SOM=SOMpp       REPO=SOMpp.git       BUILD="cmake . && make SOM++" SOM=./som.sh
+      name: SOM++
+      env: REPO=SOMpp.git       BUILD="cmake . && make SOM++" SOM=./som.sh
 
     - language: c
-      env: SOM=CSOM        REPO=CSOM.git        BUILD=make    SOM=./som.sh COMPILER=gcc ARCH=64bit
+      name: CSOM
+      env: REPO=CSOM.git        BUILD=make    SOM=./som.sh COMPILER=gcc ARCH=64bit
 
     # JsSOM can't currently be parameterized with another core lib, so, we can't really test it
     # - language: node_js
     #   env: SOM=JsSOM       REPO=JsSOM.git       BUILD=make    SOM=./som.sh
 
     - language: python
-      env: SOM=PySOM       REPO=PySOM.git       BUILD=""      SOM=./som.sh  PYTHON=python
+      name: PySOM
+      env: REPO=PySOM.git       BUILD=""      SOM=./som.sh  PYTHON=python
       python:
         - "2.7"
 
     - language: python
-      env: SOM=RPySOM      REPO=RPySOM.git      BUILD=""      SOM=./som.sh  PYTHON=python SOM_INTERP=BC
+      name: RPySOM
+      env: REPO=RPySOM.git      BUILD=""      SOM=./som.sh  PYTHON=python SOM_INTERP=BC
       python:
         - "2.7"
       before_script:
@@ -32,21 +36,30 @@ jobs:
           cd ..
 
     - language: java
+      name: SOM (Java)
       dist: trusty
-      env: SOM=SOM         REPO=som-java.git    BUILD=make    SOM=./som.sh
+      env: REPO=som-java.git    BUILD=make    SOM=./som.sh
       jdk: [oraclejdk8]
       addons: {apt: {packages: [libc6-dev-i386]}}
 
     - language: java
+      name: TruffleSOM
       dist: trusty
-      env: SOM=TruffleSOM  REPO=TruffleSOM.git  BUILD="ant jar"    SOM="./som -G"
+      env: REPO=TruffleSOM.git  BUILD="ant jar"    SOM="./som -G"
       jdk: [oraclejdk8]
       addons: {apt: {packages: [libc6-dev-i386]}}
 
     - language: java
+      name: Specification Tests
       dist: trusty
       env: SOM=spec
       jdk: [oraclejdk8]
+    
+    - language: rust
+      name: SOM-RS
+      dist: bionic
+      rust: [stable]
+      env: REPO=som-rs.git  BUILD="cargo build --release -p som-interpreter-bc"  SOM=./target/release/som-interpreter-bc SOM_TESTS=" -c ../Smalltalk ../TestSuite -- TestHarness"
 
   allow_failures:
     # - env: SOM=JsSOM       REPO=JsSOM.git       BUILD=make    SOM=./som.sh
@@ -86,6 +99,16 @@ script:
       export ST_DIR=`pwd`/Smalltalk
       cd som-vm
       git --no-pager log -n 1
+      
+      echo Build $REPO
       eval $BUILD
-      $SOM -cp ../Smalltalk ../TestSuite/TestHarness.som
+      
+      echo Run Tests
+      if [ "$SOM_TESTS" == "" ]
+      then
+        export SOM_TESTS=" -cp ../Smalltalk ../TestSuite/TestHarness.som"
+      fi
+      
+      echo "$SOM $SOM_TESTS"
+      eval "$SOM $SOM_TESTS"
     fi

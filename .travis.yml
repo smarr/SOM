@@ -20,27 +20,15 @@ jobs:
         - "2.7"
 
     - language: python
-      env: SOM=RPySOM      REPO=RPySOM.git      BUILD=""      SOM=./som.sh  PYTHON=python
+      env: SOM=RPySOM      REPO=RPySOM.git      BUILD=""      SOM=./som.sh  PYTHON=python SOM_INTERP=BC
       python:
         - "2.7"
       before_script:
         - |
           cd som-vm
-          travis_retry wget https://bitbucket.org/pypy/pypy/downloads/pypy2.7-v7.0.0-src.tar.bz2
-          tar -xjf pypy2.7-v7.0.0-src.tar.bz2
-          mv pypy2.7-v7.0.0-src pypy
-          cd ..
-
-    - language: python
-      env: SOM=RTruffleSOM REPO=RTruffleSOM.git BUILD=""      SOM=./som.sh  PYTHON=python
-      python:
-        - "2.7"
-      before_script:
-        - |
-          cd som-vm
-          travis_retry wget https://bitbucket.org/pypy/pypy/downloads/pypy2.7-v7.0.0-src.tar.bz2
-          tar -xjf pypy2.7-v7.0.0-src.tar.bz2
-          mv pypy2.7-v7.0.0-src pypy
+          travis_retry wget https://downloads.python.org/pypy/pypy2.7-v7.3.1-src.tar.bz2
+          tar -xjf pypy2.7-v7.3.1-src.tar.bz2
+          mv pypy2.7-v7.3.1-src pypy
           cd ..
 
     - language: java

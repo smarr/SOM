@@ -60,6 +60,13 @@ jobs:
       dist: bionic
       rust: [stable]
       env: REPO=som-rs.git  BUILD="cargo build --release -p som-interpreter-bc"  SOM=./target/release/som-interpreter-bc SOM_TESTS=" -c ../Smalltalk ../TestSuite -- TestHarness"
+    
+    - language: rust
+      name: ykSOM
+      dist: bionic
+      rust: [nightly]
+      env: REPO=yksom.git  BUILD="cargo build"  SOM="cargo run -- " SOM_TESTS="--cp ../Smalltalk ../TestSuite/TestHarness.som"
+      
 
   allow_failures:
     # - env: SOM=JsSOM       REPO=JsSOM.git       BUILD=make    SOM=./som.sh
@@ -106,7 +113,7 @@ script:
       echo Run Tests
       if [ "$SOM_TESTS" == "" ]
       then
-        export SOM_TESTS=" -cp ../Smalltalk ../TestSuite/TestHarness.som"
+        export SOM_TESTS="-cp ../Smalltalk ../TestSuite/TestHarness.som"
       fi
       
       echo "$SOM $SOM_TESTS"

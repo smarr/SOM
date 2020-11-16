@@ -98,6 +98,10 @@ Integer = (
         (self < otherInt) ifTrue: [^otherInt] ifFalse: [^self].
     )
 
+    min: otherInt = (
+        (self < otherInt) ifTrue: [^self] ifFalse: [^otherInt].
+    )
+
     ----
     
     fromString: aString = primitive

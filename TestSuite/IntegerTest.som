@@ -257,4 +257,35 @@ IntegerTest = TestCase (
     self optional: #toBeSpecified assert: 9223372036854775807 equals:    -1 >>> 1.
     self optional: #toBeSpecified assert: 9223372036854775296 equals: -1024 >>> 1.
   )
+
+  testMin = (
+    "We need to test numbers that are 64bit or less, larger than 64bit,
+     positive, and negative"
+    | big small |
+    big   := #(1 100 9223372036854775807 922337203685477580700
+               -50 -2147483648 922337203685477580700 -922337203685477580700
+               922337203685477580700).
+    small := #(0  52 9223372036854775296 922337203685477529600
+               -51 -2147483650                     1 -922337203685477580701
+               -922337203685477580701).
+  
+    big doIndexes: [:i |
+      self assert: (small at: i)  equals: ((big   at: i) min: (small at: i)).
+      self assert: (small at: i)  equals: ((small at: i) min: (big   at: i)) ]
+  )
+  
+  testMax = (
+    "We need to test numbers that are 64bit or less, larger than 64bit,
+     positive, and negative"
+    | big small |
+    big   := #(1 100 9223372036854775807 922337203685477580700
+               -50 -2147483648 922337203685477580700 -922337203685477580700
+               922337203685477580700).
+    small := #(0  52 9223372036854775296 922337203685477529600
+               -51 -2147483650                     1 -922337203685477580701
+               -922337203685477580701).
+    big doIndexes: [:i |
+      self assert: (big at: i)  equals: ((big   at: i) max: (small at: i)).
+      self assert: (big at: i)  equals: ((small at: i) max: (big   at: i)) ]
+  )
 )

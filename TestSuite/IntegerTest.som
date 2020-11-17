@@ -209,8 +209,11 @@ IntegerTest = TestCase (
   )
 
   testAbsoluteValue = (
-    self assert: 4 equals: (-4 abs).
-    self assert: 4 equals: ( 4 abs).
+    self assert: 4 equals: -4 abs.
+    self assert: 4 equals:  4 abs.
+    
+    self assert: 9223372036854775296 equals: -9223372036854775296 abs.
+    self assert: 9223372036854775296 equals:  9223372036854775296 abs.
   )
 
   testNegated = (
@@ -239,6 +242,8 @@ IntegerTest = TestCase (
     self assert: 1 << 31 equals: (1 << 31) as32BitUnsignedValue.
     self assert:       0 equals: (1 << 32) as32BitUnsignedValue.
     self assert: 4294967295 equals:     -1 as32BitUnsignedValue.
+    self assert: 512        equals: -9223372036854775296 as32BitUnsignedValue.
+    self assert: 4294966784 equals:  9223372036854775296 as32BitUnsignedValue.
   )
 
   testAs32BitSignedValue = (
@@ -246,6 +251,9 @@ IntegerTest = TestCase (
     self assert:     1 << 10 equals: (1 << 10) as32BitSignedValue.
     self assert: -2147483648 equals: (1 << 31) as32BitSignedValue.
     self assert:           0 equals: (1 << 32) as32BitSignedValue.
+    
+    self assert:  512 equals:  -9223372036854775296 as32BitSignedValue.
+    self assert: -512 equals:   9223372036854775296 as32BitSignedValue.
   )
 
   testUnsignedRightShift = (

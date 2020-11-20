@@ -146,6 +146,9 @@ ArrayTest = TestCase (
   testLiteralArrays = (
   	self assert: (#(1 2) at: 1) equals: 1.
   	self assert: (#(1 2) at: 2) equals: 2.
+    
+  	self assert: (#(-1 -200.0) at: 1) equals: -1.
+  	self assert: (#(-1 -200.0) at: 2) equals: -200.0.
   )
 )
 

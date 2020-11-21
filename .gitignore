@@ -5,3 +5,4 @@ specification/*.tokens
 specification/*.interp
 specification/are-we-fast-yet
 specification/*.jar
+/SOM

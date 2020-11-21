@@ -16,11 +16,12 @@ jobs:
     # - language: node_js
     #   env: SOM=JsSOM       REPO=JsSOM.git       BUILD=make    SOM=./som.sh
 
-    - language: python
-      name: PySOM
-      env: REPO=PySOM.git       BUILD=""      SOM=./som.sh  PYTHON=python
-      python:
-        - "2.7"
+    # PySOM isn't maintained. I should make sure that RPySOM works without RPython though
+    # - language: python
+    #   name: PySOM
+    #   env: REPO=PySOM.git       BUILD=""      SOM=./som.sh  PYTHON=python
+    #   python:
+    #     - "2.7"
 
     - language: python
       name: RPySOM

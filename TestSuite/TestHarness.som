@@ -97,7 +97,7 @@ TestHarness = (
     runOneSuite: name = (
       | testName runner |
       testName := name.
-      (testName endsWith: 'Test') ifFalse: [
+      ((testName endsWith: 'Test') or: [testName endsWith: 'Spec']) ifFalse: [
         testName := testName + 'Test'].
 
       runner := TestRunner new.

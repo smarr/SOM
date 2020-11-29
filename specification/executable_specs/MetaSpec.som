@@ -1,0 +1,12 @@
+MetaSpec = Specification (
+  testMetaclassBasics1 = (
+    self expect: 1 class name  toEqual:  #Integer.
+    self expect: 1 class class name  toEqual:  #'Integer class'
+  )
+
+  testMetaclassBasics2 = (
+    self expect: 1 class class  toBe:  1 class class.
+    self expect: 1 class class  toBe:  2 class class
+  )
+
+)

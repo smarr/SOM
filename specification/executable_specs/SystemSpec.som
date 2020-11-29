@@ -1,0 +1,236 @@
+SystemSpec = Specification (
+  testGlobalsLiteral = (
+    | value |
+    self helper_testGlobalsLiteral1.
+    self helper_testGlobalsLiteral2
+  )
+
+  createVectorOneOfEachBasicType = (
+    | l1 |
+    l1 := Vector new: 10.
+    self createVectorOneOfEachBasicTypePart1: l1.
+    ^ l1
+  )
+
+  createVectorOneOfEachBasicTypePart1: vector = (
+    vector append: true.
+    vector append: false.
+    vector append: #foo.
+    vector append: 123.
+    vector append: 0.123.
+    vector append: 'string'.
+    vector append: #(1 2).
+    vector append: [ 42 ].
+    vector append: nil.
+    vector append: Object new
+  )
+
+  testGlobalsLoop = (
+    self createVectorOneOfEachBasicType do: [:value |
+      system global: #myGlobal put: value.
+      self expect: (system global: #myGlobal)  toBe:  value ]
+  )
+
+  createVectorBackwardOneOfEachBasicType = (
+    | l1 |
+    l1 := Vector new: 10.
+    self createVectorBackwardOneOfEachBasicTypePart1: l1.
+    ^ l1
+  )
+
+  createVectorBackwardOneOfEachBasicTypePart1: vector = (
+    vector append: true.
+    vector append: false.
+    vector append: #foo.
+    vector append: 123.
+    vector append: 0.123.
+    vector append: 'string'.
+    vector append: #(1 2).
+    vector append: [ 42 ].
+    vector append: nil.
+    vector append: Object new
+  )
+
+  testGlobalsLoopBackward = (
+    self createVectorBackwardOneOfEachBasicType do: [:value |
+      system global: #myGlobal put: value.
+      self expect: (system global: #myGlobal)  toBe:  value ]
+  )
+
+  createVectorShuffledOneOfEachBasicType = (
+    | l1 |
+    l1 := Vector new: 10.
+    self createVectorShuffledOneOfEachBasicTypePart1: l1.
+    ^ l1
+  )
+
+  createVectorShuffledOneOfEachBasicTypePart1: vector = (
+    vector append: [ 42 ].
+    vector append: 0.123.
+    vector append: true.
+    vector append: #(1 2).
+    vector append: #foo.
+    vector append: nil.
+    vector append: 'string'.
+    vector append: false.
+    vector append: 123.
+    vector append: Object new
+  )
+
+  testGlobalsLoopShuffled = (
+    self createVectorShuffledOneOfEachBasicType do: [:value |
+      system global: #myGlobal put: value.
+      self expect: (system global: #myGlobal)  toBe:  value ]
+  )
+
+  createVectorShuffledTwiceOneOfEachBasicType = (
+    | l1 |
+    l1 := Vector new: 10.
+    self createVectorShuffledTwiceOneOfEachBasicTypePart1: l1.
+    ^ l1
+  )
+
+  createVectorShuffledTwiceOneOfEachBasicTypePart1: vector = (
+    vector append: false.
+    vector append: 'string'.
+    vector append: true.
+    vector append: 0.123.
+    vector append: nil.
+    vector append: [ 42 ].
+    vector append: Object new.
+    vector append: 123.
+    vector append: #foo.
+    vector append: #(1 2)
+  )
+
+  testGlobalsLoopShuffledTwice = (
+    self createVectorShuffledTwiceOneOfEachBasicType do: [:value |
+      system global: #myGlobal put: value.
+      self expect: (system global: #myGlobal)  toBe:  value ]
+  )
+
+  testSetGlobalsLiteral = (
+    | value |
+    self helper_testSetGlobalsLiteral1.
+    self helper_testSetGlobalsLiteral2
+  )
+
+  testSetGlobalsLoop = (
+    self createVectorOneOfEachBasicType do: [:value |
+      self expect: (system global: #myGlobal put: value)  toBe:  value.
+      self expect: myGlobal  toBe:  value ]
+  )
+
+  testSetGlobalsLoopBackward = (
+    self createVectorBackwardOneOfEachBasicType do: [:value |
+      self expect: (system global: #myGlobal put: value)  toBe:  value.
+      self expect: myGlobal  toBe:  value ]
+  )
+
+  testSetGlobalsLoopShuffled = (
+    self createVectorShuffledOneOfEachBasicType do: [:value |
+      self expect: (system global: #myGlobal put: value)  toBe:  value.
+      self expect: myGlobal  toBe:  value ]
+  )
+
+  testSetGlobalsLoopShuffledTwice = (
+    self createVectorShuffledTwiceOneOfEachBasicType do: [:value |
+      self expect: (system global: #myGlobal put: value)  toBe:  value.
+      self expect: myGlobal  toBe:  value ]
+  )
+
+  helper_testGlobalsLiteral1 = (
+    | value |
+    value := true.
+    system global: #myGlobal put: value.
+    self expect: (system global: #myGlobal)  toBe:  value.
+
+    value := false.
+    system global: #myGlobal put: value.
+    self expect: (system global: #myGlobal)  toBe:  value.
+
+    value := #foo.
+    system global: #myGlobal put: value.
+    self expect: (system global: #myGlobal)  toBe:  value.
+
+    value := 123.
+    system global: #myGlobal put: value.
+    self expect: (system global: #myGlobal)  toBe:  value.
+
+    value := 0.123.
+    system global: #myGlobal put: value.
+    self expect: (system global: #myGlobal)  toBe:  value.
+
+    value := 'string'.
+    system global: #myGlobal put: value.
+    self expect: (system global: #myGlobal)  toBe:  value.
+
+    value := #(1 2).
+    system global: #myGlobal put: value.
+    self expect: (system global: #myGlobal)  toBe:  value
+  )
+
+  helper_testGlobalsLiteral2 = (
+    | value |
+    value := #(1 2).
+    value := [ 42 ].
+    system global: #myGlobal put: value.
+    self expect: (system global: #myGlobal)  toBe:  value.
+
+    value := nil.
+    system global: #myGlobal put: value.
+    self expect: (system global: #myGlobal)  toBe:  value.
+
+    value := Object new.
+    system global: #myGlobal put: value.
+    self expect: (system global: #myGlobal)  toBe:  value
+  )
+
+  helper_testSetGlobalsLiteral1 = (
+    | value |
+    value := true.
+    self expect: (system global: #myGlobal put: value)  toBe:  value.
+    self expect: myGlobal  toBe:  value.
+
+    value := false.
+    self expect: (system global: #myGlobal put: value)  toBe:  value.
+    self expect: myGlobal  toBe:  value.
+
+    value := #foo.
+    self expect: (system global: #myGlobal put: value)  toBe:  value.
+    self expect: myGlobal  toBe:  value.
+
+    value := 123.
+    self expect: (system global: #myGlobal put: value)  toBe:  value.
+    self expect: myGlobal  toBe:  value.
+
+    value := 0.123.
+    self expect: (system global: #myGlobal put: value)  toBe:  value.
+    self expect: myGlobal  toBe:  value.
+
+    value := 'string'.
+    self expect: (system global: #myGlobal put: value)  toBe:  value.
+    self expect: myGlobal  toBe:  value.
+
+    value := #(1 2).
+    self expect: (system global: #myGlobal put: value)  toBe:  value.
+    self expect: myGlobal  toBe:  value
+  )
+
+  helper_testSetGlobalsLiteral2 = (
+    | value |
+    value := #(1 2).
+    value := [ 42 ].
+    self expect: (system global: #myGlobal put: value)  toBe:  value.
+    self expect: myGlobal  toBe:  value.
+
+    value := nil.
+    self expect: (system global: #myGlobal put: value)  toBe:  value.
+    self expect: myGlobal  toBe:  value.
+
+    value := Object new.
+    self expect: (system global: #myGlobal put: value)  toBe:  value.
+    self expect: myGlobal  toBe:  value
+  )
+
+)

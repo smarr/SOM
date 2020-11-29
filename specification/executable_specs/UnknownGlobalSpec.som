@@ -1,0 +1,14 @@
+UnknownGlobalSpec = Specification (
+  | didExecuteHandler ugName |
+  unknownGlobal: name = (
+    didExecuteHandler := true.
+    ugName := name.
+    ^ #wasUnknown
+  )
+
+  testUnknownGlobal = (
+    self expect: nonExistingGlobal toBe: #wasUnknown.
+    self expect: didExecuteHandler toBe: true.
+    self expect: ugName toBe: #nonExistingGlobal.
+  )
+)

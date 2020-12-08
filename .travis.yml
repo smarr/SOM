@@ -18,22 +18,9 @@ jobs:
 
     - language: python
       name: PySOM
-      env: REPO=PySOM.git       BUILD=""      SOM=./som.sh  PYTHON=python
+      env: REPO=PySOM.git      BUILD=""      SOM=./som.sh  PYTHON=python SOM_INTERP=BC
       python:
         - "2.7"
-
-    - language: python
-      name: RPySOM
-      env: REPO=RPySOM.git      BUILD=""      SOM=./som.sh  PYTHON=python SOM_INTERP=BC
-      python:
-        - "2.7"
-      before_script:
-        - |
-          cd som-vm
-          travis_retry wget https://downloads.python.org/pypy/pypy2.7-v7.3.1-src.tar.bz2
-          tar -xjf pypy2.7-v7.3.1-src.tar.bz2
-          mv pypy2.7-v7.3.1-src pypy
-          cd ..
 
     - language: java
       name: SOM (Java)
@@ -68,10 +55,8 @@ jobs:
       env: REPO=yksom.git  BUILD="cargo build"  SOM="cargo run -- " SOM_TESTS="--cp ../Smalltalk ../TestSuite/TestHarness.som"
       
 
-  allow_failures:
+  # allow_failures:
     # - env: SOM=JsSOM       REPO=JsSOM.git       BUILD=make    SOM=./som.sh
-    - env: SOM=PySOM       REPO=PySOM.git       BUILD=""      SOM=./som.sh  PYTHON=python
-    - env: SOM=RPySOM      REPO=RPySOM.git      BUILD=""      SOM=./som.sh  PYTHON=python
 
 install:
   - |

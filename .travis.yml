@@ -13,8 +13,10 @@ jobs:
       env: REPO=CSOM.git        BUILD=make    SOM=./som.sh COMPILER=gcc ARCH=64bit
 
     # JsSOM can't currently be parameterized with another core lib, so, we can't really test it
-    # - language: node_js
-    #   env: SOM=JsSOM       REPO=JsSOM.git       BUILD=make    SOM=./som.sh
+    - language: node_js
+      name: JsSOM
+      node_js: [15]
+      env: REPO=JsSOM.git       BUILD=""     SOM=./som.sh
 
     - language: python
       name: PySOM

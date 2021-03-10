@@ -54,6 +54,27 @@ BlockInlining = (
       ^ self oneLevelInliningWithLocalShadow: false
     )
     
+    testShadowDoesntStoreWrongLocal = (
+      | a |
+      a := 33.
+      true ifTrue: [
+        | a |
+        a := 2 ].
+      ^ a
+    )
+
+    testShadowDoesntReadUnrelated = (
+      | a |
+      a := 33.
+      true ifTrue: [
+        | a |
+        a := 2 ].
+
+      true ifTrue: [
+        | a |
+        ^ a class ].
+    )
+
     deepNestedInlinedIf: bool = (
       | block  a block2 |
       a := 1.

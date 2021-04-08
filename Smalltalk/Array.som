@@ -86,6 +86,20 @@ Array = (
     sum     = ( ^self inject: 0 into: [ :sub :elem | sub + elem ] )
     average = ( ^self sum / self length )
 
+    join: joiner = (
+        | result first |
+        first := true.
+
+        self do: [:e |
+            first
+                ifTrue: [
+                    result := e.
+                    first := false]
+                ifFalse: [
+                    result := result + joiner + e] ].
+        ^ result
+    )
+
     "Containment check"
     contains: element = ( self do: [ :e | e = element ifTrue: [ ^true ] ].
                           ^false )

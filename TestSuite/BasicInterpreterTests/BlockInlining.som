@@ -108,6 +108,19 @@ BlockInlining = (
     testBlockNestedInIfTrue  = ( ^ self blockNestedInIf: true  )
     testBlockNestedInIfFalse = ( ^ self blockNestedInIf: false )
     
+    testStackDisciplineTrue = (
+      | result | 
+      result := 0 max: (1 > 0 ifTrue: [1] ifFalse: [2]).
+      ^ result
+    )
+
+    testStackDisciplineFalse = (
+      | result |
+      1 halt.
+      result := 0 max: (1 < 0 ifTrue: [1] ifFalse: [2]).
+      ^ result
+    )
+
     deepNestedBlocksInInlinedIf: bool = (
       | block a block2 block3 |
       a := 1.

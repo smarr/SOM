@@ -44,6 +44,30 @@ IfTrueIfFalse = (
         ^ 4
     )
     
+    testIfTrueTrueResult = (
+      | result |
+      result := true ifTrue: [ 1 ].
+      ^ result class
+    )
+    
+    testIfTrueFalseResult = (
+      | result |
+      result := false ifTrue: [ 1 ].
+      ^ result class
+    )
+
+    testIfFalseTrueResult = (
+      | result |
+      result := true ifFalse: [ 1 ].
+      ^ result class
+    )
+
+    testIfFalseFalseResult = (
+      | result |
+      result := false ifFalse: [ 1 ].
+      ^ result class
+    )
+    
     resolve: a = (
         (a == nil) ifFalse: [ ^ a ].
     )

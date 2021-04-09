@@ -1,0 +1,136 @@
+name: Tests
+
+on: [push, pull_request]
+
+jobs:
+  test_soms:
+    runs-on: ubuntu-20.04 # ubuntu-latest
+    strategy:
+      fail-fast: false # we want all jobs to run, because they may fail independently
+      matrix:
+        include:
+          - name: SOM++
+            repo: SOMpp.git
+            apt: libcppunit-dev
+            build: "cmake . && make SOM++"
+            som:   "./som.sh"
+
+          - name: CSOM
+            repo: CSOM.git
+            build: |
+              export COMPILER=gcc
+              export ARCH=64bit
+              make
+            som:   "./som.sh"
+
+          - name: JsSOM
+            repo: JsSOM.git
+            build: ""
+            som:   "./som.sh"
+
+          - name: PySOM
+            repo: PySOM.git
+            som: "PYTHON=python SOM_INTERP=BC ./som.sh"
+
+          - name: SOM (Java)
+            build: make
+            som:  ./som.sh
+            repo: som-java.git
+
+          - name: TruffleSOM
+            repo: TruffleSOM.git
+            build: |
+              export JAVA_HOME=$JAVA_HOME_8_X64
+              ant jar
+            som: "JAVA_HOME=$JAVA_HOME_8_X64 ./som -G"
+
+          - name: Specification Tests
+            som:  spec
+
+          - name: SOM-RS
+            repo: som-rs.git
+            build: "cargo build --release -p som-interpreter-bc"
+            som: "./target/release/som-interpreter-bc"
+            som-tests: " -c ../Smalltalk ../TestSuite -- TestHarness"
+
+          - name: ykSOM
+            repo: yksom.git
+            build: "cargo build"
+            som:   "cargo run -- "
+            som-tests: "--cp ../Smalltalk ../TestSuite/TestHarness.som"
+
+    name: ${{ matrix.name }}
+    steps:
+      - name: Checkout SOM Repository
+        uses: actions/checkout@v2
+
+      - name: Checkout SOM VM Repository
+        if: matrix.som != 'spec'
+        run: |
+          set +e  # Disable early abort in Bash
+          export BRANCH_NAME=${GITHUB_REF##*/}
+          export GITHUB_USER=${{ github.actor }}
+          export PR_TARGET_USER=${{ github.repository_owner }}
+          export REPO=${{ matrix.repo }}
+          
+          GIT_CMDS=(
+            "git clone --branch $BRANCH_NAME --depth 1 https://github.com/$GITHUB_USER/$REPO som-vm"
+            "git clone --depth 1 https://github.com/$GITHUB_USER/$REPO som-vm"
+            "git clone --depth 1 https://github.com/$PR_TARGET_USER/$REPO som-vm"
+          )
+          
+          for ((i = 0; i < ${#GIT_CMDS[@]}; i++))
+          do
+            echo ""
+            echo ""
+            echo "Attempting: ${GIT_CMDS[$i]}"
+            echo ""
+            eval "${GIT_CMDS[$i]}"
+            if [ $? -eq 0 ]
+            then
+              echo ""
+              echo "Clone succeeded"
+              break
+            fi
+          done
+
+      - name: Install Apt Packages
+        if: ${{ matrix.apt != '' }}
+        run: |
+          sudo apt-get install ${{ matrix.apt }}
+
+      - name: Test Specification
+        if: ${{ matrix.som == 'spec' }}
+        run: |
+          cd specification
+          make test
+      
+      - name: Check Whether Basic Interpreter Tests are Up to Date
+        if: ${{ matrix.som == 'spec' }}
+        run: |
+          ./TestSuite/BasicInterpreterTests/number-of-tests.sh
+      
+      - name: Build SOM VM
+        if: ${{ matrix.som != 'spec' }}
+        run: |
+          export ST_DIR=`pwd`/Smalltalk
+          cd som-vm
+          git --no-pager log -n 1
+      
+          echo Build ${{ matrix.repo }}
+          ${{ matrix.build }}
+
+      - name: Run Tests on SOM VM
+        if: ${{ matrix.som != 'spec' }}
+        run: |
+          cd som-vm
+          if [ "${{ matrix.som-tests }}" == "" ]
+          then
+            # The default settings for running the test harness, supported by most SOM VMs
+            export SOM_TESTS="-cp ../Smalltalk ../TestSuite/TestHarness.som"
+          else
+            export SOM_TESTS="${{ matrix.som-tests }}"
+          fi
+      
+          echo "${{ matrix.som }} $SOM_TESTS"
+          eval "${{ matrix.som }} $SOM_TESTS"

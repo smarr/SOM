@@ -113,7 +113,7 @@ DoublePrimitives = Primitives (
         | rcvr arg |
         arg  := frame pop.
         rcvr := frame pop.
-        frame push: (universe newDouble: (String fromString: arg string)) ]).
+        frame push: (universe newDouble: (Double fromString: arg string)) ]).
   )
 
   ----

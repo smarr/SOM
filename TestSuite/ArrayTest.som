@@ -27,47 +27,48 @@ THE SOFTWARE.
 
 ArrayTest = TestCase (
   | a |
-  
+
   setUp = (
     a := Array new: 3.
     a at: 1 put: 'hello'.
     a at: 2 put: #world.
     a at: 3 put: 23.
   )
-  
+
   testLength = (
     self assert: 3 equals: a length
   )
-  
+
   testAt = (
+    self assert: 'hello' equals: (a at: 1).
     self assert: #world equals: (a at: 2).
     self assert: 23 equals:     (a at: 3).
   )
-  
+
   testContains = (
     self assert: (a contains: 23).
     self deny:   (a contains: #notInThere).
   )
-  
+
   testDo = (
     | j |
     j := 1.
-    
+
     a do: [:i |
       self assert: (a at: j) is: i.
       j := j + 1.
     ]
   )
-  
+
   testSumAndAverage = (
     | arr |
     arr := Array new: 3.
     1 to: 3 do: [ :i | arr at: i put: i ].
-    
+
     self assert: 6 equals: arr sum.
     self assert: 2 equals: arr average.
   )
-  
+
   testCopyFrom = (
     | arr b |
     arr := Array new: 5.
@@ -77,13 +78,57 @@ ArrayTest = TestCase (
     self assert: 2 equals: (b at: 1).
     self assert: 3 equals: (b at: 2).
     self assert: 4 equals: (b at: 3).
-    
+
     b := arr copyFrom: 3.
     self assert: 3 equals: (b at: 1).
     self assert: 4 equals: (b at: 2).
     self assert: 5 equals: (b at: 3).
   )
-  
+
+  testExtendedWith = (
+    | arr newArr |
+    arr := Array new: 0.
+    newArr := arr extendedWith: 33.
+
+    self assert: 1 equals: newArr length.
+    self assert: 0 equals: arr length.
+    self assert: 33 equals: (newArr at: 1).
+
+    self testAt.  "confirm a is correct"
+    self testLength.
+
+    newArr := a extendedWith: 44.
+
+    self testAt.  "confirm a is correct"
+    self testLength.
+
+    self assert: 4 equals: newArr length.
+    self assert: 0 equals: arr length.
+    self assert: 44 equals: (newArr at: 4).
+  )
+
+  testPrependedWith = (
+    | arr newArr |
+    arr := Array new: 0.
+    newArr := arr prependedWith: 33.
+
+    self assert: 1 equals: newArr length.
+    self assert: 0 equals: arr length.
+    self assert: 33 equals: (newArr at: 1).
+
+    self testAt.  "confirm a is correct"
+    self testLength.
+
+    newArr := a prependedWith: 44.
+
+    self testAt.  "confirm a is correct"
+    self testLength.
+
+    self assert: 4 equals: newArr length.
+    self assert: 0 equals: arr length.
+    self assert: 44 equals: (newArr at: 1).
+  )
+
   testIndexOf = (
     | arr |
     arr := Array new: 6.
@@ -92,17 +137,17 @@ ArrayTest = TestCase (
     arr at: 3 put: #three.
     arr at: 4 put: #four.
     arr at: 5 put: #five.
-    arr at: 6 put: #one. 
-    
+    arr at: 6 put: #one.
+
     self assert: 2 equals: (arr indexOf: #two).
     self assert: 4 equals: (arr indexOf: #four).
     self assert: 5 equals: (arr indexOf: #five).
-    
+
     self assert: nil equals: (arr indexOf: #notIncluded).
-    
+
     self assert: 1 equals: (arr indexOf: #one).
   )
-  
+
   testLastIndexOf = (
     | arr |
     arr := Array new: 6.
@@ -111,44 +156,55 @@ ArrayTest = TestCase (
     arr at: 3 put: #three.
     arr at: 4 put: #four.
     arr at: 5 put: #five.
-    arr at: 6 put: #one. 
-    
+    arr at: 6 put: #one.
+
     self assert: 2 equals: (arr lastIndexOf: #two).
     self assert: 4 equals: (arr lastIndexOf: #four).
     self assert: 5 equals: (arr lastIndexOf: #five).
-    
+
     self assert: nil equals: (arr indexOf: #notIncluded).
-    
+
     self assert: 6 equals: (arr lastIndexOf: #one).
   )
-  
+
   testNewWithAll = (
     | arr |
     arr := Array new: 5 withAll: [1].
     1 to: 5 do: [:i | self assert: 1 equals: (arr at: i)].
-    
+
     arr := Array new: 5 withAll: 1.
     1 to: 5 do: [:i | self assert: 1 equals: (arr at: i)].
   )
-  
+
   testPutAllIntAndObjects = (
     | arr o |
     arr := Array new: 5 withAll: 5.
     self assert: 5 equals: (arr at: 3).
     arr at: 3 put: nil.
     self assert: nil equals: (arr at: 3).
-    
+
     o := Object new.
     arr at: 2 put: o.
     self assert: o equals: (arr at: 2).
   )
-  
+
   testLiteralArrays = (
   	self assert: (#(1 2) at: 1) equals: 1.
   	self assert: (#(1 2) at: 2) equals: 2.
-    
+
   	self assert: (#(-1 -200.0) at: 1) equals: -1.
   	self assert: (#(-1 -200.0) at: 2) equals: -200.0.
   )
-)
 
+  testJoin = (
+    | arr |
+    arr := Array new: 0.
+    self assert: nil is: (arr join: ', ').
+
+    arr := Array with: 1 with: 10 with: 100.
+    self assert: 1 + 20000 + 10 + 20000 + 100 equals: (arr join: 20000).
+
+    arr := Array with: 'a' with: 'b' with: 'c'.
+    self assert: 'a, b, c' equals: (arr join: ', ').
+  )
+)

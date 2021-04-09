@@ -122,5 +122,6 @@ TestHarness = (
             self runAllSuites
           ] ifFalse: [
             self runOneSuite: (args at: 2) ]].
+      ^ 0
     )
 )

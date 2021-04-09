@@ -27,27 +27,55 @@ THE SOFTWARE.
 
 VectorTest = TestCase (
   | a |
-  
+
   setUp = (
     a := Vector new.
     a append: 'hello'.
     a append: #world.
     a append: 23.
   )
-  
+
   testSize = (
     self assert: 3 equals: a size.
   )
-  
+
   testAt = (
     self assert: #world equals: (a at: 2).
     self assert:     23 equals: (a at: 3).
   )
-  
+
+  testFirst = (
+    | v |
+    self assert: 'hello' equals: a first.
+
+    v := Vector new.
+    1 to: 10 do: [:i |
+      v append: i.
+      self assert: 1 equals: v first ].
+
+    1 to: 10 do: [:i |
+      self assert: 1 equals: v first.
+      v removeFirst ]
+  )
+
+  testLast = (
+    | v |
+    self assert: 23 equals: a last.
+
+    v := Vector new.
+    1 to: 10 do: [:i |
+      v append: i.
+      self assert: i equals: v last ].
+
+    10 downTo: 1 do: [:i |
+      self assert: i equals: v last.
+      v remove ]
+  )
+
   testContains = (
     self assert: (a contains: 23).
   )
-  
+
   testDo = (
     | j |
     j := 1.
@@ -55,5 +83,77 @@ VectorTest = TestCase (
       self assert: i equals: (a at: j).
       j := j + 1.
     ].
+  )
+
+  testAppendAndRemoveFirst = (
+    | v |
+    v := Vector new: 10.
+    1 to: 100 do: [:i |
+      v append: i ].
+
+    "160 is implementation dependent, just here for orientation"
+    self assert: 160 equals: v capacity.
+    self assert: 100 equals: v size.
+
+    1 to: 100 do: [:i |
+      v removeFirst ].
+    1 to: 100 do: [:i |
+      v append: i ].
+
+    self assert: 320 equals: v capacity.
+    self assert: 100 equals: v size.
+  )
+
+  testIndexOf = (
+    | v |
+    v := Vector new: 3.
+    1 to: 17 do: [:i |
+      v append: i ].
+
+    self assert: -1 equals: (v indexOf: nil).
+    self assert: 1 equals: (v indexOf: 1).
+
+    self assert: 13 equals: (v indexOf: 13).
+    v at: 13 put: #test.
+
+    self assert: 13 equals: (v indexOf: #test).
+
+    v removeFirst.
+    self assert: -1 equals: (v indexOf: 1).
+
+    1 to: 12 do: [:i |
+      v removeFirst ].
+    self assert: -1 equals: (v indexOf: #test).
+  )
+
+  testAppendAll = (
+    | v c i |
+    v := Vector new: 2.
+    v append: 1.
+    v append: 2.
+    v append: 3.
+
+    c := Array with: 4 with: 5 with: 6.
+
+    v appendAll: c.
+    i := 1.
+
+    v do: [:e |
+      self assert: i equals: e.
+      i := i + 1 ]
+  )
+
+  testAsArray = (
+    | v arr |
+    v := Vector new.
+    self assert: 0 equals: v asArray length.
+
+    v append: 1.
+    v append: 2.
+
+    arr := v asArray.
+    self assert: 2 equals: arr length.
+    self assert: 1 equals: (arr at: 1).
+    self assert: 2 equals: (arr at: 2).
   )
 )

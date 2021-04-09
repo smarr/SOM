@@ -26,7 +26,7 @@ THE SOFTWARE.
 Hashtable = (
 
     | table count |
-    
+
     "Testing"
     containsKey: key = ( | idx e |
         idx := self indexForKey: key.
@@ -34,17 +34,17 @@ Hashtable = (
         e isNil ifFalse: [ e keys do: [ :k | k = key ifTrue: [ ^true ] ] ].
         ^false.
     )
-    
-    containsValue: val = ( 
-        table do: [ :ent | 
-            ent isNil ifFalse: [ 
+
+    containsValue: val = (
+        table do: [ :ent |
+            ent isNil ifFalse: [
                 ent values do: [ :v | v = val ifTrue: [ ^true ] ] ] ].
         ^false.
     )
-    
+
     isEmpty = ( ^count = 0 )
     size = ( ^count )
-    
+
     "Accessing"
     get: key = ( | idx e |
         idx := self indexForKey: key.
@@ -52,7 +52,7 @@ Hashtable = (
         e isNil ifTrue: [ ^nil ].
         ^e getValue: key.
     )
-    
+
     at: key put: value = ( | idx |
         idx := self indexForKey: key.
         (table at: idx) isNil
@@ -65,38 +65,38 @@ Hashtable = (
                     ifTrue: [ count := count + 1 ] ].
         "TODO: enlarge table, rehash if too large"
     )
-    
+
     "TODO: some way to delete keys'd be nice..."
-    
+
     "Enumerate"
     keys = ( | vec |
         vec := Vector new.
-        table do: [ :ent | 
+        table do: [ :ent |
             ent isNil ifFalse: [ ent keys do: [ :k | vec append: k ] ] ].
         ^vec.
     )
-    
+
     values = ( | vec |
         vec := Vector new.
-        table do: [ :ent | 
+        table do: [ :ent |
             ent isNil ifFalse: [ ent values do: [ :v | vec append: v ] ] ].
         ^vec.
     )
-    
+
     "Clearing"
-    clear = ( table := Array new: 11. 
+    clear = ( table := Array new: 11.
               count := 0 )
-    
+
     "Private"
     indexForKey: aKey = ( ^(aKey hashcode % table length) abs + 1 )
-    
+
     ----------------
-    
+
     "Allocation"
     new = ( | ht |
         ht := super new.
         ht clear.
         ^ht.
     )
-    
+
 )

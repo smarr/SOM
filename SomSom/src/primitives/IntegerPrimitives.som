@@ -24,6 +24,12 @@ IntegerPrimitives = Primitives (
         frame push: (universe newInteger: rcvr integer atRandom) ]).
 
     self installInstancePrimitive: (
+      SPrimitive new: 'asDouble' in: universe with: [:frame :interp |
+        | rcvr |
+        rcvr := frame pop.
+        frame push: (universe newDouble: rcvr integer asDouble) ]).
+
+    self installInstancePrimitive: (
       SPrimitive new: '+' in: universe with: [:frame :interp |
         | argument rcvr |
         argument := frame pop.

@@ -90,6 +90,9 @@ BasicInterpreterTests = TestCase (
     self c: 'Blocks'  t: 'testArg2' e: 77 t: SInteger.
     self c: 'Blocks'  t: 'testArgAndLocal'   e: 8 t: SInteger.
     self c: 'Blocks'  t: 'testArgAndContext' e: 8 t: SInteger.
+    self c: 'Blocks'  t: 'testEmptyZeroArg'  e: 1 t: SInteger.
+    self c: 'Blocks'  t: 'testEmptyOneArg'   e: 1 t: SInteger.
+    self c: 'Blocks'  t: 'testEmptyTwoArg'   e: 1 t: SInteger.
 
     self c: 'Return'  t: 'testReturnSelf' e: 'Return' t: SClass.
     self c: 'Return'  t: 'testReturnSelfImplicitly' e: 'Return' t: SClass.
@@ -99,6 +102,11 @@ BasicInterpreterTests = TestCase (
     self c: 'IfTrueIfFalse'  t: 'test'  e: 42 t: SInteger.
     self c: 'IfTrueIfFalse'  t: 'test2' e: 33 t: SInteger.
     self c: 'IfTrueIfFalse'  t: 'test3' e:  4 t: SInteger.
+
+    self c: 'IfTrueIfFalse'  t: 'testIfTrueTrueResult'   e: 'Integer' t: SClass.
+    self c: 'IfTrueIfFalse'  t: 'testIfTrueFalseResult'  e: 'Nil'     t: SClass.
+    self c: 'IfTrueIfFalse'  t: 'testIfFalseTrueResult'  e: 'Nil'     t: SClass.
+    self c: 'IfTrueIfFalse'  t: 'testIfFalseFalseResult' e: 'Integer' t: SClass.
   )
 
   setupBasicTest2 = (
@@ -125,8 +133,14 @@ BasicInterpreterTests = TestCase (
     self c: 'BlockInlining'  t: 'testOneLevelInliningWithLocalShadowTrue'   e: 2 t: SInteger.
     self c: 'BlockInlining'  t: 'testOneLevelInliningWithLocalShadowFalse'   e: 1 t: SInteger.
 
-    self c: 'BlockInlining'  t: 'testBlockNestedInIfTrue'   e: 2 t: SInteger.
-    self c: 'BlockInlining'  t: 'testBlockNestedInIfFalse'   e: 42 t: SInteger.
+    self c: 'BlockInlining'  t: 'testShadowDoesntStoreWrongLocal' e: 33 t: SInteger.
+    self c: 'BlockInlining'  t: 'testShadowDoesntReadUnrelated'   e: 'Nil' t: SClass.
+
+    self c: 'BlockInlining'  t: 'testBlockNestedInIfTrue'   e: 2  t: SInteger.
+    self c: 'BlockInlining'  t: 'testBlockNestedInIfFalse'  e: 42 t: SInteger.
+
+    self c: 'BlockInlining'  t: 'testStackDisciplineTrue'   e: 1 t: SInteger.
+    self c: 'BlockInlining'  t: 'testStackDisciplineFalse'  e: 2 t: SInteger.
 
     self c: 'BlockInlining'  t: 'testDeepNestedInlinedIfTrue'   e: 3 t: SInteger.
     self c: 'BlockInlining'  t: 'testDeepNestedInlinedIfFalse'   e: 42 t: SInteger.
@@ -143,10 +157,14 @@ BasicInterpreterTests = TestCase (
 
     "self c: 'ObjectCreation'  t: 'test'   e: 1000000 t: SInteger."
 
-    self c: 'Regressions'  t: 'testSymbolEquality'   e: 1 t: SInteger.
+    self c: 'Regressions'  t: 'testSymbolEquality'            e: 1 t: SInteger.
     self c: 'Regressions'  t: 'testSymbolReferenceEquality'   e: 1 t: SInteger.
+    self c: 'Regressions'  t: 'testUninitializedLocal'        e: 1 t: SInteger.
+    self c: 'Regressions'  t: 'testUninitializedLocalInBlock' e: 1 t: SInteger.
 
-    self c: 'NumberOfTests'  t: 'numberOfTests'   e: 51 t: SInteger.
+    self c: 'BinaryOperation'  t: 'test' e: 3 + 8 t: SInteger.
+
+    self c: 'NumberOfTests'  t: 'numberOfTests' e: 65 t: SInteger.
   )
 
   c: className t: testName e: value t: resultClass = (

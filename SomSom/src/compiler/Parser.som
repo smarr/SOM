@@ -162,6 +162,14 @@ Parser = (
          return the value of the last expression, regardless of
          whether it was terminated with a . or not)"
         mgenc removeLastBytecode ].
+
+      (mgenc isBlockMethod and: [ mgenc hasBytecodes not ]) ifTrue: [
+        | nilSym |
+        "if the block is empty, we need to return nil"
+        nilSym := universe symbolFor: 'nil'.
+        mgenc addLiteralIfAbsent: nilSym.
+        bcGen emit: mgenc pushGlobal: aSymbol. ].
+
       bcGen emitReturnLocal: mgenc.
       mgenc markAsFinished.
       ^ self ].

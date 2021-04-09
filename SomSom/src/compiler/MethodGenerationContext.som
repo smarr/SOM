@@ -115,6 +115,10 @@ MethodGenerationContext = (
     bytecode remove
   )
 
+  hasBytecodes = (
+    ^ bytecode isEmpty not
+  )
+
   hasField: aSymbol = (
     ^ holderGenc hasField: aSymbol
   )

@@ -75,6 +75,16 @@ jobs:
           
           GIT_CMDS=(
             "git clone --branch $BRANCH_NAME --depth 1 https://github.com/$GITHUB_USER/$REPO som-vm"
+          )
+
+          if [ ! -z "${{ github.head_ref }}" ]
+          then
+            GIT_CMDS+=(
+              "git clone --branch ${{ github.head_ref }} --depth 1 https://github.com/$GITHUB_USER/$REPO som-vm"
+            )
+          fi
+          
+          GIT_CMDS+=(
             "git clone --depth 1 https://github.com/$GITHUB_USER/$REPO som-vm"
             "git clone --depth 1 https://github.com/$PR_TARGET_USER/$REPO som-vm"
           )

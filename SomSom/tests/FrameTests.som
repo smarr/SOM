@@ -1,0 +1,118 @@
+FrameTests = TestCase (
+  | u a b c d e f g h |
+
+  initialize = (
+    u := Universe new: true.
+    u setupClassPath: 'Smalltalk:TestSuite/BasicInterpreterTests'.
+    u initializeObjectSystem.
+
+    a := SSymbol new: 'a'.
+    b := SSymbol new: 'b'.
+    c := SSymbol new: 'c'.
+    d := SSymbol new: 'd'.
+    e := SSymbol new: 'e'.
+    g := SSymbol new: 'g'.
+    h := SSymbol new: 'h'.
+  )
+
+  method: name numLocals: numLocals = (
+    | sym clazz method |
+    sym := SSymbol new: name.
+    clazz := SClass new: u.
+    clazz name: (SSymbol new: 'Holder').
+    method := SMethod new: sym bc: #() literals: #() numLocals: numLocals maxStack: 4.
+    method holder: clazz.
+    ^ method
+  )
+
+  testPushPop = (
+    | f length m |
+    m := self method: 'testPushPop' numLocals: 0.
+    length := 4 + m numberOfArguments + m numberOfLocals.
+    f := Frame new: u nilObject previous: nil context: nil method: m maxStack: length.
+    f resetStackPointer.
+
+    f push: a.
+    self assert: 'a' equals: (f stackElement: 0) string.
+    f push: b.
+    self assert: 'b' equals: (f stackElement: 0) string.
+    f push: c.
+    self assert: 'c' equals: (f stackElement: 0) string.
+    f pop.
+    self assert: 'b' equals: (f stackElement: 0) string.
+    f pop.
+    self assert: 'a' equals: (f stackElement: 0) string.
+    f pop.
+  )
+
+  testArgsAndLocal = (
+    | f length m |
+    m := self method: 'testArgsAndLocal' numLocals: 2.
+    length := 4 + m numberOfArguments + m numberOfLocals.
+    f := Frame new: u nilObject previous: nil context: nil method: m maxStack: length.
+    f resetStackPointer.
+
+    f argument: 1 put: a. "rcvr"
+    f argument: 2 put: b. "local 1"
+    f argument: 3 put: c. "local 2"
+    f push: d.
+    f push: e.
+    f push: g.
+    f push: h.
+
+    self assert: 'a' equals: (f argument: 1) string.
+    self assert: 'b' equals: (f local: 1) string.
+    self assert: 'c' equals: (f local: 2) string.
+    self assert: 'h' equals: (f stackElement: 0) string.
+    self assert: 'g' equals: (f stackElement: 1) string.
+    self assert: 'e' equals: (f stackElement: 2) string.
+    self assert: 'd' equals: (f stackElement: 3) string.
+    self assert: 'c' equals: (f stackElement: 4) string.
+  )
+
+  testCopyArgs = (
+    | f length m1 m2 copyF |
+    m1 := self method: 'sourceTest:copy:args:' numLocals: 2.
+    m2 := self method: 'targetTest:copy:args:' numLocals: 2.
+    length := 5 + m1 numberOfArguments + m1 numberOfLocals.
+    f := Frame new: u nilObject previous: nil context: nil method: m1 maxStack: length.
+    f resetStackPointer.
+
+    f local: 1 put: e. "local 1"
+    f local: 2 put: g. "local 2"
+    f push: h. "stack 1"
+    "stuff to be copied"
+    f push: a. "rcvr"
+    f push: b. "arg test:"
+    f push: c. "arg copy:"
+    f push: d. "arg args:"
+
+    copyF := Frame new: u nilObject previous: nil context: nil method: m2 maxStack: length.
+    copyF resetStackPointer.
+    copyF copyArgumentsFrom: f.
+
+    self assert: 'a' equals: (copyF argument: 1) string.
+    self assert: 'b' equals: (copyF argument: 2) string.
+    self assert: 'c' equals: (copyF argument: 3) string.
+    self assert: 'd' equals: (copyF argument: 4) string.
+    self assert: u nilObject is: (copyF local: 1).
+    self assert: u nilObject is: (copyF local: 2).
+    self assert: u nilObject is: (copyF stackElement: 0).
+
+    copyF push: e. "arg args:"
+
+    self assert: 'a' equals: (copyF argument: 1) string.
+    self assert: 'b' equals: (copyF argument: 2) string.
+    self assert: 'c' equals: (copyF argument: 3) string.
+    self assert: 'd' equals: (copyF argument: 4) string.
+    self assert: u nilObject is: (copyF local: 1).
+    self assert: u nilObject is: (copyF local: 2).
+    self assert: 'e' equals: (copyF stackElement: 0) string.
+
+  )
+  ----
+
+  new = (
+    ^ super new initialize
+  )
+)

@@ -1,0 +1,176 @@
+LexerTests = TestCase (
+
+  testEmptyClass = (
+    | l |
+    l := Lexer new: 'Foo = ()'.
+
+    self assert: #identifier is: l sym.
+    self assert: 'Foo' equals: l text.
+
+    self assert: #equal is: l sym.
+    self assert: '=' equals: l text.
+
+    self assert: #newTerm is: l sym.
+    self assert: '(' equals: l text.
+
+    self assert: #endTerm is: l sym.
+    self assert: ')' equals: l text.
+
+    self assert: #NONE is: l sym.
+  )
+
+  testKeywordSymbol = (
+    | l |
+    l := Lexer new: '#key:word:'.
+
+    self assert: #pound is: l sym.
+    self assert: '#' equals: l text.
+
+    self assert: #keywordSequence is: l sym.
+    self assert: 'key:word:' equals: l text.
+
+    self assert: #NONE is: l sym.
+  )
+
+  testIntMessage = (
+    | l |
+    l := Lexer new: '314 println'.
+
+    self assert: #integer is: l sym.
+    self assert: '314' equals: l text.
+
+    self assert: #identifier is: l sym.
+    self assert: 'println' equals: l text.
+
+    self assert: #NONE is: l sym.
+  )
+
+  testAssignDouble = (
+    | l |
+    l := Lexer new: 'var := 3.14.'.
+
+    self assert: #identifier is: l sym.
+    self assert: 'var' equals: l text.
+
+    self assert: #assign is: l sym.
+    self assert: ':=' equals: l text.
+
+    self assert: #double is: l sym.
+    self assert: '3.14' equals: l text.
+
+    self assert: #period is: l sym.
+    self assert: '.' equals: l text.
+
+    self assert: #NONE is: l sym.
+  )
+
+  testString = (
+    | l str |
+    str := '\'some string with new\nline\''.
+    l := Lexer new: str.
+
+    self assert: #string is: l sym.
+    self assert: 'some string with new\nline' equals: l text.
+
+    self assert: #NONE is: l sym.
+  )
+
+  testEscapeChars = (
+    | l str |
+    str := '\'\\n\\0\\t\''.
+    l := Lexer new: str.
+
+    self assert: #string is: l sym.
+    self assert: '\n\0\t' equals: l text.
+    self assert: 3 equals: l text length.
+
+    self assert: #NONE is: l sym.
+  )
+
+  testPrimitiveMethod = (
+    | l |
+    l := Lexer new: ' foo: bar = primitive '.
+
+    self assert: #keyword is: l sym.
+    self assert: 'foo:' equals: l text.
+
+    self assert: #identifier is: l sym.
+    self assert: 'bar' equals: l text.
+
+    self assert: #equal is: l sym.
+    self assert: '=' equals: l text.
+
+    self assert: #primitive is: l sym.
+    self assert: 'primitive' equals: l text.
+  )
+
+  testMathBlock = (
+    | l syms |
+    l := Lexer new: '[ 0 ~ 1 & 2 | 3 * 4 / 5 \\ 6 + 7 - 8 > 9 < 10 , 11 @ 12 % 13]'.
+
+    syms := #(#not #and #or #star #div #mod #plus #minus #more #less #comma #at #per).
+
+    self assert: #newBlock is: l sym.
+    self assert: '[' equals: l text.
+
+    0 to: 12 do: [:i |
+      self assert: #integer is: l sym.
+      self assert: i asString equals: l text.
+      self assert: (syms at: i + 1) is: l sym ].
+
+    self assert: #integer is: l sym.
+    self assert: '13' equals: l text.
+
+    self assert: #endBlock is: l sym.
+    self assert: ']' equals: l text.
+  )
+
+  testOperatorSequence = (
+    | l |
+    l := Lexer new: '1 ------ ---- --> 2'.
+
+    self assert: #integer is: l sym.
+    self assert: '1' equals: l text.
+
+    self assert: #separator is: l sym.
+    self assert: '------' equals: l text.
+
+    self assert: #separator is: l sym.
+    self assert: '----' equals: l text.
+
+    self assert: #operatorSequence is: l sym.
+    self assert: '-->' equals: l text.
+
+    self assert: #integer is: l sym.
+    self assert: '2' equals: l text.
+  )
+
+  testBlock = (
+    | l |
+    l := Lexer new: '[:x | ^ 1]'.
+
+    self assert: #newBlock is: l sym.
+    self assert: '[' equals: l text.
+
+    self assert: #colon is: l sym.
+    self assert: ':' equals: l text.
+
+    self assert: #identifier is: l sym.
+    self assert: 'x' equals: l text.
+
+    self assert: #or is: l sym.
+    self assert: '|' equals: l text.
+
+    self assert: #exit is: l sym.
+    self assert: '^' equals: l text.
+
+    self assert: #integer is: l sym.
+    self assert: '1' equals: l text.
+
+    self assert: #endBlock is: l sym.
+    self assert: ']' equals: l text.
+  )
+
+
+  "  Colon, Exit  "
+)

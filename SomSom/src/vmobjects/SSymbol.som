@@ -1,0 +1,44 @@
+SSymbol = SString (
+  | numSignatureArguments |
+
+  initializeWith: aString = (
+    super initializeWith: aString.
+    numSignatureArguments := self determineNumberOfArguments
+  )
+
+  determineNumberOfArguments = (
+    | numColons |
+    self isBinarySignature ifTrue: [ ^ 2 ].
+
+    numColons := 0.
+
+    1 to: string length do: [:i |
+      ':' = (string charAt: i) ifTrue: [
+        numColons := numColons + 1 ] ].
+    ^ numColons + 1
+  )
+
+  isBinarySignature = (
+    1 to: string length do: [:i |
+      (Lexer isOperator: (string charAt: i))
+        ifFalse: [ ^ false ] ].
+    ^ true
+  )
+
+  numberOfSignatureArguments = (
+    ^ numSignatureArguments
+  )
+
+  somClassIn: universe = (
+    ^ universe symbolClass
+  )
+
+  "For using in debugging tools such as the Diassembler"
+  debugString = ( ^ 'SSymbol(' + string + ')' )
+
+  ----
+
+  new: aString = (
+    ^ self new initializeWith: aString
+  )
+)

@@ -1,0 +1,212 @@
+ParserTests = TestCase (
+  | universe |
+  testEmptyClass = (
+    | cgenc parser u |
+    u := self initUniverse.
+    parser := Parser newWith: 'Foo = ()' for: 'Foo.som' in: u.
+    cgenc := parser classdef.
+  )
+
+  testSpaceBeforeEmptyClass = (
+    | cgenc parser u |
+    u := self initUniverse.
+    parser := Parser newWith: '
+        Foo = ()' for: 'Foo.som' in: u.
+    cgenc := parser classdef.
+  )
+
+  testCommentBeforeEmptyClass = (
+    | cgenc parser u |
+    u := self initUniverse.
+    parser := Parser newWith: '
+      "This is a Foo Class"
+      Foo = ()' for: 'Foo.som' in: u.
+    cgenc := parser classdef.
+  )
+
+  testEmptyWithNilSuperClass = (
+    | cgenc parser u |
+    u := self initUniverse.
+    parser := Parser newWith: 'Foo = nil ()' for: 'Foo.som' in: u.
+    cgenc := parser classdef.
+  )
+
+  testEmptyWithObjectSuperClass = (
+    | cgenc parser u |
+    u := self initUniverse.
+    parser := Parser newWith: 'Foo = Object ()' for: 'Foo.som' in: u.
+    cgenc := parser classdef.
+  )
+
+  parseAndCaptureError: parser = (
+    parser errorHandler: [:msg | ^ msg ].
+    ^ parser classdef.
+  )
+
+  testEmptyClassMissingEqual = (
+    | cgenc parser u |
+    u := self initUniverse.
+    parser := ParserWithError newWith: 'Foo ()' for: 'Foo.som' in: u.
+    cgenc := self parseAndCaptureError: parser.
+    self assert: (cgenc beginsWith: 'Parsing of Foo.som failed, expected equal but found newTerm')
+  )
+
+  testEmptyClassWithComment = (
+    | cgenc parser u |
+    u := self initUniverse.
+    parser := Parser newWith: 'Foo = ( "comment" )' for: 'Foo.som' in: u.
+    cgenc := parser classdef.
+  )
+
+  testClassWithFields = (
+    | cgenc parser u |
+    u := self initUniverse.
+    parser := Parser newWith: 'Foo = (|a b c|)' for: 'Foo.som' in: u.
+    cgenc := parser classdef.
+  )
+
+  testClassWithUnaryMethod = (
+    | cgenc parser u |
+    u := self initUniverse.
+    parser := Parser newWith: 'Foo = ( m = () )' for: 'Foo.som' in: u.
+    cgenc := parser classdef.
+  )
+
+  testClassWithBinaryMethod = (
+    | cgenc parser u |
+    u := self initUniverse.
+    parser := Parser newWith: 'Foo = ( * o = () )' for: 'Foo.som' in: u.
+    cgenc := parser classdef.
+  )
+
+  testClassWithKeywordMethod = (
+    | cgenc parser u |
+    u := self initUniverse.
+    parser := Parser newWith: 'Foo = ( m: o = () )' for: 'Foo.som' in: u.
+    cgenc := parser classdef.
+  )
+
+  testClassWithKeywordPrimitive = (
+    | cgenc parser u |
+    u := self initUniverse.
+    parser := Parser newWith: 'Foo = ( m: o = primitive )' for: 'Foo.som' in: u.
+    cgenc := parser classdef.
+  )
+
+  testClassWithVariousMethods = (
+    | cgenc parser u |
+    u := self initUniverse.
+    parser := Parser newWith: '
+    ClassWithVariousMethods = (
+      a: o = ( | s n v | )
+      b: o = ( ^ 1 )
+      bn: o = ( ^ -1 )
+      c: o = ( ^ 2.2 )
+      cn: o = ( ^ -2.2 )
+      d: o = ( ^ \'ss\' )
+      e: o = ( ^ #sym )
+      f: o = ( | a | a := a := 2 )
+      g: o = ( o )
+      h: o = ( self foo )
+      i: o = ( super foo )
+      j: o = ( (1) )
+      k: o = ( [1] )
+      l: o = ( 1 foo: 4 )
+      m: o = ( 1 + 4 )
+      n: o = ( 1 ++ 2 )
+      o: o = ( #(2 3 4 5) )
+    )' for: 'ClassWithVariousMethods.som' in: u.
+    cgenc := parser classdef.
+  )
+
+  testSmalltalkFolder = (
+    | files |
+    files := #(
+      'Array.som'
+      'Block.som'
+      'Block1.som'
+      'Block2.som'
+      'Block3.som'
+      'Boolean.som'
+      'Class.som'
+      'Dictionary.som'
+      'Double.som'
+      'False.som'
+      'HashEntry.som'
+      'Hashtable.som'
+      'Integer.som'
+      'Metaclass.som'
+      'Method.som'
+      'Nil.som'
+      'Object.som'
+      'Pair.som'
+      'Primitive.som'
+      'Set.som'
+      'String.som'
+      'Symbol.som'
+      'System.som'
+      'True.som'
+      'Vector.som' ).
+
+    files do: [:f |
+      | cgenc parser u |
+      u := self initUniverse.
+      parser := Parser load: 'Smalltalk/' + f in: u.
+      self deny: parser isNil.
+      cgenc := parser classdef ].
+  )
+
+  testTestSuiteFolder = (
+    | files |
+    files := #(
+      'ArrayTest.som'
+      'BlockTest.som'
+      'ClassA.som'
+      'ClassB.som'
+      'ClassC.som'
+      'ClassLoadingTest.som'
+      'ClassStructureTest.som'
+      'ClosureTest.som'
+      'CoercionTest.som'
+      'CompilerReturnTest.som'
+      'DoesNotUnderstandMessage.som'
+      'DoesNotUnderstandTest.som'
+      'DoubleTest.som'
+      'EmptyTest.som'
+      'GlobalTest.som'
+      'HashTest.som'
+      'IntegerTest.som'
+      'PreliminaryTest.som'
+      'ReflectionTest.som'
+      'SelfBlockTest.som'
+      'SetTest.som'
+      'SpecialSelectorsTest.som'
+      'StringTest.som'
+      'SuperTest.som'
+      'SuperTestSuperClass.som'
+      'SymbolTest.som'
+      'SystemTest.som'
+      'TestCase.som'
+      'TestHarness.som'
+      'TestRunner.som'
+      'VectorTest.som'
+    ).
+
+    files do: [:f |
+      | cgenc parser u |
+      u := self initUniverse.
+      parser := Parser load: 'TestSuite/' + f in: u.
+      self deny: parser isNil.
+      cgenc := parser classdef ].
+  )
+
+  initUniverse = (
+    | u |
+    universe ifNil: [
+      u := Universe new.
+      u setupClassPath: 'Smalltalk:TestSuite'.
+      u initializeObjectSystem.
+      universe := u ].
+    ^ universe
+  )
+)

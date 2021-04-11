@@ -1,0 +1,124 @@
+ClassGenerationContext = (
+  | universe
+    name superName
+    classSide
+    classFields instanceFields
+    classMethods instanceMethods |
+
+  initalize: aUniverse = (
+    universe := aUniverse.
+    classSide := false.
+    classFields := Vector new.
+    instanceFields := Vector new.
+    classMethods := Vector new.
+    instanceMethods := Vector new.
+  )
+
+  name = (
+    ^ name
+  )
+
+  name: aSSymbol = (
+    name := aSSymbol
+  )
+
+  superName = (
+    ^ superName
+  )
+
+  superName: aSymbol = (
+    superName := aSymbol
+  )
+
+  instanceFieldsOfSuper: aSArrayOfFieldNames = (
+    | numFields |
+    numFields := aSArrayOfFieldNames numberOfIndexableFields.
+    1 to: numFields do: [:i |
+      instanceFields append: (aSArrayOfFieldNames indexableField: i) ]
+  )
+
+  classFieldsOfSuper: aSArrayOfFieldNames = (
+    | numFields |
+    numFields := aSArrayOfFieldNames numberOfIndexableFields.
+    1 to: numFields do: [:i |
+      classFields append: (aSArrayOfFieldNames indexableField: i) ]
+  )
+
+  addField: aSymbol = (
+    classSide
+      ifTrue: [classFields append: aSymbol]
+      ifFalse: [instanceFields append: aSymbol]
+  )
+
+  hasField: aSymbol = (
+    ^ classSide
+      ifTrue: [classFields contains: aSymbol]
+      ifFalse: [instanceFields contains: aSymbol]
+  )
+
+  fieldIndex: aSymbol = (
+    ^ classSide
+      ifTrue: [classFields indexOf: aSymbol]
+      ifFalse: [instanceFields indexOf: aSymbol]
+  )
+
+  addMethod: anInvokable = (
+    classSide
+      ifTrue: [classMethods append: anInvokable]
+      ifFalse: [instanceMethods append: anInvokable]
+  )
+
+  startClassSide = (
+    classSide := true
+  )
+
+  assemble = (
+    | ccname superClass resultClass superMClass result |
+    "build class class name"
+    ccname := name string + ' class'.
+
+    "Load the super class"
+    superClass := universe loadClass: superName.
+
+    "Allocate the class of the resulting class"
+    resultClass := universe newClass: universe metaclassClass.
+
+    "Initialize the class of the resulting class"
+    resultClass instanceFields: (universe newArrayFromVector: classFields).
+    resultClass instanceInvokables: (universe newArrayFromVector: classMethods).
+    resultClass name: (universe symbolFor: ccname).
+
+    superMClass := superClass somClass.
+    resultClass superClass: superMClass.
+
+    "Allocate the resulting class"
+    result := universe newClass: resultClass.
+
+    "Initialize the resulting class"
+    result name: name.
+    result superClass: superClass.
+    result instanceFields: (universe newArrayFromVector: instanceFields).
+    result instanceInvokables: (universe newArrayFromVector: instanceMethods).
+
+    ^ result
+  )
+
+  assembleSystemClass: systemClass = (
+    | superMClass |
+    systemClass instanceInvokables: (universe newArrayFromVector: instanceMethods).
+    systemClass instanceFields: (universe newArrayFromVector: instanceFields).
+
+    "class-bound == class-instance-bound"
+    superMClass := systemClass somClass.
+    superMClass instanceInvokables: (universe newArrayFromVector: classMethods).
+    superMClass instanceFields: (universe newArrayFromVector: classFields).
+
+    ^ systemClass
+  )
+
+  ----
+
+  new: aUniverse = (
+    ^ self new initalize: aUniverse
+  )
+)

@@ -1,0 +1,87 @@
+SMethod = SAbstractObject (
+  | signature
+    holder
+    bytecodes literals
+    numberOfLocals maximumNumberOfStackElements |
+
+  initializeWith: aSSymbol bc: bcArray literals: literalsArray numLocals: numLocals maxStack: maxStack = (
+    signature := aSSymbol.
+    bytecodes := bcArray.
+    literals := literalsArray.
+    numberOfLocals := numLocals.
+    maximumNumberOfStackElements := maxStack.
+  )
+
+  isPrimitive = (
+    ^ false
+  )
+
+  numberOfLocals = (
+    ^ numberOfLocals
+  )
+
+  maximumNumberOfStackElements = (
+    ^ maximumNumberOfStackElements
+  )
+
+  signature = (
+    ^ signature
+  )
+
+  holder = (
+    ^ holder
+  )
+
+  holder: value = (
+    holder := value.
+
+    literals == nil ifTrue: [ ^ self ].
+
+    "Make sure all nested invokables have the same holder"
+    literals do: [:l |
+      (l class == SMethod or: [l class == SPrimitive]) ifTrue: [
+        l holder: value ] ]
+  )
+
+  constant: bytecodeIndex = (
+    "Get the constant associated to a given bytecode index"
+    ^ literals at: (bytecodes at: bytecodeIndex + 1)
+  )
+
+  numberOfArguments = (
+    "Get the number of arguments of this method"
+    ^ signature numberOfSignatureArguments
+  )
+
+  numberOfBytecodes = (
+    "Get the number of bytecodes in this method"
+    ^ bytecodes length
+  )
+
+  bytecode: index = (
+    "Get the bytecode at the given index"
+    ^ bytecodes at: index
+  )
+
+  invoke: frame using: interpreter = (
+    | newFrame |
+    "Allocate and push a new frame on the interpreter stack"
+    newFrame := interpreter pushNewFrame: self.
+    newFrame copyArgumentsFrom: frame
+  )
+
+  somClassIn: universe = (
+    ^ universe methodClass
+  )
+
+  "For using in debugging tools such as the Diassembler"
+  debugString = ( ^ 'SMethod(' + holder name + '>>#' + signature string + ')' )
+
+  ----
+
+  new: aSSymbol bc: bcArray literals: literalsArray numLocals: numLocals maxStack: maxStack = (
+    ^ self new
+        initializeWith: aSSymbol bc: bcArray literals: literalsArray numLocals: numLocals maxStack: maxStack
+  )
+
+)

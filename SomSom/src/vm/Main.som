@@ -1,0 +1,14 @@
+Main = (
+  run: args = (
+    | u args2 |
+    u := Universe new.
+
+    '-- args' println.
+    args do: [:a | a println].
+
+    args2 := args copyFrom: 2.
+
+    u interpret: args2.
+    u exit: 0.
+  )
+)

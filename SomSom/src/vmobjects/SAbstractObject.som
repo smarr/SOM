@@ -1,0 +1,48 @@
+SAbstractObject = (
+  send: selectorString with: arguments in: universe using: interpreter = (
+    | selector invokable |
+    selector := universe symbolFor: selectorString.
+
+    interpreter frame push: self.
+
+    arguments do: [:arg |
+      interpreter frame push: arg ].
+
+    invokable := (self somClassIn: universe) lookupInvokable: selector.
+
+    invokable invoke: interpreter frame using: interpreter
+  )
+
+  sendDoesNotUnderstand: selector in: universe using: interpreter = (
+    | numberOfArguments frame argumentsArray args |
+    numberOfArguments := selector numberOfSignatureArguments.
+
+    frame := interpreter frame.
+    frame printStackTrace.
+
+    "Allocate an array with enough room to hold all arguments
+     except for the receiver, which is passed implicitly, as receiver of #dnu."
+    argumentsArray := universe newArray: numberOfArguments - 1.
+
+    "Remove all arguments and put them in the freshly allocated array"
+    numberOfArguments - 1 downTo: 1 do: [:i |
+      argumentsArray indexableField: i put: frame pop ].
+
+    frame pop. "pop receiver"
+
+    args := Array with: selector with: argumentsArray.
+    self send: 'doesNotUnderstand:arguments:' with: args in: universe using: interpreter
+  )
+
+  sendUnknownGlobal: globalName in: universe using: interpreter = (
+    | arguments |
+    arguments := Array with: globalName.
+    self send: 'unknownGlobal:' with: arguments in: universe using: interpreter
+  )
+
+  sendEscapedBlock: block in: universe using: interpreter = (
+    | arguments |
+    arguments := Array with: block.
+    self send: 'escapedBlock:' with: arguments in: universe using: interpreter
+  )
+)

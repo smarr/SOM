@@ -1,0 +1,180 @@
+BasicInterpreterTests = TestCase (
+  | testClass testSel
+    expectedResult resultType |
+
+  testBasicInterpreter = (
+    | arr |
+    arr := BasicInterpreterTests nextTest.
+
+    testClass := arr at: 1.
+    testSel := arr at: 2.
+    expectedResult := arr at: 3.
+    resultType := arr at: 4.
+
+    testSelector := '  ' + testClass + '>>#' + testSel.
+
+    self doBasicInterpreterBehavior.
+  )
+
+  doBasicInterpreterBehavior = (
+    | u actualResult |
+    u := Universe new: true.
+    u setupClassPath: 'Smalltalk:TestSuite/BasicInterpreterTests'.
+
+    actualResult := u interpret: testClass with: testSel.
+
+    self assertExpectedEqualsSOMValue: actualResult.
+  )
+
+  assertExpectedEqualsSOMValue: actualResult = (
+    resultType ~= actualResult class ifTrue: [
+      self signalFailure: 'Unexpected result type: ' + actualResult debugString.
+      ^ self ].
+
+    resultType == SInteger ifTrue: [
+      self assert: expectedResult equals: actualResult integer.
+      ^ self ].
+
+    resultType == SDouble ifTrue: [
+      "TODO: allow for small errors/inaccuracies"
+      self assert: expectedResult equals: actualResult double.
+      ^ self ].
+
+    resultType == SClass ifTrue: [
+      self assert: expectedResult equals: actualResult name string.
+      ^ self ].
+
+    resultType == SSymbol ifTrue: [
+      self assert: expectedResult equals: actualResult string.
+      ^ self ].
+
+    self signalFailure: 'resultType not currently supported: ' + resultType name string
+  )
+
+  ----
+
+  | basicTests next |
+
+  tests = (
+    | tests |
+    next := 1.
+    basicTests := Vector new.
+    tests := Vector new.
+
+    self setupBasicTest.
+    self setupBasicTest2.
+
+    basicTests size timesRepeat: [
+      tests append: (self for: #testBasicInterpreter) ].
+    ^ tests
+  )
+
+  nextTest = (
+    | test |
+    test := basicTests at: next.
+    next := next + 1.
+    ^ test
+  )
+
+  setupBasicTest = (
+    self c: 'MethodCall'  t: 'test' e: 42 t: SInteger.
+    self c: 'MethodCall'  t: 'test2' e: 42 t: SInteger.
+
+    self c: 'NonLocalReturn'  t: 'test1' e: 42 t: SInteger.
+    self c: 'NonLocalReturn'  t: 'test2' e: 43 t: SInteger.
+    self c: 'NonLocalReturn'  t: 'test3' e:  3 t: SInteger.
+    self c: 'NonLocalReturn'  t: 'test4' e: 42 t: SInteger.
+    self c: 'NonLocalReturn'  t: 'test5' e: 22 t: SInteger.
+
+    self c: 'Blocks'  t: 'testArg1' e: 42 t: SInteger.
+    self c: 'Blocks'  t: 'testArg2' e: 77 t: SInteger.
+    self c: 'Blocks'  t: 'testArgAndLocal'   e: 8 t: SInteger.
+    self c: 'Blocks'  t: 'testArgAndContext' e: 8 t: SInteger.
+    self c: 'Blocks'  t: 'testEmptyZeroArg'  e: 1 t: SInteger.
+    self c: 'Blocks'  t: 'testEmptyOneArg'   e: 1 t: SInteger.
+    self c: 'Blocks'  t: 'testEmptyTwoArg'   e: 1 t: SInteger.
+
+    self c: 'Return'  t: 'testReturnSelf' e: 'Return' t: SClass.
+    self c: 'Return'  t: 'testReturnSelfImplicitly' e: 'Return' t: SClass.
+    self c: 'Return'  t: 'testNoReturnReturnsSelf' e: 'Return' t: SClass.
+    self c: 'Return'  t: 'testBlockReturnsImplicitlyLastValue' e: 4 t: SInteger.
+
+    self c: 'IfTrueIfFalse'  t: 'test'  e: 42 t: SInteger.
+    self c: 'IfTrueIfFalse'  t: 'test2' e: 33 t: SInteger.
+    self c: 'IfTrueIfFalse'  t: 'test3' e:  4 t: SInteger.
+
+    self c: 'IfTrueIfFalse'  t: 'testIfTrueTrueResult'   e: 'Integer' t: SClass.
+    self c: 'IfTrueIfFalse'  t: 'testIfTrueFalseResult'  e: 'Nil'     t: SClass.
+    self c: 'IfTrueIfFalse'  t: 'testIfFalseTrueResult'  e: 'Nil'     t: SClass.
+    self c: 'IfTrueIfFalse'  t: 'testIfFalseFalseResult' e: 'Integer' t: SClass.
+  )
+
+  setupBasicTest2 = (
+    self c: 'CompilerSimplification'  t: 'testReturnConstantSymbol' e:  'constant' t: SSymbol.
+    self c: 'CompilerSimplification'  t: 'testReturnConstantInt' e: 42 t: SInteger.
+    self c: 'CompilerSimplification'  t: 'testReturnSelf' e: 'CompilerSimplification' t: SClass.
+    self c: 'CompilerSimplification'  t: 'testReturnSelfImplicitly' e: 'CompilerSimplification' t: SClass.
+
+    self c: 'CompilerSimplification'  t: 'testReturnArgumentN' e: 55 t: SInteger.
+    self c: 'CompilerSimplification'  t: 'testReturnArgumentA' e: 44 t: SInteger.
+    self c: 'CompilerSimplification'  t: 'testSetField'        e: 'foo' t: SSymbol.
+    self c: 'CompilerSimplification'  t: 'testGetField'        e: 40 t: SInteger.
+
+    self c: 'Hash'  t: 'testHash'  e: 444 t: SInteger.
+
+    self c: 'Arrays'  t: 'testEmptyToInts'  e: 3 t: SInteger.
+    self c: 'Arrays'  t: 'testPutAllInt'    e: 5 t: SInteger.
+    self c: 'Arrays'  t: 'testPutAllNil'    e: 'Nil' t: SClass.
+    self c: 'Arrays'  t: 'testPutAllBlock'  e: 3 t: SInteger.
+    self c: 'Arrays'  t: 'testNewWithAll'   e: 1 t: SInteger.
+
+    self c: 'BlockInlining'  t: 'testNoInlining'   e: 1 t: SInteger.
+    self c: 'BlockInlining'  t: 'testOneLevelInlining'   e: 1 t: SInteger.
+    self c: 'BlockInlining'  t: 'testOneLevelInliningWithLocalShadowTrue'   e: 2 t: SInteger.
+    self c: 'BlockInlining'  t: 'testOneLevelInliningWithLocalShadowFalse'   e: 1 t: SInteger.
+
+    self c: 'BlockInlining'  t: 'testShadowDoesntStoreWrongLocal' e: 33 t: SInteger.
+    self c: 'BlockInlining'  t: 'testShadowDoesntReadUnrelated'   e: 'Nil' t: SClass.
+
+    self c: 'BlockInlining'  t: 'testBlockNestedInIfTrue'   e: 2  t: SInteger.
+    self c: 'BlockInlining'  t: 'testBlockNestedInIfFalse'  e: 42 t: SInteger.
+
+    self c: 'BlockInlining'  t: 'testStackDisciplineTrue'   e: 1 t: SInteger.
+    self c: 'BlockInlining'  t: 'testStackDisciplineFalse'  e: 2 t: SInteger.
+
+    self c: 'BlockInlining'  t: 'testDeepNestedInlinedIfTrue'   e: 3 t: SInteger.
+    self c: 'BlockInlining'  t: 'testDeepNestedInlinedIfFalse'   e: 42 t: SInteger.
+
+    self c: 'BlockInlining'  t: 'testDeepNestedBlocksInInlinedIfTrue'   e: 5 t: SInteger.
+    self c: 'BlockInlining'  t: 'testDeepNestedBlocksInInlinedIfFalse'   e: 43 t: SInteger.
+
+    self c: 'BlockInlining'  t: 'testDeepDeepNestedTrue'   e: 9 t: SInteger.
+    self c: 'BlockInlining'  t: 'testDeepDeepNestedFalse'   e: 43 t: SInteger.
+
+    self c: 'BlockInlining'  t: 'testToDoNestDoNestIfTrue'   e: 2 t: SInteger.
+
+    self c: 'NonLocalVars'  t: 'testWriteDifferentTypes'   e: 3.75 t: SDouble.
+
+    "self c: 'ObjectCreation'  t: 'test'   e: 1000000 t: SInteger."
+
+    self c: 'Regressions'  t: 'testSymbolEquality'            e: 1 t: SInteger.
+    self c: 'Regressions'  t: 'testSymbolReferenceEquality'   e: 1 t: SInteger.
+    self c: 'Regressions'  t: 'testUninitializedLocal'        e: 1 t: SInteger.
+    self c: 'Regressions'  t: 'testUninitializedLocalInBlock' e: 1 t: SInteger.
+
+    self c: 'BinaryOperation'  t: 'test' e: 3 + 8 t: SInteger.
+
+    self c: 'NumberOfTests'  t: 'numberOfTests' e: 65 t: SInteger.
+  )
+
+  c: className t: testName e: value t: resultClass = (
+    | arr |
+    arr := Array new: 4.
+    arr at: 1 put: className.
+    arr at: 2 put: testName.
+    arr at: 3 put: value.
+    arr at: 4 put: resultClass.
+
+    basicTests append: arr.
+  )
+)

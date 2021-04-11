@@ -1,0 +1,292 @@
+Lexer = (
+  | fileContent state stateAfterPeek peekDone
+    index
+    sym text
+    nextSym nextText
+  |
+
+  initialize: aString = (
+    fileContent := aString.
+    peekDone := false.
+    index := 1.
+  )
+
+  isPeekDone = ( ^ peekDone )
+  text = ( ^ text )
+
+  currentTextContext = (
+    | start end |
+    start := (index - 50) max: 1.
+    end := (index + 5) min: fileContent length.
+    ^ fileContent substringFrom: start to: end
+  )
+
+  peek = (
+    | savedSym savedText |
+    peekDone ifTrue: [
+      self error: 'SOM lexer cannot peek twice. Likely parser bug' ].
+
+    savedSym := sym.
+    savedText := text.
+    self sym.
+
+    nextSym := sym.
+    nextText := text.
+    peekDone := true.
+
+    sym := savedSym.
+    text := savedText.
+
+    ^ nextSym
+  )
+
+  sym = (
+    peekDone ifTrue: [
+      peekDone := false.
+      sym := nextSym.
+      text := nextText.
+      ^ sym ].
+
+    self hasMoreInput ifFalse: [
+      sym := #NONE.
+      text := nil.
+      ^ sym ].
+
+    [self currentChar isWhiteSpace or: [self currentChar = '"']] whileTrue: [
+      self skipWhiteSpace.
+      self skipComment ].
+
+    self currentChar = '\'' ifTrue: [
+      ^ self lexString ].
+    self currentChar = '[' ifTrue: [
+      ^ self match: #newBlock ].
+    self currentChar = ']' ifTrue: [
+      ^ self match: #endBlock ].
+
+    self currentChar = ':' ifTrue: [
+      self nextChar = '='
+        ifTrue: [
+          index := index + 2.
+          sym := #assign.
+          text := ':=' ]
+        ifFalse: [
+          index := index + 1.
+          sym := #colon.
+          text := ':'
+        ].
+      ^ sym ].
+
+    self currentChar = '(' ifTrue: [
+      ^ self match: #newTerm ].
+    self currentChar = ')' ifTrue: [
+      ^ self match: #endTerm ].
+    self currentChar = '#' ifTrue: [
+      ^ self match: #pound ].
+    self currentChar = '^' ifTrue: [
+      ^ self match: #exit ].
+    self currentChar = '.' ifTrue: [
+      ^ self match: #period ].
+    self currentChar = '-' ifTrue: [
+      (self currentMatches: Lexer sepStr)
+        ifTrue: [
+          text := ''.
+          [self currentChar = '-'] whileTrue: [
+            text := text + self currentChar.
+            index := index + 1 ].
+
+          ^ sym := #separator ]
+        ifFalse: [
+          ^ self lexOperator ] ].
+    (Lexer isOperator: self currentChar) ifTrue: [
+      ^ self lexOperator ].
+    (self currentMatches: Lexer primStr) ifTrue: [
+      index := index + Lexer primStr length.
+      text := Lexer primStr.
+      ^ sym := #primitive ].
+    self currentChar isLetters ifTrue: [
+      text := ''.
+      [self currentChar isLetters or: [self currentChar isDigits or: [self currentChar = '_']]] whileTrue: [
+        text := text + self currentChar.
+        index := index + 1 ].
+      sym := #identifier.
+
+      self currentChar = ':' ifTrue: [
+        sym := #keyword.
+        index := index + 1.
+        text := text + ':'.
+        self currentChar isLetters ifTrue: [
+          sym := #keywordSequence.
+          [self currentChar isLetters or: [self currentChar = ':']] whileTrue: [
+            text := text + self currentChar.
+            index := index + 1 ] ] ].
+      ^ sym ].
+    self currentChar isDigits ifTrue: [
+      ^ self lexNumber ].
+
+    text := self currentChar.
+    ^ sym := #NONE
+  )
+
+  lexNumber = (
+    | sawDecimalMark |
+    sym := #integer.
+    text := ''.
+
+    sawDecimalMark := false.
+
+    [self currentChar isDigits] whileTrue: [
+      text := text + self currentChar.
+      index := index + 1.
+      (sawDecimalMark not and: [
+        self currentChar = '.' and: [
+          self nextChar isDigits]]) ifTrue: [
+        sym := #double.
+        text := text + self currentChar.
+        index := index + 1 ] ].
+    ^ sym
+  )
+
+  lexEscapeChar = (
+    self currentChar = 't' ifTrue: [ ^ text := text + '\t' ].
+    self currentChar = 'b' ifTrue: [ ^ text := text + '\b' ].
+    self currentChar = 'n' ifTrue: [ ^ text := text + '\n' ].
+    self currentChar = 'r' ifTrue: [ ^ text := text + '\r' ].
+    self currentChar = 'f' ifTrue: [ ^ text := text + '\f' ].
+    self currentChar = '\'' ifTrue: [ ^ text := text + '\'' ].
+    self currentChar = '\\' ifTrue: [ ^ text := text + '\\' ].
+    self currentChar = '0' ifTrue: [ ^ text := text + '\0' ].
+
+    self error: 'Unknown escape sequence \\' + self currentChar
+  )
+
+  lexStringChar = (
+    self currentChar = '\\'
+      ifTrue: [
+        index := index + 1.
+        self lexEscapeChar.
+        index := index + 1 ]
+      ifFalse: [
+        text := text + self currentChar.
+        index := index + 1 ]
+  )
+
+  lexString = (
+    sym := #string.
+    text := ''.
+    index := index + 1.
+
+    [self currentChar = '\''] whileFalse: [
+      self lexStringChar ].
+
+    index := index + 1.
+    ^ sym
+  )
+
+  lexOperator = (
+    (Lexer isOperator: self nextChar) ifTrue: [
+      text := ''.
+      [Lexer isOperator: self currentChar] whileTrue: [
+        text := text + self currentChar.
+        index := index + 1 ].
+      ^ sym := #operatorSequence ].
+    self currentChar = '~' ifTrue: [
+      ^ self match: #not ].
+    self currentChar = '&' ifTrue: [
+      ^ self match: #and ].
+    self currentChar = '|' ifTrue: [
+      ^ self match: #or ].
+    self currentChar = '*' ifTrue: [
+      ^ self match: #star ].
+    self currentChar = '/' ifTrue: [
+      ^ self match: #div ].
+    self currentChar = '\\' ifTrue: [
+      ^ self match: #mod ].
+    self currentChar = '+' ifTrue: [
+      ^ self match: #plus ].
+    self currentChar = '=' ifTrue: [
+      ^ self match: #equal ].
+    self currentChar = '>' ifTrue: [
+      ^ self match: #more ].
+    self currentChar = '<' ifTrue: [
+      ^ self match: #less ].
+    self currentChar = ',' ifTrue: [
+      ^ self match: #comma ].
+    self currentChar = '@' ifTrue: [
+      ^ self match: #at ].
+    self currentChar = '%' ifTrue: [
+      ^ self match: #per ].
+    self currentChar = '-' ifTrue: [
+      ^ self match: #minus ].
+    self error: 'lexOperator ran out of options. This should not happen'
+  )
+
+  skipWhiteSpace = (
+    [self currentChar isWhiteSpace] whileTrue: [
+      index := index + 1 ]
+  )
+
+  skipComment = (
+    self currentChar = '"'
+      ifFalse: [ ^ self ].
+
+    index := index + 1.
+
+    [self currentChar = '"'] whileFalse: [
+      index := index + 1 ].
+
+    index := index + 1
+  )
+
+  currentChar = (
+    index > fileContent length ifTrue: [ ^ '\0' ].
+    ^ fileContent charAt: index
+  )
+
+  nextChar = (
+    (index + 1) > fileContent length ifTrue: [ ^ '\0' ].
+    ^ fileContent charAt: index + 1
+  )
+
+  hasMoreInput = (
+    ^ index <= fileContent length
+  )
+
+  currentMatches: str = (
+    (index + str length) <= fileContent length ifFalse: [ ^ false ].
+    ^ str = (fileContent substringFrom: index to: index - 1 + str length)
+  )
+
+  match: s = (
+    sym := s.
+    text := self currentChar.
+    index := index + 1.
+    ^ sym
+  )
+
+  ----
+
+  new: aString = (
+    ^ self new initialize: aString
+  )
+
+  isOperator: c = (
+    c = '~' ifTrue: [ ^ true ].
+    c = '&' ifTrue: [ ^ true ].
+    c = '|' ifTrue: [ ^ true ].
+    c = '*' ifTrue: [ ^ true ].
+    c = '/' ifTrue: [ ^ true ].
+    c = '\\' ifTrue: [ ^ true ].
+    c = '+' ifTrue: [ ^ true ].
+    c = '=' ifTrue: [ ^ true ].
+    c = '>' ifTrue: [ ^ true ].
+    c = '<' ifTrue: [ ^ true ].
+    c = ',' ifTrue: [ ^ true ].
+    c = '@' ifTrue: [ ^ true ].
+    c = '%' ifTrue: [ ^ true ].
+    c = '-' ifTrue: [ ^ true ].
+    ^ false
+  )
+
+  sepStr  = ( ^ '----' )
+  primStr = ( ^ 'primitive' )
+)

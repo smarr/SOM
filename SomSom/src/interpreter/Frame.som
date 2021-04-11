@@ -1,0 +1,209 @@
+Frame = (
+"
+Frame layout:
++-----------------+
+| Arguments       | 1
++-----------------+
+| Local Variables | <-- localOffset
++-----------------+
+| Stack           | <-- stackPointer
+| ...             |
++-----------------+
+"
+|
+  "Points at the top element"
+  stackPointer
+  bytecodeIndex
+
+  "the offset at which local variables start"
+  localOffset
+
+  method
+  context
+  previousFrame
+  stack
+|
+  initialize: nilObject previous: prevFrame context: contextFrame method: aSMethod maxStack: stackElements = (
+    previousFrame := prevFrame.
+    context := contextFrame.
+    method := aSMethod.
+    stack := Array new: stackElements withAll: nilObject.
+
+    "Reset the stack pointer and the bytecode index"
+    self resetStackPointer.
+    bytecodeIndex := 1.
+  )
+
+  previousFrame = (
+    ^ previousFrame
+  )
+
+  clearPreviousFrame = (
+    previousFrame := nil
+  )
+
+  hasPreviousFrame = (
+    ^ previousFrame ~= nil
+  )
+
+  isBootstrapFrame = (
+    ^ self hasPreviousFrame not
+  )
+
+  context = (
+    ^ context
+  )
+
+  hasContext = (
+    ^ context ~= nil
+  )
+
+  context: level = (
+    | frame |
+    "Get the context frame at the given level"
+    frame := self.
+
+    "Iterate through the context chain until the given level is reached"
+    [level > 0] whileTrue: [
+      "Get the context of the current frame"
+      frame := frame context.
+
+      "Go to the next level"
+      level := level - 1 ].
+
+    ^ frame
+  )
+
+  outerContext = (
+    | frame |
+    "Compute the outer context of this frame"
+    frame := self.
+
+    "Iterate through the context chain until null is reached"
+    [frame hasContext] whileTrue: [
+      frame := frame context ].
+
+    ^ frame
+  )
+
+  method = (
+    ^ method
+  )
+
+  pop = (
+    | sp |
+    "Pop an object from the expression stack and return it"
+    sp := stackPointer.
+    stackPointer := stackPointer - 1.
+    ^ stack at: sp.
+  )
+
+  push: aSAbstractObject = (
+    "Push an object onto the expression stack"
+    | sp |
+    sp := stackPointer + 1.
+    stack at: sp put: aSAbstractObject.
+    stackPointer := sp
+  )
+
+  resetStackPointer = (
+    "arguments are stored in front of local variables"
+    localOffset := method numberOfArguments + 1.
+
+    "Set the stack pointer to its initial value thereby clearing the stack"
+    stackPointer := localOffset + method numberOfLocals - 1
+  )
+
+  bytecodeIndex = (
+    "Get the current bytecode index for this frame"
+    ^ bytecodeIndex
+  )
+
+  bytecodeIndex: value = (
+    "Set the current bytecode index for this frame"
+    bytecodeIndex := value
+  )
+
+  stackElement: index = (
+    "Get the stack element with the given index
+     (an index of zero yields the top element)"
+    ^ stack at: stackPointer - index
+  )
+
+  stackElement: index put: value = (
+    "Set the stack element with the given index to the given value
+     (an index of zero yields the top element)"
+    stack at: stackPointer - index put: value
+  )
+
+  local: index = (
+    ^ stack at: localOffset + index - 1
+  )
+
+  local: index put: value = (
+    stack at: localOffset + index - 1 put: value
+  )
+
+  local: index at: contextLevel = (
+    "Get the local with the given index in the given context"
+    ^ (self context: contextLevel) local: index
+  )
+
+  local: index at: contextLevel put: value = (
+    "Set the local with the given index in the given context to the given value"
+    (self context: contextLevel) local: index put: value
+  )
+
+  argument: index = (
+    ^ stack at: index
+  )
+
+  argument: index put: value = (
+    ^ stack at: index put: value
+  )
+
+  argument: index at: contextLevel = (
+    | context |
+    "Get the context"
+    context := self context: contextLevel.
+
+    "Get the argument with the given index"
+    ^ context argument: index
+  )
+
+  argument: index at: contextLevel put: value = (
+    | context |
+    "Get the context"
+    context := self context: contextLevel.
+
+    "Set the argument with the given index to the given value"
+    context argument: index put: value
+  )
+
+  copyArgumentsFrom: frame = (
+    | numArgs |
+    "copy arguments from frame:
+     - arguments are at the top of the stack of frame.
+     - copy them into the argument area of the current frame"
+    numArgs := method numberOfArguments.
+    0 to: numArgs - 1 do: [:i |
+      stack at: i + 1 put: (frame stackElement: numArgs - 1 - i) ]
+  )
+
+  printStackTrace = (
+    | className methodName |
+    "Print a stack trace starting in this frame"
+    self hasPreviousFrame ifTrue: [
+      previousFrame printStackTrace ].
+
+    className := method holder name string.
+    methodName := method signature string.
+    Universe println: className + '>>#' + methodName + ' @bi: ' + bytecodeIndex
+  )
+
+  ----
+
+  new: nilObject previous: prevFrame context: contextFrame method: aSMethod maxStack: stackElements = (
+    ^ self new initialize: nilObject previous: prevFrame context: contextFrame method: aSMethod maxStack: stackElements
+  )
+)

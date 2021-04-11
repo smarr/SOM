@@ -1,0 +1,11 @@
+ParserWithError = Parser (
+  | errorHandler |
+
+  errorHandler: aBlock = (
+    errorHandler := aBlock
+  )
+
+  error: message = (
+    errorHandler value: message
+  )
+)

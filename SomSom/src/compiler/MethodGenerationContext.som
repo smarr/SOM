@@ -1,0 +1,216 @@
+MethodGenerationContext = (
+  | holderGenc outerGenc
+    arguments locals literals
+    signature
+    finished prim blockMethod
+    bytecode |
+
+  initializeWith: aHolderGenc and: aOuterGenc = (
+    holderGenc := aHolderGenc.
+    outerGenc := aOuterGenc.
+    arguments := Vector new.
+    locals := Vector new.
+    literals := Vector new.
+    finished := false.
+    prim := false.
+    blockMethod := false.
+    bytecode := Vector new.
+  )
+
+  holder = (
+    ^ holderGenc
+  )
+
+  signature: aSymbol = (
+    signature := aSymbol
+  )
+
+  addArgument: aString = (
+    arguments append: aString
+  )
+
+  addArgumentIfAbsent: aString = (
+    (arguments contains: aString)
+      ifTrue: [^ false].
+
+    arguments append: aString.
+    ^ true
+  )
+
+  numberOfArguments = (
+    ^ arguments size
+  )
+
+  addLocalIfAbsent: aString = (
+    (locals contains: aString)
+      ifTrue: [^ false].
+
+    locals append: aString.
+    ^ true
+  )
+
+  addLiteralIfAbsent: anAbstractObject = (
+    | idx |
+    idx := literals indexOf: anAbstractObject.
+    idx <> -1 ifTrue: [
+      ^ idx ].
+
+    ^ self addLiteral: anAbstractObject
+  )
+
+  addLiteral: anAbstractObject = (
+    literals append: anAbstractObject.
+    ^ literals size
+  )
+
+  updateLiteral: oldVal at: idx put: newVal = (
+    (literals at: idx) == oldVal ifFalse: [
+      self error: 'updateLiteral saw wrong oldVal, indicates bug in parser' ].
+    literals at: idx put: newVal
+  )
+
+  findVar: var with: searchResult = (
+    "searchResult: index, context, isArgument"
+    searchResult at: 1 put: (locals indexOf: var).
+    (searchResult at: 1) = -1 ifTrue: [
+      searchResult at: 1 put: (arguments indexOf: var).
+      (searchResult at: 1) = -1
+        ifTrue: [
+          outerGenc == nil
+            ifTrue: [^ false]
+            ifFalse: [
+              searchResult at: 2 put: (searchResult at: 2) + 1.
+              ^ outerGenc findVar: var with: searchResult ] ]
+        ifFalse: [
+          searchResult at: 3 put: true ] ].
+
+    ^ true
+  )
+
+  markAsFinished = (
+    finished := true
+  )
+
+  isFinished = (
+    ^ finished
+  )
+
+  markAsPrimitive = (
+    prim := true
+  )
+
+  isBlockMethod = (
+    ^ blockMethod
+  )
+
+  markAsBlockMethod = (
+    blockMethod := true
+  )
+
+  addBytecode: code = (
+    bytecode append: code
+  )
+
+  removeLastBytecode = (
+    bytecode remove
+  )
+
+  hasBytecodes = (
+    ^ bytecode isEmpty not
+  )
+
+  hasField: aSymbol = (
+    ^ holderGenc hasField: aSymbol
+  )
+
+  fieldIndex: aSymbol = (
+    ^ holderGenc fieldIndex: aSymbol
+  )
+
+  assemble: universe = (
+    prim
+      ifTrue: [
+        ^ SPrimitive emptyPrimitive: signature string in: universe ]
+      ifFalse: [
+        ^ self assembleMethod: universe ]
+  )
+
+  assembleMethod: universe = (
+    | numLocals meth i |
+    "create a method instance with the given number of bytecodes"
+    numLocals := locals size.
+
+    meth := universe newMethod: signature
+        bc: bytecode asArray literals: literals asArray
+        numLocals: numLocals maxStack: self computeStackDepth.
+
+    "return the method - the holder field is to be set later on!"
+    ^ meth
+  )
+
+  computeStackDepth = (
+    | depth maxDepth i |
+    depth := 0.
+    maxDepth := 0.
+    i := 1.
+
+    [i <= bytecode size] whileTrue: [
+      | bc |
+      bc := bytecode at: i.
+
+      bc == #halt ifTrue: [
+        i := i + 1 ] ifFalse: [
+      bc == #dup  ifTrue: [
+        depth := depth + 1.
+        i := i + 1. ] ifFalse: [
+      (bc == #pushLocal or: [
+       bc == #pushArgument]) ifTrue: [
+          depth := depth + 1.
+          i := i + 3. ] ifFalse: [
+       (bc == #pushField or: [
+        bc == #pushBlock or: [
+        bc == #pushConstant or: [
+        bc == #pushGlobal ] ] ]) ifTrue: [
+           depth := depth + 1.
+           i := i + 2. ] ifFalse: [
+      bc == #pop ifTrue: [
+        depth := depth - 1.
+        i := i + 1. ] ifFalse: [
+      (bc == #popLocal or: [
+       bc == #popArgument ]) ifTrue: [
+          depth := depth - 1.
+          i := i + 3. ] ifFalse: [
+      bc == #popField ifTrue: [
+        depth := depth - 1.
+        i := i + 2. ] ifFalse: [
+      (bc == #send or: [bc == #superSend]) ifTrue: [
+        | sig |
+        "these are special: they need to look at the number of
+         arguments (extractable from the signature)"
+        sig := literals at: (bytecode at: i + 1).
+        depth := depth - sig numberOfSignatureArguments.
+        depth := depth + 1. "return value"
+        i := i + 2 ] ifFalse: [
+      (bc == #returnLocal or: [
+       bc == #returnNonLocal ]) ifTrue: [
+          i := i + 1. ]
+      ifFalse: [
+        self error: 'Illegal bytecode ' + bc asString
+      ] ] ] ] ] ] ] ] ].
+
+      depth > maxDepth ifTrue: [
+        maxDepth := depth ] ].
+
+    ^ maxDepth
+  )
+
+  ----
+
+  new: holderGenc = (
+    ^ self new initializeWith: holderGenc and: nil
+  )
+
+  new: holderGenc with: outerGenc = (
+    ^ self new initializeWith: holderGenc and: outerGenc
+  )
+)

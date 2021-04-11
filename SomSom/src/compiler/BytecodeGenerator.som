@@ -1,0 +1,86 @@
+BytecodeGenerator = (
+  ----
+  emitPop: mgenc = (
+    self emit: mgenc bc: #pop
+  )
+
+  emit: mgenc pushArgument: idx in: ctx = (
+    self emit: mgenc bc: #pushArgument with: idx and: ctx
+  )
+
+  emitReturnLocal: mgenc = (
+    self emit: mgenc bc: #returnLocal
+  )
+
+  emitReturnNonLocal: mgenc = (
+    self emit: mgenc bc: #returnNonLocal
+  )
+
+  emitDup: mgenc = (
+    self emit: mgenc bc: #dup
+  )
+
+  emit: mgenc pushBlock: blockMethod = (
+    self emit: mgenc bc: #pushBlock with: (mgenc addLiteralIfAbsent: blockMethod)
+  )
+
+  emit: mgenc pushLocal: idx in: ctx = (
+    idx negative ifTrue: [ self error: 'pushLocal: ' + idx asString].
+    self emit: mgenc bc: #pushLocal with: idx and: ctx
+  )
+
+  emit: mgenc pushField: aSymbol = (
+    (mgenc hasField: aSymbol) ifFalse: [ self error: 'pushField: field unknown ' + aSymbol ].
+    self emit: mgenc bc: #pushField with: (mgenc fieldIndex: aSymbol)
+  )
+
+  emit: mgenc pushGlobal: aSymbol = (
+    self emit: mgenc bc: #pushGlobal with: (mgenc addLiteralIfAbsent: aSymbol)
+  )
+
+  emit: mgenc popArgument: idx in: ctx = (
+    idx negative ifTrue: [ self error: 'popArgument: ' + idx asString].
+    self emit: mgenc bc: #popArgument with: idx and: ctx
+  )
+
+  emit: mgenc popLocal: idx in: ctx = (
+    idx negative ifTrue: [ self error: 'popLocal: ' + idx asString].
+    self emit: mgenc bc: #popLocal with: idx and: ctx
+  )
+
+  emit: mgenc popField: aSymbol = (
+    (mgenc hasField: aSymbol) ifFalse: [ self error: 'popField: field unknown ' + aSymbol ].
+    self emit: mgenc bc: #popField with: (mgenc fieldIndex: aSymbol)
+  )
+
+  emit: mgenc superSend: aSymbol = (
+    self emit: mgenc bc: #superSend with: (mgenc addLiteralIfAbsent: aSymbol)
+  )
+
+  emit: mgenc send: aSymbol = (
+    self emit: mgenc bc: #send with: (mgenc addLiteralIfAbsent: aSymbol)
+  )
+
+  emit: mgenc pushConstant: anAbstractObject = (
+    self emit: mgenc bc: #pushConstant with: (mgenc addLiteralIfAbsent: anAbstractObject)
+  )
+
+  emit: mgenc pushConstantIdx: anInteger = (
+    self emit: mgenc bc: #pushConstant with: anInteger
+  )
+
+  emit: mgenc bc: aSymbol = (
+    mgenc addBytecode: aSymbol.
+  )
+
+  emit: mgenc bc: aSymbol with: anInteger = (
+    mgenc addBytecode: aSymbol.
+    mgenc addBytecode: anInteger.
+  )
+
+  emit: mgenc bc: aSymbol with: anInteger and: otherInteger = (
+    mgenc addBytecode: aSymbol.
+    mgenc addBytecode: anInteger.
+    mgenc addBytecode: otherInteger.
+  )
+)

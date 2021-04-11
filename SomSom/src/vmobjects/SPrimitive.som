@@ -1,0 +1,63 @@
+SPrimitive = SAbstractObject (
+  | signature holder isEmpty operation |
+
+  initialize: aSSymbol with: aBlock = (
+    signature := aSSymbol.
+    isEmpty := false.
+    operation := aBlock.
+  )
+
+  initializeEmpty: aSSymbol in: universe = (
+    signature := aSSymbol.
+    isEmpty := true.
+    operation := [:frame :interp |
+      | receiver msg |
+      signature numberOfSignatureArguments timesRepeat: [
+        receiver := frame pop ].
+      msg := 'Undefined primitive ' + (receiver somClassIn: universe) name string +
+        '>>#' + signature string + ' called'.
+      self send: 'error:' with: (Array with: receiver with: (universe newString: msg))
+           in: universe using: interp ].
+  )
+
+  isPrimitive = ( ^ true )
+
+  signature = (
+    ^ signature
+  )
+
+  holder = (
+    ^ holder
+  )
+
+  holder: aSClass = (
+    holder := aSClass
+  )
+
+  isEmpty = (
+    ^ isEmpty
+  )
+
+  invoke: frame using: interp = (
+    ^ operation value: frame with: interp
+  )
+
+  somClassIn: universe = (
+    ^ universe primClass
+  )
+
+  "For using in debugging tools such as the Diassembler"
+  debugString = ( ^ 'SPrimitive(' + holder name string + '>>#' + signature string + ')' )
+
+  ----
+
+  new: signatureString in: universe with: aBlock = (
+    ^ self new initialize: (universe symbolFor: signatureString)
+               with: aBlock
+  )
+
+  emptyPrimitive: signatureString in: universe = (
+    ^ self new initializeEmpty: (universe symbolFor: signatureString)
+               in: universe
+  )
+)

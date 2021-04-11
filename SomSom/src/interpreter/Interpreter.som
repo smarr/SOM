@@ -1,0 +1,303 @@
+Interpreter = (
+  | universe frame |
+
+  initializeWith: aUniverse = (
+    universe := aUniverse
+  )
+
+  doDup = (
+    frame push: (frame stackElement: 0)
+  )
+
+  doPushLocal: bytecodeIndex = (
+    frame push: (
+        frame local: (frame method bytecode: bytecodeIndex + 1)
+                 at: (frame method bytecode: bytecodeIndex + 2))
+  )
+
+  doPushArgument: bytecodeIndex = (
+    frame push: (
+        frame argument: (frame method bytecode: bytecodeIndex + 1)
+                    at: (frame method bytecode: bytecodeIndex + 2))
+  )
+
+  doPushField: bytecodeIndex = (
+    | fieldIndex |
+    fieldIndex := frame method bytecode: bytecodeIndex + 1.
+
+    "Push the field with the computed index onto the stack"
+    frame push: (self getSelf field: fieldIndex)
+  )
+
+  doPushBlock: bytecodeIndex = (
+    | blockMethod |
+    blockMethod := frame method constant: bytecodeIndex.
+
+    "Push a new block with the current frame as context onto the stack"
+    frame push: (
+        universe newBlock: blockMethod
+                     with: frame
+                  numArgs: blockMethod numberOfArguments)
+  )
+
+  doPushConstant: bytecodeIndex = (
+    frame push: (frame method constant: bytecodeIndex)
+  )
+
+  doPushGlobal: bytecodeIndex = (
+    | globalName global |
+    globalName := frame method constant: bytecodeIndex.
+
+    "Get the global from the universe"
+    global := universe global: globalName.
+
+    global ~= nil
+      ifTrue: [ frame push: global  ]
+      ifFalse: [
+        "Send 'unknownGlobal:' to self"
+        self getSelf sendUnknownGlobal: globalName in: universe using: self ]
+  )
+
+  doPop = (
+    frame pop
+  )
+
+  doPopLocal: bytecodeIndex = (
+    frame local: (frame method bytecode: bytecodeIndex + 1)
+             at: (frame method bytecode: bytecodeIndex + 2)
+            put: frame pop
+  )
+
+  doPopArgument: bytecodeIndex = (
+    frame argument: (frame method bytecode: bytecodeIndex + 1)
+                at: (frame method bytecode: bytecodeIndex + 2)
+               put: frame pop
+  )
+
+  doPopField: bytecodeIndex = (
+    | fieldIndex |
+    fieldIndex := frame method bytecode: bytecodeIndex + 1.
+
+    "Set the field with the computed index to the value popped from the stack"
+    self getSelf field: fieldIndex put: frame pop
+  )
+
+  doSend: bytecodeIndex = (
+    | signature numberOfArguments receiver |
+    signature := frame method constant: bytecodeIndex.
+    numberOfArguments := signature numberOfSignatureArguments.
+    receiver := frame stackElement: numberOfArguments - 1.
+    self send: signature rcvrClass: (receiver somClassIn: universe)
+  )
+
+  doSuperSend: bytecodeIndex = (
+    | signature holderSuper invokable |
+    signature := frame method constant: bytecodeIndex.
+
+    "Send the message
+     Lookup the invokable with the given signature"
+    holderSuper := frame method holder superClass.
+    invokable := holderSuper lookupInvokable: signature.
+
+    self activate: invokable orDnu: signature
+  )
+
+  doReturnLocal = (
+    | result |
+    result := frame pop.
+
+    "Pop the top frame and push the result"
+    self popFrameAndPushResult: result
+  )
+
+  doReturnNonLocal = (
+    | result context |
+    result := frame pop.
+
+    "Compute the context for the non-local return"
+    context := frame outerContext.
+
+    "Make sure the block context is still on the stack"
+    context hasPreviousFrame ifFalse: [
+      | block sender method numArgs |
+      "Try to recover by sending 'escapedBlock:' to the sending object
+       this can get a bit nasty when using nested blocks. In this case
+       the 'sender' will be the surrounding block and not the object
+       that actually sent the 'value' message."
+      block := frame argument: 1 at: 0.
+      sender := frame previousFrame outerContext argument: 1 at: 0.
+
+      "pop the frame of the currently executing block..."
+      self popFrame.
+
+      "pop old arguments from stack"
+      method := frame method.
+      numArgs := method numberOfArguments.
+      numArgs timesRepeat: [ frame pop ].
+
+      "... and execute the escapedBlock message instead"
+      sender sendEscapedBlock: block in: universe using: self.
+      ^ self ].
+
+    "Unwind the frames"
+    [frame ~= context] whileTrue: [
+      self popFrame ].
+
+    self popFrameAndPushResult: result
+  )
+
+  start = (
+    [true] whileTrue: [
+      | bytecodeIndex bytecode bytecodeLength nextBytecodeIndex result |
+      bytecodeIndex := frame bytecodeIndex.
+      bytecode := frame method bytecode: bytecodeIndex.
+      bytecodeLength := Bytecodes length: bytecode.
+      nextBytecodeIndex := bytecodeIndex + bytecodeLength.
+      frame bytecodeIndex: nextBytecodeIndex.
+
+      result := self dispatch: bytecode idx: bytecodeIndex.
+      result ~= nil
+        ifTrue: [ ^ result ] ]
+  )
+
+  dispatch: bytecode idx: bytecodeIndex = (
+    bytecode == #halt ifTrue: [
+      ^ frame stackElement: 0 ].
+
+    bytecode == #dup ifTrue: [
+      self doDup.
+      ^ nil ].
+
+    bytecode == #pushLocal ifTrue: [
+      self doPushLocal: bytecodeIndex.
+      ^ nil ].
+
+    bytecode == #pushArgument ifTrue: [
+      self doPushArgument: bytecodeIndex.
+      ^ nil ].
+
+    bytecode == #pushField ifTrue: [
+      self doPushField: bytecodeIndex.
+      ^ nil ].
+
+    bytecode == #pushBlock ifTrue: [
+      self doPushBlock: bytecodeIndex.
+      ^ nil ].
+
+    bytecode == #pushConstant ifTrue: [
+      self doPushConstant: bytecodeIndex.
+      ^ nil ].
+
+    bytecode == #pushGlobal ifTrue: [
+      self doPushGlobal: bytecodeIndex.
+      ^ nil ].
+
+    bytecode == #pop ifTrue: [
+      self doPop.
+      ^ nil ].
+
+    bytecode == #popLocal ifTrue: [
+      self doPopLocal: bytecodeIndex.
+      ^ nil ].
+
+    bytecode == #popArgument ifTrue: [
+      self doPopArgument: bytecodeIndex.
+      ^ nil ].
+
+    bytecode == #popField ifTrue: [
+      self doPopField: bytecodeIndex.
+      ^ nil ].
+
+    bytecode == #send ifTrue: [
+      self doSend: bytecodeIndex.
+      ^ nil ].
+
+    bytecode == #superSend ifTrue: [
+      self doSuperSend: bytecodeIndex.
+      ^ nil ].
+
+    bytecode == #returnLocal ifTrue: [
+      self doReturnLocal.
+      ^ nil ].
+
+    bytecode == #returnNonLocal ifTrue: [
+      self doReturnNonLocal.
+      ^ nil ].
+
+    self error: 'Unknown bytecode' + bytecode asString
+  )
+
+  pushNewFrame: method with: contextFrame = (
+    frame := universe newFrame: frame with: method with: contextFrame.
+    ^ frame
+  )
+
+  pushNewFrame: method = (
+    ^ self pushNewFrame: method with: nil
+  )
+
+  frame = (
+    ^ frame
+  )
+
+  method = (
+    ^ frame method
+  )
+
+  getSelf = (
+    "Get the self object from the interpreter"
+    ^ frame outerContext argument: 1 at: 0
+  )
+
+  send: selector rcvrClass: receiverClass = (
+    | invokable |
+    invokable := receiverClass lookupInvokable: selector.
+    self activate: invokable orDnu: selector
+  )
+
+  activate: invokable orDnu: signature = (
+    invokable ~= nil
+        ifTrue: [
+          "Invoke the invokable in the current frame"
+          invokable invoke: frame using: self ]
+        ifFalse: [
+          | numberOfArguments receiver |
+          numberOfArguments := signature numberOfSignatureArguments.
+          receiver := frame stackElement: numberOfArguments - 1.
+          receiver sendDoesNotUnderstand: signature in: universe using: self ]
+  )
+
+  popFrame = (
+    | result |
+    "Save a reference to the top frame"
+    result := frame.
+
+    "Pop the top frame from the frame stack"
+    frame := frame previousFrame.
+
+    "Destroy the previous pointer on the old top frame"
+    result clearPreviousFrame.
+
+    "Return the popped frame"
+    ^ result
+  )
+
+  popFrameAndPushResult: result = (
+    | numberOfArguments |
+    "Pop the top frame from the interpreter frame stack and
+     get the number of arguments"
+    numberOfArguments := self popFrame method numberOfArguments.
+
+    "Pop the arguments"
+    numberOfArguments
+      timesRepeat: [ frame pop ].
+
+    frame push: result
+  )
+
+  ----
+
+  new: universe = (
+    ^ self new initializeWith: universe
+  )
+)

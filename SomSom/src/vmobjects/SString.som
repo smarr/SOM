@@ -1,0 +1,22 @@
+SString = SAbstractObject (
+  | string |
+
+  initializeWith: aString = (
+    string := aString.
+  )
+
+  string = ( ^ string )
+
+  somClassIn: universe = (
+    ^ universe stringClass
+  )
+
+  "For using in debugging tools such as the Diassembler"
+  debugString = ( ^ 'SString(' + string + ')' )
+
+  ----
+
+  new: aString = (
+    ^ self new initializeWith: aString
+  )
+)

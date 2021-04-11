@@ -1,0 +1,15 @@
+BlockPrimitives = Primitives (
+
+  installPrimitives = (
+    self installInstancePrimitive: (
+      SPrimitive new: 'restart' in: universe with: [:frame :interp |
+        frame bytecodeIndex: 1.
+        frame resetStackPointer. ]).
+  )
+
+  ----
+
+  new: universe = (
+    ^ self new initialize: universe
+  )
+)

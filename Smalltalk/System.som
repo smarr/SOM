@@ -73,7 +73,7 @@ System = (
                 self global: (current_class name) put: current_class.
                 current_class := current_class superclass. ].
             ^class ].
-        self error: 'Tried loading "' + symbol + '" as a class, but failed.'
+        self error: 'Tried loading \'' + symbol + '\' as a class, but failed.'
     )
 
     "Exiting"

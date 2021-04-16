@@ -50,6 +50,39 @@ SuperTest = SuperTestSuperClass (
   number = (
     ^ 10
   )
+  
+  + other = (
+    ^ 11
+  )
+  
+  ++++ other = (
+    ^ 111
+  )
+  
+  keyword: other = (
+    ^ 1111
+  )
+  
+  testBasicUnary = (
+    self assert: 10 equals: self number.
+    self assert:  1 equals: super number.
+  )
+  
+  testBasicBinary = (
+    self assert: 11 equals: self + 3.
+    self assert: 22 equals: super + 5.
+  )
+  
+  
+  testBasicBinaryNonStandardOperator = (
+    self assert: 111 equals: self ++++ 3.
+    self assert: 222 equals: super ++++ 5.
+  )
+  
+  testBasicKeyword = (
+    self assert: 1111 equals: (self keyword: 3).
+    self assert: 2222 equals: (super keyword: 5).
+  )
 
   testWithBinaryUnaryMessage = (
     | val |

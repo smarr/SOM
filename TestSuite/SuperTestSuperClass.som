@@ -44,6 +44,18 @@ SuperTestSuperClass = TestCase (
     number = (
         ^ 1
     )
+    
+    + other = (
+      ^ 22
+    )
+
+    ++++ other = (
+      ^ 222
+    )
+
+    keyword: other = (
+      ^ 2222
+    )
 
     key: a key: b = (
         ^ self

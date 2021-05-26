@@ -110,12 +110,29 @@ IntegerTest = TestCase (
     self assert: '-1' equals: (-1 asString).
     self assert: '-2' equals: (-2 asString).
 
-    self assert:  1 equals: (Integer fromString:  '1').
-    self assert: -1 equals: (Integer fromString: '-1').
-    self assert: 42 equals: (Integer fromString: '42').
-
     self assert: 42 equals: '42' asInteger.
     self assert: -2 equals: '-2' asInteger.
+  )
+  
+  testIntegerLiterals = (
+    "Make sure the parser reads literals correctly. So, check some basic properties"
+    self assert: 2 / 2                                     equals:                       1.
+    self assert: 50 + 50                                   equals:                     100.
+    self assert: 92233720368 * 100000000 + 54775807        equals:     9223372036854775807.
+    self assert: 92233720368 * 100000000 + 54775807 * 100  equals:   922337203685477580700.
+    self assert: 50 - 100                                  equals:                     -50.
+    self assert: 21474 * -100000 - 83648                   equals:             -2147483648.
+    self assert: 92233720368 * 100000000 + 54775807 * -100 equals:  -922337203685477580700.
+  )
+  
+  testFromString = (
+    self assert:                      1 equals: (Integer fromString:                      '1').
+    self assert:                    100 equals: (Integer fromString:                    '100').
+    self assert:    9223372036854775807 equals: (Integer fromString:    '9223372036854775807').
+    self assert:  922337203685477580700 equals: (Integer fromString:  '922337203685477580700').
+    self assert:                    -50 equals: (Integer fromString:                    '-50').
+    self assert:            -2147483648 equals: (Integer fromString:            '-2147483648').
+    self assert: -922337203685477580700 equals: (Integer fromString: '-922337203685477580700').
   )
 
   testRangeBorders = (

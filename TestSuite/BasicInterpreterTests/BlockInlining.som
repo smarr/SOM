@@ -116,7 +116,6 @@ BlockInlining = (
 
     testStackDisciplineFalse = (
       | result |
-      1 halt.
       result := 0 max: (1 < 0 ifTrue: [1] ifFalse: [2]).
       ^ result
     )

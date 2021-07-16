@@ -29,6 +29,10 @@ BlockTest = TestCase (
       ^ [ ^ 42 ]
     )
     
+    escapingNestedBlock = (
+      [ [ ^ [ ^ 43 ] ] value ] value
+    )
+    
     testSimpleBlocks = (
       self assert: 42 equals: self simpleBlock value.
       self assert: 4  equals: (self incBlock value: 3).
@@ -62,6 +66,13 @@ BlockTest = TestCase (
       self assert: 666 equals: escaping_block value.
       self assert: 1 equals: escape_count.
       
+      self assert: escaping_block is: escaped_block.
+      
+      
+      escaping_block := self escapingNestedBlock.
+      self assert: 1 equals: escape_count.
+      self assert: 666 equals: escaping_block value.
+      self assert: 2 equals: escape_count.
       self assert: escaping_block is: escaped_block.
     )
 

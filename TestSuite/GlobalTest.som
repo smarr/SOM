@@ -13,4 +13,20 @@ GlobalTest = TestCase (
       self assert: Nil    equals: nil   class.
       self assert: System equals: system class.
     )
+    
+    escapingBlock = (
+       ^ [ EscapingBlockGlobal ]
+    )
+    
+    testUnknownGlobalSemanticsInBlocks = (
+      self assert: #NormalBlockGlobal is: [ NormalBlockGlobal ] value.
+      self assert: #NormalBlockGlobal is: doesntKnow.
+    
+      self assert: #EscapingBlockGlobal is: self escapingBlock value.
+      self assert: #EscapingBlockGlobal is: doesntKnow.
+      
+      self assert: #NestedBlockGlobal is: [
+         [ [ NestedBlockGlobal ] value ] value ] value.
+      self assert: #NestedBlockGlobal is: doesntKnow.
+    )
 )

@@ -35,10 +35,11 @@ Blocks = (
         a + blockLocal] value: 5)
     )
     
-    testArgAndContext = ( | methodLocal |
-      ^ ([:a |
-        methodLocal := 3.
-        a + methodLocal] value: 5)
+    testArgAndContext = (
+      | methodLocal |
+      ^ [:a |
+          methodLocal := 3.
+          a + methodLocal] value: 5
     )
     
     testEmptyZeroArg = (

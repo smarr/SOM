@@ -1,0 +1,32 @@
+GlobalTest = TestCase (
+    | doesntKnow |
+    unknownGlobal: name = ( doesntKnow := name. ^ name )
+
+    testUnknownGlobalHandler = (
+      self assert: #foobar equals: foobar.     "should return the unknown globals name"
+      self assert: #foobar equals: doesntKnow. "and should have set it in the field"
+    )
+    
+    testKnownGlobals = (
+      self assert: True   equals: true  class.
+      self assert: False  equals: false class.
+      self assert: Nil    equals: nil   class.
+      self assert: System equals: system class.
+    )
+    
+    escapingBlock = (
+       ^ [ EscapingBlockGlobal ]
+    )
+    
+    testUnknownGlobalSemanticsInBlocks = (
+      self assert: #NormalBlockGlobal is: [ NormalBlockGlobal ] value.
+      self assert: #NormalBlockGlobal is: doesntKnow.
+    
+      self assert: #EscapingBlockGlobal is: self escapingBlock value.
+      self assert: #EscapingBlockGlobal is: doesntKnow.
+      
+      self assert: #NestedBlockGlobal is: [
+         [ [ NestedBlockGlobal ] value ] value ] value.
+      self assert: #NestedBlockGlobal is: doesntKnow.
+    )
+)

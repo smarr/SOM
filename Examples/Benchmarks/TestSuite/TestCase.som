@@ -1,0 +1,124 @@
+TestCase = (
+    | testSelector runner failed |
+
+    selector       = ( ^ testSelector )
+    selector: aSym = ( testSelector := aSym )
+
+    "asserting"
+    assert: aBoolean = (
+        runner countAssert.
+        aBoolean ifFalse: [
+            self signalFailure: 'Assertion failed' ] )
+
+    assert: aBoolean description: aStringOrBlock = (
+        runner countAssert.
+        aBoolean ifFalse: [
+            self signalFailure: aStringOrBlock value ] )
+
+    assert: expected equals: actual = (
+        "test value equality"
+        self assert: (expected = actual)
+             description: [self comparingStringBetween: expected and: actual]
+    )
+
+    assert: expected is: actual = (
+        "test reference equality"
+        self assert: (expected == actual)
+             description: [self comparingStringBetween: expected and: actual]
+    )
+
+    optional: aSymbol assert: aBoolean = (
+        runner countAssert.
+        aBoolean ifFalse: [
+            self signalUnsupported: aSymbol description: nil ] )
+
+    optional: aSymbol assert: expected equals: actual = (
+        self optional: aSymbol
+             assert: (expected = actual)
+             description: [self comparingStringBetween: expected and: actual]
+    )
+
+    optional: aSymbol assert: expected is: actual = (
+        self optional: aSymbol
+             assert: (expected == actual)
+             description: [self comparingStringBetween: expected and: actual]
+    )
+
+    optional: aSymbol assert: aBoolean description: aStringOrBlock = (
+        runner countAssert.
+        aBoolean ifFalse: [
+            self signalUnsupported: aSymbol description: aStringOrBlock value ] )
+
+    deny: aBoolean = (
+        self assert: aBoolean not
+    )
+
+    deny: aBooleanOrBlock description: aString = (
+        self assert: aBooleanOrBlock value not description: aString
+    )
+
+    optional: aSymbol deny: aBoolean = (
+        self optional: aSymbol assert: aBoolean not
+    )
+
+    optional: aSymbol deny: aBooleanOrBlock description: aString = (
+        self optional: aSymbol assert: aBooleanOrBlock value not description: aString
+    )
+
+    signalFailure: aString = (
+        failed := true.
+        runner fail: self class name + '>>#' + testSelector
+            because: aString.
+    )
+
+    signalUnsupported: aSymbol description: aDescription = (
+        runner unsupported: aSymbol
+                      test: self class name + '>>#' + testSelector
+                   because: aDescription.
+    )
+
+    comparingStringBetween: expected and: actual = (
+        ^ 'Expected ' + expected asString +
+          ' but was ' + actual asString + '.'
+    )
+
+    "running"
+    run: aRunner = (
+        runner := aRunner.
+        failed := false.
+
+        self setUp.
+        self performTest.
+        self tearDown.
+
+        failed ifFalse: [
+            runner passed: self class name + '>>#' + testSelector
+        ].
+    )
+
+    setUp    = ()
+    tearDown = ()
+
+    performTest = ( self perform: testSelector )
+
+    ----
+
+    for: aSelector = (
+        | case |
+        case := self new.
+        case selector: aSelector.
+        ^ case
+    )
+
+    tests = (
+        | tests |
+        tests := Vector new: self methods length.
+        self methods do: [:m |
+            (m signature beginsWith: #test) ifTrue: [
+                tests append: (self for: m signature).
+            ].
+        ].
+
+        ^ tests
+    )
+)

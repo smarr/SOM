@@ -1,0 +1,100 @@
+BooleanTest = TestCase (
+
+    testIfTrueIfFalse = (
+      | b1 b2 |
+      b1 := false.
+      b2 := false.
+      
+      true ifTrue: [ b1 := true ] ifFalse: [ b2 := true ].
+      self assert: b1.
+      self deny: b2.
+      
+      b1 := false.
+      b2 := false.
+      false ifTrue: [ b1 := true ] ifFalse: [ b2 := true ].
+      self assert: b2.
+      self deny: b1.
+    )
+    
+    testIfTrue = (
+      | b |
+      b := false.
+      
+      true ifTrue: [ b := true ].
+      self assert: b.
+      
+      b := false.
+      false ifTrue: [ b := true ].
+      self deny: b.
+    )
+    
+    testIfFalse = (
+      | b |
+      b := false.
+      
+      true ifFalse: [ b := true ].
+      self deny: b.
+      
+      b := false.
+      false ifFalse: [ b := true ].
+      self assert: b.
+    )
+    
+    testNot = (
+      self deny: true not.
+      self assert: false not.
+    )
+
+    andBoolTrueTrue   = ( ^ true  and: [ true  ] )
+    andBoolTrueFalse  = ( ^ true  and: [ false ] )
+    andBoolFalseTrue  = ( ^ false and: [ true  ] )
+    andBoolFalseFalse = ( ^ false and: [ false ] )
+    
+    testAnd = (
+      self assert: self andBoolTrueTrue.
+      self deny:   self andBoolTrueFalse.
+      self deny:   self andBoolFalseTrue.
+      self deny:   self andBoolFalseFalse.
+    )
+    
+    ampBoolTrueTrue   = ( ^ true  && [ true  ] )
+    ampBoolTrueFalse  = ( ^ true  && [ false ] )
+    ampBoolFalseTrue  = ( ^ false && [ true  ] )
+    ampBoolFalseFalse = ( ^ false && [ false ] )
+    
+    testAmp = (
+      self assert: self ampBoolTrueTrue.
+      self deny:   self ampBoolTrueFalse.
+      self deny:   self ampBoolFalseTrue.
+      self deny:   self ampBoolFalseFalse.
+    )
+    
+    orBoolTrueTrue   = ( ^ true  or: [ true  ] )
+    orBoolTrueFalse  = ( ^ true  or: [ false ] )
+    orBoolFalseTrue  = ( ^ false or: [ true  ] )
+    orBoolFalseFalse = ( ^ false or: [ false ] )
+    
+    testOr = (
+      self assert: self orBoolTrueTrue.
+      self assert: self orBoolTrueFalse.
+      self assert: self orBoolFalseTrue.
+      self deny:   self orBoolFalseFalse.
+    )
+    
+    pipeBoolTrueTrue   = ( ^ true  || [ true  ] )
+    pipeBoolTrueFalse  = ( ^ true  || [ false ] )
+    pipeBoolFalseTrue  = ( ^ false || [ true  ] )
+    pipeBoolFalseFalse = ( ^ false || [ false ] )
+    
+    testOr = (
+      self assert: self pipeBoolTrueTrue.
+      self assert: self pipeBoolTrueFalse.
+      self assert: self pipeBoolFalseTrue.
+      self deny:   self pipeBoolFalseFalse.
+    )
+    
+    testAsString = (
+      self assert: 'true'  equals: true asString.
+      self assert: 'false' equals: false asString.
+    )
+)

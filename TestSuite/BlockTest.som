@@ -83,4 +83,18 @@ BlockTest = TestCase (
       "return some dummy value to the object that sent 'value' to block"
       ^666
     )
+    
+    testWhileTrue = (
+      | i |
+      i := 1.
+      [ i < 10 ] whileTrue: [ i := i + 1 ].
+      self assert: 10 equals: i.
+    )
+    
+    testWhileTrue = (
+      | i |
+      i := 1.
+      [ i >= 10 ] whileFalse: [ i := i + 1 ].
+      self assert: 10 equals: i.
+    )
 )

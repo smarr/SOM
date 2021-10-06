@@ -32,6 +32,7 @@ TestHarness = (
           SpecialSelectorsTest,
           ArrayTest,
           BlockTest,
+          BooleanTest,
           ClassLoadingTest,
           ClassStructureTest,
           ClosureTest,

@@ -38,6 +38,7 @@ TestHarness = (
           ClosureTest,
           CoercionTest,
           CompilerReturnTest,
+          DictionaryTest,
           DoesNotUnderstandTest,
           DoubleTest,
           GlobalTest,

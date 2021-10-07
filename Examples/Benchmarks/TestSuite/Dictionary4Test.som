@@ -1,0 +1,97 @@
+Dictionary4Test = TestCase (
+  testAtAndAtPut = (
+    | dict val |
+    dict := Dictionary new.
+    val := dict at: 1.
+    
+    self assert: nil is: val.
+    
+    val := dict at: 1 put: #foo.
+    self assert: dict is: val.
+    val := dict at: 1.
+    self assert: #foo is: val.
+    
+    val := dict at: 1 put: #foo.
+    self assert: dict is: val.
+    val := dict at: 1.
+    self assert: #foo is: val.
+
+    val := dict at: 1 put: 42.
+    self assert: dict is: val.
+    val := dict at: 1.
+    self assert: 42 equals: val.
+  )
+  
+  testContainsKey = (
+    | dict |
+    dict := Dictionary new.
+    self deny: (dict containsKey: 4).
+    
+    dict at: 4 put: 34234.
+    self assert: (dict containsKey: 4).
+  )
+  
+  testKeys = (
+    | dict keys |
+    dict := Dictionary new.
+    
+    self assert: 0 equals: dict keys size.
+    
+    dict at: 4 put: 423.
+    self assert: 1 equals: dict keys size.
+    
+    dict at: 4 put: #gdfgd.
+    self assert: 1 equals: dict keys size.
+    
+    dict at: 'as' put: Object new.
+    self assert: 2 equals: dict keys size.
+    
+    keys := dict keys.
+    self assert: 4    equals: (keys at: 1).
+    self assert: 'as' equals: (keys at: 2).
+  )
+  
+  testValues = (
+    | dict values v2 |
+    dict := Dictionary new.
+    
+    self assert: 0 equals: dict values size.
+    
+    dict at: 4 put: 423.
+    self assert: 1 equals: dict values size.
+    
+    dict at: 4 put: #gdfgd.
+    self assert: 1 equals: dict values size.
+    
+    dict at: 'as' put: #(1 2 3).
+    self assert: 2 equals: dict values size.
+    
+    values := dict values.
+    self assert: #gdfgd is: (values at: 1).
+    
+    v2 := values at: 2.
+    self assert: 1 equals: (v2 at: 1).
+    self assert: 2 equals: (v2 at: 2).
+    self assert: 3 equals: (v2 at: 3).
+  )
+  
+  testDo = (
+    | dict expectedKs expectedVs i |
+    i := 1.
+    dict := Dictionary new.
+    dict at: #e put: 344.
+    dict at: 1  put: 545.
+    dict at: 0  put: 123.
+    
+    expectedKs := #(#e 1 0).
+    expectedVs := #(344 545 123).
+    
+    dict do: [:p |
+      self assert: (expectedKs at: i) equals: p key.
+      self assert: (expectedVs at: i) equals: p value.
+      i := i + 1.
+    ].
+    
+    self assert: 4 equals: i.
+  )
+)

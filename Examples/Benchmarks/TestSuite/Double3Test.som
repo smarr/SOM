@@ -1,0 +1,258 @@
+"
+
+$Id: DoubleTest.som 48 2009-08-12 12:57:20Z michael.haupt $
+
+Copyright (c) 2001-2013 see AUTHORS file
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the 'Software'), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+"
+
+Double3Test = TestCase (
+
+  testAdd = (
+    self assert: 1.0 equals: 0.5 + 0.5.
+    self assert: 0.0 equals: 0.5 + -0.5.
+    
+    self assert: 9007199254740992.0 equals: 9007199254740992.0 + 0.1.
+    self assert: 9007199254741000.1 equals: 9007199254740990.0 + 10.1.
+  )
+  
+  testSubtract = (
+    self assert: 0.0 equals: 0.5 - 0.5.
+    self assert: 1.0 equals: 0.5 - -0.5.
+  
+    self assert: 9007199254740992.0 equals: 9007199254740992.0 - 0.1.
+    self assert: 9007199254740990.0 equals: 9007199254741000.1 - 10.1.
+  )
+  
+  testMultiply = (
+    self assert:  4.0 equals: 2.0 * 2.0.
+    self assert: -4.0 equals: 2.0 * -2.0.
+    
+    self assert:  1.0 equals:  4.0 * 0.25.
+    self assert: -1.0 equals: -4.0 * 0.25.
+  )
+
+  testIntegerDivision = (
+    self assert: 1 equals: (4/3) + (4/5)
+  )
+
+  testDoubleDivision = (
+    self assert: 32 // 15 equals: (4//3) + (4//5)
+  )
+  
+  testModulo = (
+    self assert: 1.0 equals: 3.0 % 2.0.
+    self assert: 0.0 equals: 3.0 % 3.0.
+
+    self assert: -1.0 equals: -3.0 %  2.0.
+    self assert: -1.0 equals: -3.0 % -2.0.
+    self assert:  1.0 equals:  3.0 % -2.0.
+    
+    self assert: 0.0 equals:  3.0 %  3.0.
+    self assert: 0.0 equals: -3.0 % -3.0.
+    self assert: 0.0 equals:  3.0 % -3.0.
+  )
+  
+  testAbs = (
+    self assert: 1.0 equals:  1.0 abs.
+    self assert: 1.0 equals: -1.0 abs.
+    
+    self assert: 9007199254740992.0 equals:  9007199254740992.0 abs.
+    self assert: 9007199254740992.0 equals: -9007199254740992.0 abs.
+    
+    self assert: 19007199254740992.0 equals:  19007199254740992.0 abs.
+    self assert: 19007199254740992.0 equals: -19007199254740992.0 abs.
+  )
+  
+  testSqrt = (
+    self assert:  3.0 equals:   9.0 sqrt.
+    self assert: 16.0 equals: 256.0 sqrt.
+    
+    self assert: 23453456.0 equals: (23453456.0 * 23453456.0) sqrt.
+  )
+  
+  testNegated = (
+    self assert:  0.0 equals:  0.0 negated.
+    self assert: -1.0 equals:  1.0 negated.
+    self assert:  1.0 equals: -1.0 negated.
+    
+    self assert: -9007199254740992.0 equals:  9007199254740992.0 negated.
+    self assert:  9007199254740992.0 equals: -9007199254740992.0 negated.
+    
+    self assert: -19007199254740992.0 equals:  19007199254740992.0 negated.
+    self assert:  19007199254740992.0 equals: -19007199254740992.0 negated.
+  )
+
+  testAsString = (
+    self assert: '0.5' equals: (1//2) asString.
+    self assert: '0.5' equals: 0.5 asString.
+  )
+
+  testEquals = (
+    self assert: (1.0 = 1).
+  )
+
+  testRound = (
+    self assert:   1 equals:         1.0 round.
+    self assert:   1 equals:         1.4 round.
+    self assert:   1 equals:         1.4999 round.
+    self assert:   2 equals:         1.5 round.
+    self assert:   2 equals:         1.5000001 round.
+    self assert:   1 equals:     (5//10) round.
+    self assert:   1 equals:    (14//10) round.
+    self assert: 445 equals: (44534//100) round.
+  )
+
+  testAsInteger = (
+    self assert: 1 equals: 1.0 asInteger.
+    self assert: 1 equals: 1.1 asInteger.
+    self assert: 1 equals: 1.999 asInteger.
+
+    self assert: -1 equals: -1.0 asInteger.
+    self assert: -1 equals: -1.999 asInteger.
+  )
+
+  testSin = (
+    | pi |
+    pi := 3.141592653589.
+    self assert: 0.0 equals: 0.0 sin.
+    self assert: pi sin abs < 0.00000000001.
+    self assert: (pi // 2.0) sin > 0.9999999999.
+  )
+
+  testCos = (
+    | pi |
+    pi := 3.141592653589.
+    self assert: 1.0 equals: 0.0 cos.
+    self assert: (pi // 2.0) cos abs < 0.00000000001.
+    self assert: pi cos < -0.9999999999.
+  )
+
+  testInfinity = (
+    self assert: Double PositiveInfinity > 1.
+    self assert: Double PositiveInfinity equals: Double PositiveInfinity + 1.
+    self assert: Double PositiveInfinity equals: Double PositiveInfinity - 1.
+    
+    self assert: Double PositiveInfinity > (999999 * 999999 * 999999 * 999999).
+  )
+
+  testFromString = (
+    self assert:  0.0 equals: (Double fromString:  '0.0').
+    self assert: -1.1 equals: (Double fromString: '-1.1').
+
+    self assert:  3423.54656 equals: (Double fromString:  '3423.54656').
+    self assert: -672.433244 equals: (Double fromString: '-672.433244').
+  )
+  
+  testEqual = (
+    self assert:  0.0 =  0.0.
+    self assert:  1.0 =  1.0.
+    self assert:  0.0 = -0.0.
+    self assert: -0.0 =  0.0.
+  )
+  
+  testLessThan = (
+    self assert: 0.0 < 1.0.
+    self assert: 0.499999999 < 0.5.
+    self deny:   1.0 < 0.0.
+    self deny:   0.5 < 0.499999999.
+  )
+  
+  testGreaterThan = (
+    self deny:   0.0 > 1.0.
+    self deny:   0.499999999 > 0.5.
+    self assert: 1.0 > 0.0.
+    self assert: 0.5 > 0.499999999.
+  )
+  
+  testLessThanOrEqual = (
+    self assert: 0.0 <= 1.0.
+    self assert: 0.499999999 <= 0.5.
+    self assert: 0.5 <= 0.5.
+    self deny:   1.0 < 0.0.
+    self deny:   0.5 < 0.499999999.
+  )
+  
+  testGreaterThanOrEqual = (
+    self deny:   0.0 >= 1.0.
+    self deny:   0.499999999 >= 0.5.
+    self assert: 0.5 >= 0.5.
+    self assert: 1.0 >= 0.0.
+    self assert: 0.5 >= 0.499999999.
+  )
+  
+  testNegative = (
+    self assert: -0.000000001 negative.
+    self assert: -1.0 negative.
+    self assert: -123123.000000001 negative.
+    self deny: 0.000000001 negative.
+    self deny: 1.0 negative.
+    self deny: 123123.000000001 negative.
+  )
+  
+  testBetween = (
+    self assert: (1.0 between: 0.0 and: 2.0).
+    self assert: (0.000001 between: 0.0 and: 2.0).
+    self assert: (1.999999 between: 0.0 and: 2.0).
+    self deny:   (0.0 between: 0.0 and: 2.0).
+    self deny:   (2.0 between: 0.0 and: 2.0).
+  )
+  
+  testToDo = (
+    | d |
+    d := 0.0.
+    0.0 to: 10.0 do: [:ii |
+      d := d + ii.
+    ].
+    
+    self assert: 55.0 equals: d.
+    
+    d := 0.0.
+    0.0 to: 10.1 do: [:ii |
+      d := d + ii.
+    ].
+    
+    self assert: 55.0 equals: d.
+    
+    d := 0.0.
+    0.1 to: 10.1 do: [:ii |
+      d := d + ii.
+    ].
+    
+    self assert: 55.0 + 1.1 equals: d.
+  )
+  
+  testDownToDo = (
+    | d |
+    d := 0.0.
+    10.0 downTo: 0.0 do: [:ii |
+      d := d + ii.
+    ].
+  
+    self assert: 55.0 equals: d.
+  
+    d := 0.0.
+    10.1 downTo: 0.0 do: [:ii |
+      d := d + ii.
+    ].
+  
+    self assert: ((55.0 + 1.1) * 10.0) round equals: (d * 10.0) round.
+  )
+)

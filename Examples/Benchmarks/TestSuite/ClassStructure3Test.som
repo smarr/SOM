@@ -1,0 +1,83 @@
+ClassStructure3Test = TestCase (
+
+  testClassIdentity = (
+    self assert: Array   equals: Array new class.
+    self assert: Integer equals: 1 class.
+    self assert: Integer equals: 10000000000 class.
+    self assert: Double  equals: (1 // 2) class.
+    self assert: Double  equals: 0.5 class.
+    self assert: Block1  equals: [42] class.
+    self assert: Object  equals: Object new class.
+    self assert: Set     equals: Set new class.
+    self assert: String  equals: 'foo' class.
+    self assert: Symbol  equals: #foo class.
+    self assert: True    equals: true class.
+    self assert: False   equals: false class.
+    self assert: Nil     equals: nil class.
+
+    self assert: True superclass equals: False superclass.
+    self assert: True superclass equals: Boolean.
+    self assert: True superclass equals: Boolean.
+  )
+
+  testThatCertainMethodsArePrimitives = (
+    | m |
+    "This is a little fragile.
+     Index needs to be adapted with changing Class definition."
+    m := Object methods at: 1.
+    "self expect: #class equals: m signature."
+
+    self optional: #invokableTypes assert: Primitive equals: m class. "Class>>#name should be a primitive."
+
+    m := Object methods at: 7.
+    "self expect: #asString equals: m signature."
+
+    self optional: #invokableTypes assert: Method equals: m class. "Class>>#asString should be a normal method."
+  )
+
+  testAccessToInstanceFields = (
+    | o |
+    o := ClassC new.
+    o a: 333.
+    self assert: 333 equals: o a.
+
+    o f: 333.
+    self assert: 333 equals: o f.
+  )
+
+  testAccessToClassFields = (
+    | arr |
+    ClassC setAllAndInc: 4.
+    arr := ClassC getAll.
+    1 to: 9 do: [:i |
+      self assert: i + (4 - 1) equals: (arr at: i).
+    ].
+
+    "We do that here to make sure that class fields do not interfere with
+     other class properties."
+    self assert: ClassB    is: ClassC superclass.
+    self assert: Metaclass is: ClassC class class.
+    self assert: #ClassC   equals: ClassC name.
+  )
+
+  testMetaclasses = (
+    self assert: nil              is: Object superclass.
+    self assert: Integer          is: 1 class.
+    self assert: #'Integer class' is: 1 class class name.
+    self assert: Metaclass        is: 1 class class class.
+
+    self assert: #'Metaclass class' is: Metaclass class name.
+    self assert: Metaclass          is: Metaclass class class.
+
+    self assert: Object          is: 1 class superclass.
+    self assert: #'Object class' is: 1 class class superclass name.
+    self assert: Class           is: Object class superclass.
+    self assert: Metaclass       is: Class class class.
+  )
+
+  testInstanceFields = (
+    self assert: 2 equals: ClassA fields length.
+    self assert: 4 equals: ClassB fields length.
+    self assert: 6 equals: ClassC fields length.
+  )
+)

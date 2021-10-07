@@ -1,0 +1,14 @@
+SpecialSelectors4Test = TestCase (
+  testMinusMinsPrefix = (
+    self assert: self --> 1 equals: 1.
+    self assert: self -- 1 equals: 1.
+  )
+  
+  --> aValue = (
+    ^1
+  )
+  
+  -- aValue = (
+  	^1
+  )
+)

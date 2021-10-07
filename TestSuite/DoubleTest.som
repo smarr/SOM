@@ -25,12 +25,79 @@ THE SOFTWARE.
 
 DoubleTest = TestCase (
 
+  testAdd = (
+    self assert: 1.0 equals: 0.5 + 0.5.
+    self assert: 0.0 equals: 0.5 + -0.5.
+    
+    self assert: 9007199254740992.0 equals: 9007199254740992.0 + 0.1.
+    self assert: 9007199254741000.1 equals: 9007199254740990.0 + 10.1.
+  )
+  
+  testSubtract = (
+    self assert: 0.0 equals: 0.5 - 0.5.
+    self assert: 1.0 equals: 0.5 - -0.5.
+  
+    self assert: 9007199254740992.0 equals: 9007199254740992.0 - 0.1.
+    self assert: 9007199254740990.0 equals: 9007199254741000.1 - 10.1.
+  )
+  
+  testMultiply = (
+    self assert:  4.0 equals: 2.0 * 2.0.
+    self assert: -4.0 equals: 2.0 * -2.0.
+    
+    self assert:  1.0 equals:  4.0 * 0.25.
+    self assert: -1.0 equals: -4.0 * 0.25.
+  )
+
   testIntegerDivision = (
     self assert: 1 equals: (4/3) + (4/5)
   )
 
   testDoubleDivision = (
     self assert: 32 // 15 equals: (4//3) + (4//5)
+  )
+  
+  testModulo = (
+    self assert: 1.0 equals: 3.0 % 2.0.
+    self assert: 0.0 equals: 3.0 % 3.0.
+    
+    self assert: -1.0 equals: -3.0 %  2.0.
+    self assert: -1.0 equals: -3.0 % -2.0.
+    self assert:  1.0 equals:  3.0 % -2.0.
+    
+    self assert: 0.0 equals:  3.0 %  3.0.
+    self assert: 0.0 equals: -3.0 % -3.0.
+    self assert: 0.0 equals:  3.0 % -3.0.
+  )
+  
+  testAbs = (
+    self assert: 1.0 equals:  1.0 abs.
+    self assert: 1.0 equals: -1.0 abs.
+    
+    self assert: 9007199254740992.0 equals:  9007199254740992.0 abs.
+    self assert: 9007199254740992.0 equals: -9007199254740992.0 abs.
+    
+    self assert: 19007199254740992.0 equals:  19007199254740992.0 abs.
+    self assert: 19007199254740992.0 equals: -19007199254740992.0 abs.
+  )
+  
+  testSqrt = (
+    self assert:  3.0 equals:   9.0 sqrt.
+    self assert: 16.0 equals: 256.0 sqrt.
+    
+    self assert: 23453456.0 equals: (23453456.0 * 23453456.0) sqrt.
+  )
+  
+  testNegated = (
+    self assert:  0.0 equals:  0.0 negated.
+    self assert: -1.0 equals:  1.0 negated.
+    self assert:  1.0 equals: -1.0 negated.
+    
+    self assert: -9007199254740992.0 equals:  9007199254740992.0 negated.
+    self assert:  9007199254740992.0 equals: -9007199254740992.0 negated.
+    
+    self assert: -19007199254740992.0 equals:  19007199254740992.0 negated.
+    self assert:  19007199254740992.0 equals: -19007199254740992.0 negated.
   )
 
   testAsString = (

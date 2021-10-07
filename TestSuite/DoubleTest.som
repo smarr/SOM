@@ -110,6 +110,11 @@ DoubleTest = TestCase (
   )
 
   testRound = (
+    self assert:   1 equals:         1.0 round.
+    self assert:   1 equals:         1.4 round.
+    self assert:   1 equals:         1.4999 round.
+    self assert:   2 equals:         1.5 round.
+    self assert:   2 equals:         1.5000001 round.
     self assert:   1 equals:     (5//10) round.
     self assert:   1 equals:    (14//10) round.
     self assert: 445 equals: (44534//100) round.
@@ -144,6 +149,8 @@ DoubleTest = TestCase (
     self assert: Double PositiveInfinity > 1.
     self assert: Double PositiveInfinity equals: Double PositiveInfinity + 1.
     self assert: Double PositiveInfinity equals: Double PositiveInfinity - 1.
+    
+    self assert: Double PositiveInfinity > (999999 * 999999 * 999999 * 999999).
   )
 
   testFromString = (
@@ -152,5 +159,100 @@ DoubleTest = TestCase (
 
     self assert:  3423.54656 equals: (Double fromString:  '3423.54656').
     self assert: -672.433244 equals: (Double fromString: '-672.433244').
+  )
+  
+  testEqual = (
+    self assert:  0.0 =  0.0.
+    self assert:  1.0 =  1.0.
+    self assert:  0.0 = -0.0.
+    self assert: -0.0 =  0.0.
+  )
+  
+  testLessThan = (
+    self assert: 0.0 < 1.0.
+    self assert: 0.499999999 < 0.5.
+    self deny:   1.0 < 0.0.
+    self deny:   0.5 < 0.499999999.
+  )
+  
+  testGreaterThan = (
+    self deny:   0.0 > 1.0.
+    self deny:   0.499999999 > 0.5.
+    self assert: 1.0 > 0.0.
+    self assert: 0.5 > 0.499999999.
+  )
+  
+  testLessThanOrEqual = (
+    self assert: 0.0 <= 1.0.
+    self assert: 0.499999999 <= 0.5.
+    self assert: 0.5 <= 0.5.
+    self deny:   1.0 < 0.0.
+    self deny:   0.5 < 0.499999999.
+  )
+  
+  testGreaterThanOrEqual = (
+    self deny:   0.0 >= 1.0.
+    self deny:   0.499999999 >= 0.5.
+    self assert: 0.5 >= 0.5.
+    self assert: 1.0 >= 0.0.
+    self assert: 0.5 >= 0.499999999.
+  )
+  
+  testNegative = (
+    self assert: -0.000000001 negative.
+    self assert: -1.0 negative.
+    self assert: -123123.000000001 negative.
+    self deny: 0.000000001 negative.
+    self deny: 1.0 negative.
+    self deny: 123123.000000001 negative.
+  )
+  
+  testBetween = (
+    self assert: (1.0 between: 0.0 and: 2.0).
+    self assert: (0.000001 between: 0.0 and: 2.0).
+    self assert: (1.999999 between: 0.0 and: 2.0).
+    self deny:   (0.0 between: 0.0 and: 2.0).
+    self deny:   (2.0 between: 0.0 and: 2.0).
+  )
+  
+  testToDo = (
+    | d |
+    d := 0.0.
+    0.0 to: 10.0 do: [:ii |
+      d := d + ii.
+    ].
+    
+    self assert: 55.0 equals: d.
+    
+    d := 0.0.
+    0.0 to: 10.1 do: [:ii |
+      d := d + ii.
+    ].
+    
+    self assert: 55.0 equals: d.
+    
+    d := 0.0.
+    0.1 to: 10.1 do: [:ii |
+      d := d + ii.
+    ].
+    
+    self assert: 55.0 + 1.1 equals: d.
+  )
+  
+  testDownToDo = (
+    | d |
+    d := 0.0.
+    10.0 downTo: 0.0 do: [:ii |
+      d := d + ii.
+    ].
+  
+    self assert: 55.0 equals: d.
+  
+    d := 0.0.
+    10.1 downTo: 0.0 do: [:ii |
+      d := d + ii.
+    ].
+  
+    self assert: ((55.0 + 1.1) * 10.0) round equals: (d * 10.0) round.
   )
 )

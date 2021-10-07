@@ -33,7 +33,17 @@ SymbolTest = TestCase (
   )
   
   testEquality = (
-    self assert: #oink is: 'oink' asSymbol.
+    self assert: #oink == #oink.
+    self assert: #oink == 'oink' asSymbol.
+    self assert: #oink =  #oink.
+    self assert: #oink =  'oink' asSymbol.
+    
+    self deny: #foo =  #fooo.
+    self deny: #foo == #fooo.
+    
+    self deny: #foo =  'foo'.
+    self deny: #foo == 'fooo'.
+    self deny: #foo == #foo asString.
   )
   
   testSymbolIsString = (

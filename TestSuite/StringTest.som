@@ -32,6 +32,19 @@ StringTest = TestCase (
     self assert: str1 = ('f' + 'oo').
     self deny:   str1 = str2.
     self assert: str2 = str2.
+    
+    self assert: ('f' + 'o' + 'o') = ('f' + 'o' + 'o').
+    self assert: ('f' + 'o' + 'o') = ('f' + 'o' + 'o') asString.
+    self assert: ('f' + 'o' + 'o') = ('f' + 'o' + 'o') asSymbol.
+    self assert: ('f' + 'o' + 'o') = #foo.
+  )
+  
+  testEqualEqual = (
+    | str1 |
+    str1 := 'foo'.
+    self assert: str1 == str1.
+    self deny:   str1 == str1 asSymbol.
+    self deny:   str1 == #foo.
   )
 
   testLength = (

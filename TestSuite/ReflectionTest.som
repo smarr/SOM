@@ -64,9 +64,9 @@ ReflectionTest = TestCase (
   )
   
   testName = (
-    self assert: 'Object' equals: Object name.
-    self assert: 'Object class' equals: Object class name.
-    self assert: 'Integer' equals: 1 class name.
+    self assert: #Object equals: Object name.
+    self assert: #'Object class' equals: Object class name.
+    self assert: #Integer equals: 1 class name.
   )
   
   testAsString = (

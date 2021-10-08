@@ -246,4 +246,16 @@ StringTest = TestCase (
     self deny: '66e7' isDigits.
     self deny: 'aOo1öéÉíä' isDigits.
   )
+  
+  testAsInteger = (
+    self assert:   0 equals:   '0' asInteger.
+    self assert: 100 equals: '100' asInteger.
+    self assert: 923 equals: '923' asInteger.
+    
+    self assert:   -0 equals:   '-0' asInteger.
+    self assert: -100 equals: '-100' asInteger.
+    self assert: -923 equals: '-923' asInteger.
+    
+    self assert: 123342353453453456456456  equals: '123342353453453456456456' asInteger.
+  )
 )

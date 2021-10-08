@@ -77,10 +77,8 @@ Set = (
     remove: anObject = (
         | newItems |
         newItems := Vector new.
-        [ items isEmpty ]
-            whileFalse: [ | it |
-                it := items remove.
-                it = anObject ifFalse: [ newItems append: it ] ].
+        items do: [:it |
+            it == anObject ifFalse: [ newItems append: it ] ].
         items := newItems
     )
     
@@ -91,7 +89,7 @@ Set = (
     )
     
     isEmpty = (
-               ^items isEmpty
+        ^items isEmpty
     )
     
     "Iteration"

@@ -62,4 +62,31 @@ ReflectionTest = TestCase (
     tmp instVarAt: 1 put: #foo.
     self assert: #foo    equals: tmp key.
   )
+  
+  testName = (
+    self assert: #Object equals: Object name.
+    self assert: #'Object class' equals: Object class name.
+    self assert: #Integer equals: 1 class name.
+  )
+  
+  testAsString = (
+    self assert: 'Object' equals: Object asString.
+    self assert: 'Object class' equals: Object class asString.
+    self assert: 'Integer' equals: 1 class asString.
+  )
+  
+  testSelectors = (
+    | sels |
+    sels := Object selectors.
+    self assert: 32 equals: sels length.
+    
+    sels contains: #=.
+    self assert: (Object hasMethod: #=).
+    
+    sels contains: #value.
+    self assert: (Object hasMethod: #value).
+    
+    sels contains: #notNil.
+    self assert: (Object hasMethod: #notNil).
+  )
 )

@@ -23,12 +23,14 @@ StringPrimitives = Primitives (
 
     self installInstancePrimitive: (
       SPrimitive new: '=' in: universe with: [:frame :interp |
-        | rcvr argument |
+        | rcvr argument argCls |
         argument := frame pop.
         rcvr := frame pop.
+        
+        argCls := argument somClassIn: universe.
 
         frame push: (self somBool:
-          ((argument somClassIn: universe) == universe stringClass
+          ((argCls == universe stringClass or: [argCls == universe symbolClass])
             and: [rcvr string = argument string])) ]).
 
     self installInstancePrimitive: (

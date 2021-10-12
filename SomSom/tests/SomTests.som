@@ -2,12 +2,14 @@ SomTests = TestCase (
 
   testArray          = ( self doTest: 'Array' )
   testBlock          = ( self doTest: 'Block' )
+  testBoolean        = ( self doTest: 'Boolean' )
   testClassLoading   = ( self doTest: 'ClassLoading' )
   testClassStructure = ( self doTest: 'ClassStructure' )
 
   testClosure           = ( self doTest: 'Closure' )
   testCoercion          = ( self doTest: 'Coercion' )
   testCompilerReturn    = ( self doTest: 'CompilerReturn' )
+  testDictionary        = ( self doTest: 'Dictionary' )
   testDoesNotUnderstand = ( self doTest: 'DoesNotUnderstand' )
   testDouble            = ( self doTest: 'Double' )
 

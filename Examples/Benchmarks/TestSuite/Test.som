@@ -202,9 +202,9 @@ Test = Benchmark (
     verifyResult: result = (
       "result do: [:e | e println ]."
       ^ (result at: 1) = 940 and: [
-          (result at: 2) = 5 and: [
+          (result at: 2) = 0 and: [
             (result at: 3) = 940 and: [
-              (result at: 4) = 4950
+              (result at: 4) = 4940
         ] ] ]
     )
 )

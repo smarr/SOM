@@ -45,12 +45,6 @@ Integer3Test = TestCase (
 
     a := 1 << 60.  b := 1 << 60.
     self optional: #integerIdentity assert: a is: b.
-
-    a := 1 << 70.  b := 1 << 70.
-    self optional: #integerIdentity assert: a is: b.
-
-    a := 1 << 100.  b := 1 << 100.
-    self optional: #integerIdentity assert: a is: b.
   )
 
   testClassAndValueRanges = (

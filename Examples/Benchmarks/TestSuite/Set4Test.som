@@ -1,0 +1,189 @@
+Set4Test = TestCase (
+  testBasics = (
+    | a b t |
+    a := Set new.
+    b := Set new.
+    
+    a add: #a.
+    b add: #b.
+    
+    self deny: a = b.
+    
+    t := Set new.
+    t add: #a.
+    
+    self deny: a == t. "different objects"
+    self assert: a equals: t. "but with equal value"
+  )
+  
+  testEquality = (
+    | a b |
+    a := Set new.
+    a addAll: #(1 2 3 4).
+    
+    b := Set new.
+    b addAll: #(1 2 3 4).
+    
+    self assert: a = b.
+    self deny: a == b.
+    
+    a add: 5.
+    
+    self deny: a = b.
+    b add: 5.
+    
+    self assert: a = b.
+    
+    b add: #foo.
+    self deny: a = b.
+    a add: #foo.
+    self assert: a = b.
+  )
+  
+  testUnion = (
+    | a b u |
+    a := Set new.
+    b := Set new.
+    a addAll: #(1 2 3 4).
+    b addAll: #(1 2 3 4). 
+    
+    u := a union: b.
+    self assert: a = b.
+    self assert: u = a.
+    self assert: u = b.
+    
+    self deny: a == b.
+    self deny: u == a.
+    self deny: u == b.
+    
+    self assert: 4 equals: u size.
+    
+    a add: #mm.
+    u := a union: b.
+    self assert: 5 equals: u size.
+    
+    b add: #oo.
+    u := a union: b.
+    self assert: 6 equals: u size.
+    
+    b add: #mm.
+    u := a union: b.
+    self assert: 6 equals: u size.
+  )
+  
+  testIntersection = (
+    | a b i |
+    a := Set new.
+    b := Set new.
+    a addAll: #(43 64 730 667).
+    b addAll: #(43 64 730 667).
+    
+    i := a intersection: b.
+    self assert: 4 equals: i size.
+    
+    a do: [:e |
+      self assert: (i contains: e) ].
+    
+    b := Set new.
+    b add: 64.
+    b add: 667.
+    
+    i := a intersection: b.
+    self assert: 2 equals: i size.
+    
+    b do: [:e |
+      self assert: (i contains: e) ].
+  )
+  
+  testSetDifference = (
+    | a b d |
+    a := Set new.
+    b := Set new.
+    a addAll: #(43 64 730 667).
+    b addAll: #(43 64 730 667).
+    
+    d := a - b.
+    self assert: d isEmpty.
+    self assert: 0 equals: d size.
+    
+    b := Set new.
+    b add: 43.
+    b add: 667.
+    b add: 345345.
+    
+    d := a - b.
+    self assert: 2 equals: d size.
+    self assert: (d contains: 64).
+    self assert: (d contains: 730).
+  )
+  
+  testContains = (
+    | s |
+    s := Set new.
+    
+    self deny: (s contains: #'333').
+    s add: #'333'.
+    
+    self assert: (s contains: #'333').
+    s add: 333.
+    self assert: (s contains: #'333').
+    self assert: (s contains: 333).
+  )
+  
+  testRemove = (
+    | s o | 
+    o := Object new.
+    s := Set new.
+    s add: #sfsdf.
+    s add: 323.
+    s add: 545.
+    s add: self.
+    s add: o.
+    
+    self assert: (s contains: o).
+    self assert: 5 equals: s size.
+
+    s remove: 323.    
+    self assert: 4 equals: s size.
+    self deny: (s contains: 323).
+    s add: 65767.
+    self assert: 5 equals: s size.
+    
+    s remove: o.
+    self assert: 4 equals: s size.
+    self deny: (s contains: o).
+    s remove: self.
+    s remove: #sfsdf.
+    s remove: 323.
+    s remove: 545.
+    s remove: 65767.
+    
+    self assert: s isEmpty.
+  )
+  
+  testFirst = (
+    | s |
+    s := Set new.
+    s addAll: #(233 545 665).
+
+    self assert: 233 equals: s first.
+    
+    s remove: 233.
+    self assert: 545 equals: s first.
+    
+    s remove: 545.
+    self assert: 665 equals: s first.
+  )
+  
+  testCollect = (
+    | s r |
+    s := Set new.
+    s addAll: #(21 54642 6753 344 655).
+    
+    r := s collect: [:e | e % 10 ].
+    
+    self assert: 5 equals: r size.
+    self assert: 1 equals: r first.
+    self assert: 2 equals: (r at: 2).
+  )
+)

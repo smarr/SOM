@@ -1,0 +1,257 @@
+"
+
+$Id: ArrayTest.som 30 2009-07-31 12:20:25Z michael.haupt $
+
+Copyright (c) 2007-2013 see AUTHORS file
+Software Architecture Group, Hasso Plattner Institute, Potsdam, Germany
+http://www.hpi.uni-potsdam.de/swa/
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the 'Software'), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+"
+
+VectorTest = TestCase (
+  | a |
+
+  setUp = (
+    a := Vector new.
+    a append: 'hello'.
+    a append: #world.
+    a append: 23.
+  )
+
+  testSize = (
+    self assert: 3 equals: a size.
+  )
+
+  testAt = (
+    self assert: #world equals: (a at: 2).
+    self assert:     23 equals: (a at: 3).
+  )
+
+  testFirst = (
+    | v |
+    self assert: 'hello' equals: a first.
+
+    v := Vector new.
+    1 to: 10 do: [:i |
+      v append: i.
+      self assert: 1 equals: v first ].
+
+    1 to: 10 do: [:i |
+      self assert: 1 equals: v first.
+      v removeFirst ]
+  )
+
+  testLast = (
+    | v |
+    self assert: 23 equals: a last.
+
+    v := Vector new.
+    1 to: 10 do: [:i |
+      v append: i.
+      self assert: i equals: v last ].
+
+    10 downTo: 1 do: [:i |
+      self assert: i equals: v last.
+      v remove ]
+  )
+
+  testContains = (
+    self assert: (a contains: 23).
+    self deny: (a contains: #nono).
+  )
+
+  testDo = (
+    | j |
+    j := 1.
+    a do: [:i |
+      self assert: i equals: (a at: j).
+      j := j + 1.
+    ].
+  )
+
+  testAppendAndRemoveFirst = (
+    | v |
+    v := Vector new: 10.
+    1 to: 100 do: [:i |
+      v append: i ].
+
+    "160 is implementation dependent, just here for orientation"
+    self assert: 160 equals: v capacity.
+    self assert: 100 equals: v size.
+
+    1 to: 100 do: [:i |
+      v removeFirst ].
+    1 to: 100 do: [:i |
+      v append: i ].
+
+    self assert: 320 equals: v capacity.
+    self assert: 100 equals: v size.
+  )
+
+  testIndexOf = (
+    | v |
+    v := Vector new: 3.
+    1 to: 17 do: [:i |
+      v append: i ].
+
+    self assert: -1 equals: (v indexOf: nil).
+    self assert: 1 equals: (v indexOf: 1).
+
+    self assert: 13 equals: (v indexOf: 13).
+    v at: 13 put: #test.
+
+    self assert: 13 equals: (v indexOf: #test).
+
+    v removeFirst.
+    self assert: -1 equals: (v indexOf: 1).
+
+    1 to: 12 do: [:i |
+      v removeFirst ].
+    self assert: -1 equals: (v indexOf: #test).
+  )
+
+  testAppendAll = (
+    | v c i |
+    v := Vector new: 2.
+    v append: 1.
+    v append: 2.
+    v append: 3.
+
+    c := Array with: 4 with: 5 with: 6.
+
+    v appendAll: c.
+    i := 1.
+
+    v do: [:e |
+      self assert: i equals: e.
+      i := i + 1 ]
+  )
+
+  testAsArray = (
+    | v arr |
+    v := Vector new.
+    self assert: 0 equals: v asArray length.
+
+    v append: 1.
+    v append: 2.
+
+    arr := v asArray.
+    self assert: 2 equals: arr length.
+    self assert: 1 equals: (arr at: 1).
+    self assert: 2 equals: (arr at: 2).
+  )
+  
+  testAsSet = (
+    | v set |
+    v := Vector new.
+    v append: 1.
+    v append: 2.
+    v append: 3.
+    v append: 4.
+    self assert: 4 equals: v size.
+    
+    set := v asSet.
+    self assert: 4 equals: set size.
+    
+    v append: 1.
+    v append: 1.
+    v append: 1.
+    
+    self assert: 4 + 3 equals: v size.
+    
+    set := v asSet.
+    self assert: 4 equals: set size.
+  )
+  
+  testIsEmpty = (
+    | v |
+    v := Vector new.
+    self assert: v isEmpty.
+    
+    v append: 1.
+    self deny: v isEmpty.
+    
+    v removeFirst.
+    self assert: v isEmpty.
+    
+    v append: #ee.
+    self deny: v isEmpty.
+    
+    v removeFirst.
+    self assert: v isEmpty.    
+  )
+  
+  testRemoveObj = (
+    | v |
+    v := Vector new.
+    v append: #a.
+    v append: #b.
+    v append: #c.
+    v append: #d.
+    v append: #e.
+    v append: #f.
+    v append: #g.
+    v append: #h.
+    
+    self assert: 8 equals: v size.
+    
+    self deny: (v remove: #aa).
+    self assert: (v remove: #e).
+    self assert: 7 equals: v size.
+  )
+  
+  testAppendComma = (
+    | v |
+    v := Vector new.
+    v, #a.
+    v, #b.
+    
+    self assert: 2 equals: v size.
+    self assert: (v contains: #a).
+    self assert: (v contains: #b).
+  )
+  
+  testDoIndexes = (
+    | i v |
+    v := Vector new.
+    v doIndexes: [:j |
+      self assert: false ].
+    
+    v appendAll: #(1 2 3 4 5).
+    i := 1.
+    v doIndexes: [:j |
+      self assert: i equals: j.
+      i := i + 1.
+    ].
+    self assert: 6 equals: i.
+  )
+  
+  testDo = (
+    | i v |
+    v := Vector new.
+    v appendAll: #(1 2 3 4 5).
+    i := 1.
+    v do: [:v |
+      self assert: i equals: v.
+      i := i + 1.
+    ].
+    self assert: 6 equals: i.
+  )
+)

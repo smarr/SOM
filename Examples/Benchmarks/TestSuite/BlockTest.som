@@ -1,0 +1,100 @@
+BlockTest = TestCase (
+    |escape_count escaped_block|
+
+    simpleBlock = (
+      ^ [ 42 ]
+    )
+
+    incBlock = (
+      ^ [:val | val + 1 ]
+    )
+
+    "This requires a closure"
+    adderBlock: amount = (
+      ^ [:val | amount + val ]
+    )
+
+    "Closure with mutable state in block"
+    counterBlock = (
+      |count|
+      count := 0.
+      ^ [ count := count + 1. count ]
+    )
+
+    selfKeeper = (
+      ^ [ self ]
+    )
+
+    escapingBlock = (
+      ^ [ ^ 42 ]
+    )
+    
+    escapingNestedBlock = (
+      [ [ ^ [ ^ 43 ] ] value ] value
+    )
+    
+    testSimpleBlocks = (
+      self assert: 42 equals: self simpleBlock value.
+      self assert: 4  equals: (self incBlock value: 3).
+      self assert: 43 equals: ((self adderBlock: 13) value: 30).
+    )
+    
+    testClosure = (
+      | counter |
+      counter := self counterBlock.
+      self assert: 1 equals: counter value.
+      self assert: 2 equals: counter value.
+      self assert: 1 equals: self counterBlock value. "make sure each copy is independent"
+      self assert: 3 equals: counter value.
+    )
+    
+    testSelfInBlock = (
+      | test_inst |
+      test_inst := BlockTest new.
+      self assert: test_inst equals: test_inst selfKeeper value.
+      self assert: self      equals: self selfKeeper value.
+    )
+    
+    testEscapedBlock = (
+      | escaping_block |
+
+      escape_count := 0.
+
+      escaping_block := self escapingBlock.
+      
+      self assert: 0 equals: escape_count.
+      self assert: 666 equals: escaping_block value.
+      self assert: 1 equals: escape_count.
+      
+      self assert: escaping_block is: escaped_block.
+      
+      
+      escaping_block := self escapingNestedBlock.
+      self assert: 1 equals: escape_count.
+      self assert: 666 equals: escaping_block value.
+      self assert: 2 equals: escape_count.
+      self assert: escaping_block is: escaped_block.
+    )
+
+    escapedBlock: block = (
+      escape_count := escape_count + 1.
+      escaped_block := block.
+
+      "return some dummy value to the object that sent 'value' to block"
+      ^666
+    )
+    
+    testWhileTrue = (
+      | i |
+      i := 1.
+      [ i < 10 ] whileTrue: [ i := i + 1 ].
+      self assert: 10 equals: i.
+    )
+    
+    testWhileTrue = (
+      | i |
+      i := 1.
+      [ i >= 10 ] whileFalse: [ i := i + 1 ].
+      self assert: 10 equals: i.
+    )
+)

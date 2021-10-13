@@ -1,0 +1,131 @@
+"
+
+Copyright (c) 2007-2018 see AUTHORS file
+Software Architecture Group, Hasso Plattner Institute, Potsdam, Germany
+http://www.hpi.uni-potsdam.de/swa/
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the 'Software'), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+"
+
+Super3Test = SuperTestSuperClass (
+
+  testSuper = (
+    self assert: 42 equals: self give42.
+    self assert: 42 equals: self blockGive42.
+  )
+
+  yourself = (
+    record := record + 1000.
+    ^ self
+  )
+
+  give42 = (
+    ^super give42
+  )
+
+  blockGive42 = (
+    ^[ super give42 ] value
+  )
+
+  something = (
+    ^ #sub
+  )
+
+  number = (
+    ^ 10
+  )
+  
+  + other = (
+    ^ 11
+  )
+  
+  ++++ other = (
+    ^ 111
+  )
+  
+  keyword: other = (
+    ^ 1111
+  )
+  
+  testBasicUnary = (
+    self assert: 10 equals: self number.
+    self assert:  1 equals: super number.
+  )
+  
+  testBasicBinary = (
+    self assert: 11 equals: self + 3.
+    self assert: 22 equals: super + 5.
+  )
+  
+  
+  testBasicBinaryNonStandardOperator = (
+    self assert: 111 equals: self ++++ 3.
+    self assert: 222 equals: super ++++ 5.
+  )
+  
+  testBasicKeyword = (
+    self assert: 1111 equals: (self keyword: 3).
+    self assert: 2222 equals: (super keyword: 5).
+  )
+
+  testWithBinaryUnaryMessage = (
+    | val |
+    record := 0.
+    val := super number * super number.
+    self assert: 1 equals: val.
+  )
+
+  testWithBinaryUnaryUnaryMessage = (
+    | val |
+    record := 0.
+    super yourself yourself @ super yourself yourself.
+    self assert: 2002 equals: record.
+  )
+
+  testWithKeywordUnaryUnaryMessage = (
+    | val |
+    record := 0.
+    super key: super yourself yourself key: super yourself yourself.
+    self assert: 2002 equals: record.
+
+    record := 0.
+    self key: super yourself yourself key: super yourself yourself.
+    self assert: 2002 equals: record.
+  )
+
+  "Note: testing assigning self was moved to basic interpreter tests"
+
+  testGlobalSelfDoesNotShadowKeyword = (
+    | that |
+    that := self.
+    system global: #self put: 42.
+    that optional: #selfSuperBug assert: that is: self.
+
+    self assert: 42 equals: (system global: #self)
+  )
+
+  testGlobalSuperDoesNotShadowKeyword = (
+    | that |
+    that := super.
+    system global: #super put: 42.
+    that optional: #selfSuperBug assert: that is: super.
+
+    self assert: 42 equals: (system global: #super)
+  )
+)

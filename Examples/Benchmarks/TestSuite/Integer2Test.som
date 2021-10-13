@@ -1,0 +1,321 @@
+"
+
+$Id: IntegerTest.som 30 2009-07-31 12:20:25Z michael.haupt $
+
+Copyright (c) 2007-2013 see AUTHORS file
+Software Architecture Group, Hasso Plattner Institute, Potsdam, Germany
+http://www.hpi.uni-potsdam.de/swa/
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the 'Software'), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+"
+
+Integer2Test = TestCase (
+
+  testEqualityAndIdentity = (
+    | a b |
+    a := 42.
+    b := 42.
+
+    self assert: a = b   description: 'Integers are equal based on their value'.
+    self assert: a == b  description: 'Integers do not have pointer/reference equality. It is also supposed to be value equality'.
+
+    "Sometimes it can be hard to implement efficiently, but it SHOULD really
+     be true for all values of integers."
+    a := 1 << 30.  b := 1 << 30.
+    self optional: #integerIdentity assert: a is: b.
+
+    a := 1 << 32.  b := 1 << 32.
+    self optional: #integerIdentity assert: a is: b.
+
+    a := 1 << 60.  b := 1 << 60.
+    self optional: #integerIdentity assert: a is: b.
+  )
+
+  testClassAndValueRanges = (
+    | i |
+    self assert: Integer equals: -42 class.
+    self assert: Integer equals:   0 class.
+    self assert: Integer equals:  23 class.
+    self assert: Integer equals:  1073741823 class.
+    self assert: Integer equals:  1073741824 class.
+
+    "Let's test for size behavior and corresponding class"
+    i := 1 << 30.
+    self assert: Integer equals: i class.
+    self assert: i > 0 description: 'should not overflow'.
+    self assert: '1073741824' equals: i asString.
+
+    i := 1 << 32.
+    self assert: Integer equals: i class.
+    self assert: i > 0 description: 'should not overflow'.
+    self assert: '4294967296' equals: i asString.
+
+    i := 1 << 60.
+    self assert: Integer equals: i class.
+    self assert: i > 0 description: 'should not overflow'.
+    self assert: '1152921504606846976' equals: i asString.
+
+    i := 1 << 70.
+    self assert: Integer equals: i class.
+    self assert: i > 0 description: 'should not overflow'.
+    self optional: #bigIntShifts assert: '1180591620717411303424' equals: i asString.
+
+    i := -1 << 30.
+    self assert: Integer equals: i class.
+    self assert: i < 0 description: 'should not underflow'.
+    self assert: '-1073741824' equals: i asString.
+
+    i := -1 << 32.
+    self assert: Integer equals: i class.
+    self assert: i < 0 description: 'should not underflow'.
+    self assert: '-4294967296' equals: i asString.
+
+    i := -1 << 60.
+    self assert: Integer equals: i class.
+    self assert: i < 0 description: 'should not underflow'.
+    self assert: '-1152921504606846976' equals: i asString.
+
+    i := -1 << 70.
+    self assert: Integer equals: i class.
+    self assert: i < 0 description: 'should not underflow'.
+    self optional: #bigIntShifts assert: '-1180591620717411303424' equals: i asString.
+  )
+
+  testStringConversion = (
+    self assert:  '0' equals: ( 0 asString).
+    self assert:  '1' equals: ( 1 asString).
+    self assert:  '2' equals: ( 2 asString).
+    self assert: '-1' equals: (-1 asString).
+    self assert: '-2' equals: (-2 asString).
+
+    self assert: 42 equals: '42' asInteger.
+    self assert: -2 equals: '-2' asInteger.
+  )
+  
+  testIntegerLiterals = (
+    "Make sure the parser reads literals correctly. So, check some basic properties"
+    self assert: 2 / 2                                     equals:                       1.
+    self assert: 50 + 50                                   equals:                     100.
+    self assert: 92233720368 * 100000000 + 54775807        equals:     9223372036854775807.
+    self assert: 92233720368 * 100000000 + 54775807 * 100  equals:   922337203685477580700.
+    self assert: 50 - 100                                  equals:                     -50.
+    self assert: 21474 * -100000 - 83648                   equals:             -2147483648.
+    self assert: 92233720368 * 100000000 + 54775807 * -100 equals:  -922337203685477580700.
+  )
+  
+  testFromString = (
+    self assert:                      1 equals: (Integer fromString:                      '1').
+    self assert:                    100 equals: (Integer fromString:                    '100').
+    self assert:    9223372036854775807 equals: (Integer fromString:    '9223372036854775807').
+    self assert:  922337203685477580700 equals: (Integer fromString:  '922337203685477580700').
+    self assert:                    -50 equals: (Integer fromString:                    '-50').
+    self assert:            -2147483648 equals: (Integer fromString:            '-2147483648').
+    self assert: -922337203685477580700 equals: (Integer fromString: '-922337203685477580700').
+  )
+
+  testRangeBorders = (
+    self assert:   '536870911' equals:   536870911 asString.
+    self assert:   '536870912' equals:   536870912 asString.
+    self assert:   '536870913' equals:   536870913 asString.
+    self assert:  '1073741823' equals:  1073741823 asString.
+    self assert:  '1073741824' equals:  1073741824 asString.
+    self assert:  '1073741825' equals:  1073741825 asString.
+    self assert:  '2147483647' equals:  2147483647 asString.
+    self assert:  '-536870911' equals:  -536870911 asString.
+    self assert:  '-536870912' equals:  -536870912 asString.
+    self assert:  '-536870913' equals:  -536870913 asString.
+    self assert: '-1073741823' equals: -1073741823 asString.
+    self assert: '-1073741824' equals: -1073741824 asString.
+    self assert: '-1073741825' equals: -1073741825 asString.
+    self assert: '-2147483647' equals: -2147483647 asString.
+    self assert: '-2147483648' equals: -2147483648 asString.
+  )
+
+  testComparisons = (
+    self assert: ( 9 =  9).
+    self deny:   ( 1 =  2).
+    self deny:   ( 0 <  0).
+    self assert: ( 1 <  2).
+    self deny:   ( 2 <  1).
+    self assert: (-3 <  2).
+    self deny:   ( 3 < -2).
+    self deny:   ( 0 >  0).
+    self deny:   ( 1 >  2).
+    self assert: ( 2 >  1).
+    self deny:   (-3 >  2).
+    self assert: ( 3 > -2).
+    self assert: ( 4 >= 3).
+    self assert: ( 3 >= 3).
+    self deny:   ( 2 >= 3).
+    self assert: ( 2 <= 4).
+    self assert: ( 3 <= 3).
+    self deny:   ( 4 <= 3).
+  )
+
+  testAddition = (
+    self assert: 0 equals: ( 0+0).
+    self assert: 1 equals: ( 1+0).
+    self assert: 1 equals: ( 0+1).
+    self assert: 2 equals: ( 1+1).
+    self assert: 0 equals: (-1+1).
+    self assert: 1 equals: (-1+2).
+  )
+
+  testSubtraction = (
+    self assert:  1 equals: (1-0).
+    self assert: -1 equals: (0-1).
+    self assert:  1 equals: (2-1).
+  )
+
+  testMultiplication = (
+    self assert:   0 equals: ( 1*  0).
+    self assert:  -1 equals: (-1*  1).
+    self assert: -25 equals: ( 5* -5).
+    self assert:  12 equals: (-3* -4).
+  )
+
+  testDivision = (
+    self assert:  1 equals: (  1/  1).
+    self assert:  1 equals: (  3/  2).
+    self assert: -2 equals: (  4/ -2).
+    self assert: -2 equals: ( -6/  3).
+    self assert:  3 equals: (-12/ -4).
+  )
+
+  testDouble = (
+    self assert:  6 equals: ( 36//  6).
+    self assert: -5 equals: (-10//  2).
+    self assert: -4 equals: ( 20// -5).
+    self assert:  1 equals: ( -5// -5).
+  )
+
+  testModulo = (
+    self assert:  1 equals: ( 10 %  3).
+    self assert: -2 equals: ( 10 % -3).
+    self assert:  2 equals: (-10 %  3).
+    self assert: -1 equals: (-10 % -3).
+    self assert:  0 equals: ( 10 %  5).
+
+    self assert:  1 equals: ( 10 rem:  3).
+    self assert:  1 equals: ( 10 rem: -3).
+    self assert: -1 equals: (-10 rem:  3).
+    self assert: -1 equals: (-10 rem: -3).
+    self assert:  0 equals: ( 10 rem:  5).
+  )
+
+  testAbsoluteValue = (
+    self assert: 4 equals: -4 abs.
+    self assert: 4 equals:  4 abs.
+
+    self assert: 9223372036854775296 equals: -9223372036854775296 abs.
+    self assert: 9223372036854775296 equals:  9223372036854775296 abs.
+  )
+
+  testNegated = (
+    self assert: -23 equals: ( 23 negated).
+    self assert:  23 equals: (-23 negated).
+  )
+
+  testSquareRoot = (
+    self assert:       5 equals: (25 sqrt).
+    self assert: Integer equals: (25 sqrt class).
+  )
+
+  testAnd = (
+    self assert: 0 equals: (2 & 1).
+    self assert: 2 equals: (2 & 2).
+  )
+
+  testBitXor = (
+    self assert: 0 equals: (1 bitXor: 1).
+    self assert: 3 equals: (2 bitXor: 1).
+  )
+
+  testAs32BitUnsignedValue = (
+    self assert: 1 <<  1 equals: (1 <<  1) as32BitUnsignedValue.
+    self assert: 1 << 10 equals: (1 << 10) as32BitUnsignedValue.
+    self assert: 1 << 31 equals: (1 << 31) as32BitUnsignedValue.
+    self assert:       0 equals: (1 << 32) as32BitUnsignedValue.
+    self assert: 4294967295 equals:     -1 as32BitUnsignedValue.
+    self assert: 512        equals: -9223372036854775296 as32BitUnsignedValue.
+    self assert: 4294966784 equals:  9223372036854775296 as32BitUnsignedValue.
+  )
+
+  testAs32BitSignedValue = (
+    self assert:     1 <<  1 equals: (1 <<  1) as32BitSignedValue.
+    self assert:     1 << 10 equals: (1 << 10) as32BitSignedValue.
+    self assert: -2147483648 equals: (1 << 31) as32BitSignedValue.
+    self assert:           0 equals: (1 << 32) as32BitSignedValue.
+
+    self assert:  512 equals:  -9223372036854775296 as32BitSignedValue.
+    self assert: -512 equals:   9223372036854775296 as32BitSignedValue.
+  )
+
+  testAsDouble = (
+    self assert: 0.0          equals: 0 asDouble.
+    self assert: Double       is:     0 asDouble class.
+
+    self assert: 2147483648.0 equals: 2147483648 asDouble.
+    self assert: Double       is:     2147483648 asDouble class.
+
+    self assert: -2147483648.0 equals: -2147483648 asDouble.
+    self assert: Double       is:      -2147483648 asDouble class.
+  )
+
+  testUnsignedRightShift = (
+    self assert: 0   equals:    1 >>> 1.
+    self assert: 512 equals: 1024 >>> 1.
+    self assert: 127 equals: 1023 >>> 3.
+
+    "not sure whether we should really insist on this"
+    self optional: #toBeSpecified assert: 9223372036854775807 equals:    -1 >>> 1.
+    self optional: #toBeSpecified assert: 9223372036854775296 equals: -1024 >>> 1.
+  )
+
+  testMin = (
+    "We need to test numbers that are 64bit or less, larger than 64bit,
+     positive, and negative"
+    | big small |
+    big   := #(1 100 9223372036854775807 922337203685477580700
+               -50 -2147483648 922337203685477580700 -922337203685477580700
+               922337203685477580700).
+    small := #(0  52 9223372036854775296 922337203685477529600
+               -51 -2147483650                     1 -922337203685477580701
+               -922337203685477580701).
+
+    big doIndexes: [:i |
+      self assert: (small at: i)  equals: ((big   at: i) min: (small at: i)).
+      self assert: (small at: i)  equals: ((small at: i) min: (big   at: i)) ]
+  )
+
+  testMax = (
+    "We need to test numbers that are 64bit or less, larger than 64bit,
+     positive, and negative"
+    | big small |
+    big   := #(1 100 9223372036854775807 922337203685477580700
+               -50 -2147483648 922337203685477580700 -922337203685477580700
+               922337203685477580700).
+    small := #(0  52 9223372036854775296 922337203685477529600
+               -51 -2147483650                     1 -922337203685477580701
+               -922337203685477580701).
+    big doIndexes: [:i |
+      self assert: (big at: i)  equals: ((big   at: i) max: (small at: i)).
+      self assert: (big at: i)  equals: ((small at: i) max: (big   at: i)) ]
+  )
+)

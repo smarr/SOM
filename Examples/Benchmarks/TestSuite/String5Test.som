@@ -1,0 +1,260 @@
+"
+Copyright (c) 2001-2013 see AUTHORS file
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the 'Software'), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+"
+
+String5Test = TestCase (
+
+  testEquality = (
+    | str1 str2 |
+    str1 := 'foo'.
+    str2 := 'bar'.
+
+    self assert: str1 = str1.
+    self assert: str1 = 'foo'.
+    self assert: str1 = ('f' + 'oo').
+    self deny:   str1 = str2.
+    self assert: str2 = str2.
+    
+    self assert: ('f' + 'o' + 'o') = ('f' + 'o' + 'o').
+    self assert: ('f' + 'o' + 'o') = ('f' + 'o' + 'o') asString.
+    self assert: ('f' + 'o' + 'o') = ('f' + 'o' + 'o') asSymbol.
+    self assert: ('f' + 'o' + 'o') = #foo.
+  )
+  
+  testEqualEqual = (
+    | str1 |
+    str1 := 'foo'.
+    self assert: str1 == str1.
+    self deny:   str1 == str1 asSymbol.
+    self deny:   str1 == #foo.
+  )
+
+  testLength = (
+    self assert: 1 equals: 't' length.
+    self assert: 6 equals: ('foo' + 'bar') length.
+  )
+
+  testCharAt = (
+    | str |
+    str := 'foobar'.
+    self assert: 'f' equals: (str charAt: 1).
+    self assert: 'o' equals: (str charAt: 2).
+    self assert: 'o' equals: (str charAt: 3).
+    self assert: 'b' equals: (str charAt: 4).
+    self assert: 'a' equals: (str charAt: 5).
+    self assert: 'r' equals: (str charAt: 6).
+  )
+
+  testStringLiteralLineBreak = (
+    | str |
+    "Some parsers get the literals and line bounderies wrong"
+    str := '
+'.
+    self assert: '\n' equals: (str charAt: 1).
+    self assert: 1 equals: str length.
+  )
+
+  testPrimSubstringFrom = (
+    | str |
+    str := 'foobar'.
+    self assert: 'foo'    equals: (str primSubstringFrom: 1 to: 3).
+    self assert: 'bar'    equals: (str primSubstringFrom: 4 to: 6).
+    self assert: 'foobar' equals: (str primSubstringFrom: 1 to: 6).
+    self assert: 'oob' equals: ('foobar' substringFrom: 2 to: 4).
+  )
+
+  testSplit = (
+    | r |
+    r := 'aaaa' split: ','.
+    self assert: 1 equals: r length.
+    self assert: 'aaaa' equals: (r at: 1).
+
+    r := 'foo.bar' split: '.'.
+    self assert: 2     equals: r length.
+    self assert: 'foo' equals: (r at: 1).
+    self assert: 'bar' equals: (r at: 2).
+
+    r := 'foo..bar' split: '.'.
+    self assert: 3     equals: r length.
+    self assert: 'foo' equals: (r at: 1).
+    self assert: ''    equals: (r at: 2).
+    self assert: 'bar' equals: (r at: 3).
+
+    r := 'foo..bar' split: '..'.
+    self assert: 2     equals: r length.
+    self assert: 'foo' equals: (r at: 1).
+    self assert: 'bar' equals: (r at: 2).
+
+    r := 'foo' split: 'bar'.
+    self assert: 1     equals: r length.
+    self assert: 'foo' equals: (r at: 1).
+
+    self assert: Array is: r class
+  )
+
+  testIndexOf = (
+    self assert: -1 equals: ('foo' indexOf: 'b').
+    self assert:  1 equals: ('foo' indexOf: 'f').
+    self assert:  2 equals: ('foo' indexOf: 'o').
+    self assert:  3 equals: ('foo' indexOf: 'o' startingAt: 3).
+
+    self assert: -1 equals: ('foo' indexOf: 'b' startingAt: 4).
+
+    self assert:  2 equals: ('foo' indexOf: 'oo').
+  )
+
+  testBeginsWith = (
+    self deny:   ('foo' beginsWith: 'oo').
+    self assert: ('foo' beginsWith: 'foo').
+  )
+
+  testEndsWith = (
+    self assert: ('foo' endsWith: 'foo').
+    self assert: ('foo' endsWith: 'oo').
+    self deny: ('f' endsWith: 'bar').
+    self deny: ('f' endsWith: 'foo').
+  )
+
+  testMultiLineString = (
+    "Test whether the parser will parse multi-line strings correctly."
+    self assert: '
+1234567890
+1234567890
+1234567890
+1234567890
+1234567890' equals: '
+1234567890
+1234567890
+1234567890
+1234567890
+1234567890'
+  )
+
+  testEscapeSequences = (
+    "Tests for escape sequences, not all of them are reliable represented as
+     proper strings. So, we do a simple equality test, and check substring or
+     length.
+
+     \t	  a tab character
+     \b	  a backspace character
+     \n	  a newline character
+     \r	  a carriage return character
+     \f	  a formfeed character
+     \'	  a single quote character
+     \\	  backslash character
+     \0   zero byte character
+    "
+
+    self assert: '\t' equals: '\t'.
+    self assert: 1 equals: '\t' length.
+
+    self assert: '\b' equals: '\b'.
+    self assert: 1 equals: '\b' length.
+
+    self assert: '\n' equals: '\n'.
+    self assert: 1 equals: '\n' length.
+    self deny: ('\n' endsWith: 'n').
+
+    self assert: '\r' equals: '\r'.
+    self assert: 1 equals: '\n' length.
+    self deny: ('\r' endsWith: 'r').
+
+    self assert: '\f' equals: '\f'.
+    self assert: 1 equals: '\f' length.
+    self deny: ('\f' endsWith: 'f').
+
+    self assert: '\'' equals: '\''.
+    self assert: 1 equals: '\'' length.
+
+    self assert: '\\' equals: '\\'.
+    self assert: 1 equals: '\\' length.
+
+    self assert: '\0' equals: '\0'.
+    self assert: 1 equals: '\0' length.
+    self assert: 5 equals: '\0rest' length.
+  )
+
+  testHash = (
+    | str |
+    "Hash should be identical for strings that are identical,
+     whether given literal or composed at runtime"
+    self assert: 'foobar' hashcode equals: 'foobar' hashcode.
+    self assert: 'ssdf aksdf; kasd;fk a;dfk a;dfk a;d' hashcode
+         equals: 'ssdf aksdf; kasd;fk a;dfk a;dfk a;d' hashcode.
+
+    str := 'foo' + 'bar'.
+    str := str + str.
+    self assert: 'foobarfoobar' hashcode equals: str hashcode.
+
+    str := 'dfadf fgsfg sfg sdfg sfg sfg' + '345243n 24n5 kwertlw erltnwrtln'.
+    self assert: 'dfadf fgsfg sfg sdfg sfg sfg345243n 24n5 kwertlw erltnwrtln' hashcode
+         equals: str hashcode.
+  )
+
+  testWhiteSpace = (
+    self assert: ' ' isWhiteSpace.
+    self assert: '\t' isWhiteSpace.
+    self assert: '\t\n   \n \n' isWhiteSpace.
+
+    self deny: '' isWhiteSpace.
+    self deny: '\t\n N  \n \n' isWhiteSpace.
+    self deny: 'N' isWhiteSpace.
+    self deny: '3' isWhiteSpace.
+  )
+
+  testLetters = (
+    self assert: 'a' isLetters.
+    self assert: 'all' isLetters.
+
+    self deny: '' isLetters.
+    self deny: ' ' isLetters.
+    self deny: '3' isLetters.
+    self deny: '3333' isLetters.
+    self deny: 'aOo öéÉíä' isLetters.
+    self deny: 'aOo1öéÉíä' isLetters.
+  )
+
+  testDigits = (
+    self assert: '0' isDigits.
+    self assert: '0123' isDigits.
+    self assert: '0123456789' isDigits.
+
+    self deny: '' isDigits.
+    self deny: ' ' isDigits.
+    self deny: 'S' isDigits.
+    self deny: '333 3' isDigits.
+    self deny: '66i77' isDigits.
+    self deny: '66e7' isDigits.
+    self deny: 'aOo1öéÉíä' isDigits.
+  )
+  
+  testAsInteger = (
+    self assert:   0 equals:   '0' asInteger.
+    self assert: 100 equals: '100' asInteger.
+    self assert: 923 equals: '923' asInteger.
+    
+    self assert:   -0 equals:   '-0' asInteger.
+    self assert: -100 equals: '-100' asInteger.
+    self assert: -923 equals: '-923' asInteger.
+    
+    self assert: 123342353453453456456456  equals: '123342353453453456456456' asInteger.
+  )
+)

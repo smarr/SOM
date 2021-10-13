@@ -1,0 +1,15 @@
+System5Test = TestCase (
+
+  testFullGCSupport = (
+    "Test whether #fullGC is support. We expect the VM now to return true,
+     to indicate the a GC was done."
+    self optional: #fullGCWithEffect assert: system fullGC description: '#fullGC is not supported or has not immediate effect.'
+  )
+
+  testTicks = (
+    | ticks |
+    ticks := system ticks.
+    self assert: ticks class equals: Integer.
+    self assert: ticks > 0 description: 'Should return the microseconds since the start'
+  )
+)

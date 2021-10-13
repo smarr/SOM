@@ -1,0 +1,97 @@
+TestRunner = (
+  | suite passes unsupported failures numAsserts |
+
+  initializeOn: aSuite = (
+    suite := aSuite.
+
+    passes       := Vector new.
+    unsupported  := Vector new.
+    failures     := Vector new.
+
+    numAsserts := 0.
+  )
+
+  hasUnsupported  = ( ^ unsupported size > 0 )
+  hasFailures     = ( ^ failures size > 0 )
+
+  actualUnsupported = ( ^ unsupported size )
+  expectedPasses = ( ^ suite tests size )
+  actualPasses   = ( ^ passes size )
+
+  run = (
+    self reportPreRun.
+    self runAllTests.
+    self reportPostRun.
+    self overviewReport.
+  )
+
+  countAssert = (
+    numAsserts := numAsserts + 1.
+  )
+
+  numAsserts = (
+    ^ numAsserts
+  )
+
+  reportPreRun = (
+    ('TestSuite ' + suite name + ':') println.
+    ('Tests: ' + suite tests size asString) println.
+  )
+
+  reportPostRun = (
+    self hasUnsupported ifTrue: [
+      ('Unsupported optional: ' + unsupported size asString) println
+    ].
+    self hasFailures ifTrue: [
+      ('Failures: ' + failures size asString) println
+    ].
+  )
+
+  runAllTests = (
+    suite tests do: [ :each |
+        each run: self ].
+  )
+
+  overviewReport = (
+    ('Tests passed: ' + passes size asString) println.
+
+    (self hasFailures or: [self hasUnsupported]) ifTrue: [
+        '------------------------------' println ].
+
+    self hasUnsupported ifTrue: [
+      | lastCategory |
+      ('Unsupported optional features: ' + unsupported size asString) println.
+      unsupported do: [:each |
+        | cat |
+        cat := each at: 1.
+        cat == lastCategory ifFalse: [
+          lastCategory := cat.
+          ('\t' + cat) println ].
+        ('\t\t' + (each at: 2) asString) println.
+        ('\t\t\t' + (each at: 3) value asString) println ].
+    ].
+
+    self hasFailures ifTrue: [
+      ('Failures: ' + failures size asString) println.
+      failures do: [:each |
+        ('    ' + each key asString) println.
+        ('        ' + each value asString) println ].
+    ].
+  )
+
+  fail: aSignature because: aReason = (
+    | pair |
+    pair := Pair withKey: aSignature andValue: aReason.
+    failures append: pair.
+  )
+
+  unsupported: aSymbol test: aSignature because: aReason = (
+    | array |
+    array := Array with: aSymbol with: aSignature with: aReason.
+    unsupported append: array.
+  )
+
+  passed: aSignature = (
+    passes append: aSignature
+  )
+)

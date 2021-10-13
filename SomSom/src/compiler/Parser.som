@@ -613,13 +613,6 @@ Parser = (
     self error: err
   )
 
-  symIsMethod = (
-    ^ sym = #identifier or: [
-      sym = #keyword or: [
-      sym = #operatorSequence or: [
-      self symIn: Parser binaryOpSyms ] ] ]
-  )
-
   symIn: ss = (
     ^ ss contains: sym
   )

@@ -77,15 +77,6 @@ Vector5Test = TestCase (
     self deny: (a contains: #nono).
   )
 
-  testDo = (
-    | j |
-    j := 1.
-    a do: [:i |
-      self assert: i equals: (a at: j).
-      j := j + 1.
-    ].
-  )
-
   testAppendAndRemoveFirst = (
     | v |
     v := Vector new: 10.

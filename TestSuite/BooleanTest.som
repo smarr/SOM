@@ -86,7 +86,7 @@ BooleanTest = TestCase (
     pipeBoolFalseTrue  = ( ^ false || [ true  ] )
     pipeBoolFalseFalse = ( ^ false || [ false ] )
     
-    testOr = (
+    testPipe = (
       self assert: self pipeBoolTrueTrue.
       self assert: self pipeBoolTrueFalse.
       self assert: self pipeBoolFalseTrue.

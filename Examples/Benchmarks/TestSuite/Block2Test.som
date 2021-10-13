@@ -91,7 +91,7 @@ Block2Test = TestCase (
       self assert: 10 equals: i.
     )
     
-    testWhileTrue = (
+    testWhileFalse = (
       | i |
       i := 1.
       [ i >= 10 ] whileFalse: [ i := i + 1 ].

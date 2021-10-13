@@ -204,7 +204,7 @@ Test = Benchmark (
       ^ (result at: 1) = 940 and: [
           (result at: 2) = 0 and: [
             (result at: 3) = 940 and: [
-              (result at: 4) = 4940
+              (result at: 4) = 4935
         ] ] ]
     )
 )

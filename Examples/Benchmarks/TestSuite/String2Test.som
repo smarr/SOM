@@ -223,7 +223,6 @@ String2Test = TestCase (
   testLetters = (
     self assert: 'a' isLetters.
     self assert: 'all' isLetters.
-    self optional: #unicode assert: 'aOoöéÉíä' isLetters description: 'Does not support Unicode'.
 
     self deny: '' isLetters.
     self deny: ' ' isLetters.

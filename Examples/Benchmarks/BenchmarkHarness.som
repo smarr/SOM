@@ -100,7 +100,7 @@ BenchmarkHarness = (
         bench := benchmarkClass new.
         bench oneTimeSetup.
         
-        ('Starting ' + bench name + ' benchmark ... ') print.
+        ('Starting ' + bench name + ' benchmark.') println.
         result := self doRuns: bench.
         total := total + result.
         self reportBenchmark: bench result: result.

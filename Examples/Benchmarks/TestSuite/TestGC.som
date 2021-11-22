@@ -1,0 +1,202 @@
+"
+Copyright (c) 2021 see AUTHORS file
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the 'Software'), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+"
+
+TestGC = Benchmark (
+    | failOnUnsupportedOptionals |
+
+    tests = ( "Now ordered by alphabetical order to improve maintainability"
+        ^ EmptyTest,
+          SpecialSelectorsTest,
+          SpecialSelectors2Test,
+          SpecialSelectors3Test,
+          SpecialSelectors4Test,
+          SpecialSelectors5Test,
+          ArrayTest,
+          Array2Test,
+          Array3Test,
+          Array4Test,
+          Array5Test,
+          BlockTest,
+          Block2Test,
+          Block3Test,
+          Block4Test,
+          Block5Test,
+          BooleanTest,
+          Boolean2Test,
+          Boolean3Test,
+          Boolean4Test,
+          Boolean5Test,
+          ClassLoadingTest,
+          ClassLoading2Test,
+          ClassLoading3Test,
+          ClassLoading4Test,
+          ClassLoading5Test,
+          ClassStructureTest,
+          ClassStructure2Test,
+          ClassStructure3Test,
+          ClassStructure4Test,
+          ClassStructure5Test,
+          ClosureTest,
+          Closure2Test,
+          Closure3Test,
+          Closure4Test,
+          Closure5Test,
+          CoercionTest,
+          Coercion2Test,
+          Coercion3Test,
+          Coercion4Test,
+          Coercion5Test,
+          CompilerReturnTest,
+          CompilerReturn2Test,
+          CompilerReturn3Test,
+          CompilerReturn4Test,
+          CompilerReturn5Test,
+          DictionaryTest,
+          Dictionary2Test,
+          Dictionary3Test,
+          Dictionary4Test,
+          Dictionary5Test,
+          DoesNotUnderstandTest,
+          DoesNotUnderstand2Test,
+          DoesNotUnderstand3Test,
+          DoesNotUnderstand4Test,
+          DoesNotUnderstand5Test,
+          DoubleTest,
+          Double2Test,
+          Double3Test,
+          Double4Test,
+          Double5Test,
+          GlobalTest,
+          Global2Test,
+          Global3Test,
+          Global4Test,
+          Global5Test,
+          HashTest,
+          Hash2Test,
+          Hash3Test,
+          Hash4Test,
+          Hash5Test,
+          IntegerTest,
+          Integer2Test,
+          Integer3Test,
+          Integer4Test,
+          Integer5Test,
+          PreliminaryTest,
+          Preliminary2Test,
+          Preliminary3Test,
+          Preliminary4Test,
+          Preliminary5Test,
+          ReflectionTest,
+          Reflection2Test,
+          Reflection3Test,
+          Reflection4Test,
+          Reflection5Test,
+          SelfBlockTest,
+          SelfBlock2Test,
+          SelfBlock3Test,
+          SelfBlock4Test,
+          SelfBlock5Test,
+          SetTest,
+          Set2Test,
+          Set3Test,
+          Set4Test,
+          Set5Test,
+          StringTest,
+          String2Test,
+          String3Test,
+          String4Test,
+          String5Test,
+          SuperTest,
+          Super2Test,
+          Super3Test,
+          Super4Test,
+          Super5Test,
+          SymbolTest,
+          Symbol2Test,
+          Symbol3Test,
+          Symbol4Test,
+          Symbol5Test,
+          SystemTest,
+          System2Test,
+          System3Test,
+          System4Test,
+          System5Test,
+          VectorTest,
+          Vector2Test,
+          Vector3Test,
+          Vector4Test,
+          Vector5Test
+    )
+    
+    oneTimeSetup = (
+      "Load all Tests. We don't really want to benchmark the parser."
+      self tests
+    )
+
+    runAllSuites = (
+      | totalTestNum successfulTestNum unsupportedTestNum totalAssertionNum arr |
+      totalTestNum := 0.
+      unsupportedTestNum := 0.
+      successfulTestNum := 0.
+      totalAssertionNum := 0.
+
+      self tests do: [ :test |
+        | runner |
+        runner := TestRunner new.
+        runner initializeOn: test.
+        runner runAllTests.
+
+        totalTestNum       := totalTestNum + runner expectedPasses.
+        unsupportedTestNum := unsupportedTestNum + runner actualUnsupported.
+        successfulTestNum  := successfulTestNum + runner actualPasses.
+        totalAssertionNum  := totalAssertionNum + runner numAsserts.
+      ].
+
+      arr := Array new: 4.
+      arr at: 1 put: totalTestNum.
+      arr at: 2 put: unsupportedTestNum.
+      arr at: 3 put: successfulTestNum.
+      arr at: 4 put: totalAssertionNum.
+      ^ arr
+    )
+
+    runOneSuite: name = (
+      | testName runner |
+      testName := name.
+      (testName endsWith: 'Test') ifFalse: [
+        testName := testName + 'Test'].
+
+      runner := TestRunner new.
+      runner initializeOn: (system resolve: testName asSymbol).
+      runner run.
+      runner hasFailures ifTrue: [system exit: 1]
+    )
+    
+    benchmark = (
+      ^ system fullGC
+    )
+    
+    verifyResult: result = (
+      "We expect the GC to actually promise us that it did work"
+      ^ result
+    )
+)

@@ -43,8 +43,7 @@ Hash4Test = TestCase (
     ht at: 1 put: 2.
     t := Hashtable new.
     ht at: Hashtable put: t.
-    system fullGC.
-    
+
     self assert: (ht containsValue: 'b') description: 'needs to contain "b"'.
     self assert: (ht containsValue: 'd') description: 'needs to contain "d"'.
     self assert: (ht containsValue: 2)   description: 'needs to contain "2"'.

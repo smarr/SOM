@@ -39,6 +39,13 @@ Double = (
     cos         = primitive
     sin         = primitive
 
+    pow: exp = (
+        | output |
+        output := 1.
+        exp timesRepeat: [ output := output * self ].
+        ^ output
+    )
+
     "Comparing"
     =  argument = primitive
     <  argument = primitive

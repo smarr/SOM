@@ -41,10 +41,10 @@ Integer = (
     sqrt        = primitive
     negated     = ( ^0 - self )
 
-    pow: exp = (
+    raisedTo: exponent = (
         | output |
         output := 1.
-        exp timesRepeat: [ output := output * self ].
+        exponent timesRepeat: [ output := output * self ].
         ^ output
     )
 

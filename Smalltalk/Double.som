@@ -39,10 +39,10 @@ Double = (
     cos         = primitive
     sin         = primitive
 
-    pow: exp = (
-        | output |
-        output := 1.
-        exp timesRepeat: [ output := output * self ].
+    raisedTo: exponent = (
+        | factor output |
+        output := 1.0.
+        exponent timesRepeat: [ output := output * self ].
         ^ output
     )
 

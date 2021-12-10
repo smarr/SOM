@@ -1,0 +1,50 @@
+MainLoadAll = (
+  loadAllSomSomSources = (
+    #(
+        #Bytecodes
+        #Interpreter
+        #Frame
+        #SString
+        #SObject
+        #SAbstractObject
+        #SSymbol
+        #SBlock
+        #SDouble
+        #SArray
+        #SPrimitive
+        #SMethod
+        #SClass
+        #SInteger
+        #SystemPrimitives
+        #ClassPrimitives
+        #DoublePrimitives
+        #Primitives
+        #IntegerPrimitives
+        #PrimitivePrimitives
+        #SymbolPrimitives
+        #MethodPrimitives
+        #StringPrimitives
+        #BlockPrimitives
+        #ObjectPrimitives
+        #ArrayPrimitives
+        #Main
+        #Universe
+        #MainLoadAll
+        #Parser
+        #BytecodeGenerator
+        #ClassGenerationContext
+        #Lexer
+        #SourcecodeCompiler
+        #Disassembler
+        #MethodGenerationContext
+    ) do: [:className |
+      (system load: className) println. ]
+  )
+  run: args = (
+    | u args2 |
+    u := Universe new.
+    args2 := args copyFrom: 2.
+    u interpret: args2.
+    u exit: 0.
+  )
+)

@@ -22,92 +22,102 @@ THE SOFTWARE.
 SomParse = Benchmark (
     | classNames first |
     oneTimeSetup = (
+      | v | 
       first := true.
-      classNames := #(
-        #Echo
-        #Hello
-        #QuickSort
-        #Ball
-        #ListElement
-        #JenkinsRandom
-        #NBodyBench
-        #NBody
-        #Body
-        #NBodySystem
-        #Queens
-        #List
-        #BubbleSort
-        #TestHarness
-        #SuperTest
-        #ReflectionTest
-        #ClassStructureTest
-        #BlockTest
-        #SuperTestSuperClass
-        #EmptyTest
-        #StringTest
-        #ClassLoadingTest
-        #CompilerReturnTest
-        #ClassC
-        #ClassB
-        #SelfBlockTest
-        #HashTest
-        #ClassA
-        #SetTest
-        #GlobalTest
-        #ClosureTest
-        #DoesNotUnderstandMessage
-        #SpecialSelectorsTest
-        #PreliminaryTest
-        #TestRunner
-        #DictionaryTest
-        #VectorTest
-        #TestCase
-        #DoesNotUnderstandTest
-        #CoercionTest
-        #ArrayTest
-        #SystemTest
-        #DoubleTest
-        #BooleanTest
+      
+      v := Vector new: 100.
+      self classNames1: v.
+      self classNames2: v.
+      classNames := v asArray
+    )
+    
+    classNames1: v = (
+      v, #Echo
+       , #Hello
+       , #QuickSort
+       , #Ball
+       , #ListElement
+       , #JenkinsRandom
+       , #NBodyBench
+       , #NBody
+       , #Body
+       , #NBodySystem
+       , #Queens
+       , #List
+       , #BubbleSort
+       , #TestHarness
+       , #SuperTest
+       , #ReflectionTest
+       , #ClassStructureTest
+       , #BlockTest
+       , #SuperTestSuperClass
+       , #EmptyTest
+       , #StringTest
+       , #ClassLoadingTest
+       , #CompilerReturnTest
+       , #ClassC
+       , #ClassB
+       
+       , #SelfBlockTest
+       , #HashTest
+       , #ClassA
+       , #SetTest
+       , #GlobalTest
+       , #ClosureTest
+       , #DoesNotUnderstandMessage
+       , #SpecialSelectorsTest
+       , #PreliminaryTest
+       , #TestRunner
+       , #DictionaryTest
+       , #VectorTest
+       , #TestCase
+       , #DoesNotUnderstandTest
+       , #CoercionTest
+       , #ArrayTest
+       , #SystemTest
+       , #DoubleTest
+       , #BooleanTest
+    )
+    
+    classNames2: v = (
+      v, #SString
+       , #SObject
+       , #SAbstractObject
+       , #SSymbol
+       , #SBlock
+       , #SDouble
+       , #SArray
+       , #SPrimitive
+       , #SMethod
+       , #SClass
+       , #SInteger
+       , #SystemPrimitives
+       , #ClassPrimitives
+       , #DoublePrimitives
+       , #Primitives
+       , #IntegerPrimitives
+       , #PrimitivePrimitives
+       , #SymbolPrimitives
+       , #MethodPrimitives
+       , #StringPrimitives
+       , #BlockPrimitives
+       , #ObjectPrimitives
+       , #ArrayPrimitives
         
-        #SString
-        #SObject
-        #SAbstractObject
-        #SSymbol
-        #SBlock
-        #SDouble
-        #SArray
-        #SPrimitive
-        #SMethod
-        #SClass
-        #SInteger
-        #SystemPrimitives
-        #ClassPrimitives
-        #DoublePrimitives
-        #Primitives
-        #IntegerPrimitives
-        #PrimitivePrimitives
-        #SymbolPrimitives
-        #MethodPrimitives
-        #StringPrimitives
-        #BlockPrimitives
-        #ObjectPrimitives
-        #ArrayPrimitives
-        
-        #Parser
-        #BytecodeGenerator
-        #ClassGenerationContext
-        #Lexer
-        #SourcecodeCompiler
-        #Disassembler
-        #MethodGenerationContext
-        #BasicInterpreterTests
-        #SomSomTests
-        #SomTests
-        #FrameTests
-        #LexerTests
-        #ParserWithError
-        #ParserTests
-      ).
+       , #Parser
+       , #BytecodeGenerator
+       , #ClassGenerationContext
+       , #Lexer
+       , #SourcecodeCompiler
+       , #Disassembler
+       , #MethodGenerationContext
+       , #BasicInterpreterTests
+       , #SomSomTests
+       , #SomTests
+       , #FrameTests
+       , #LexerTests
+       , #ParserWithError
+       , #ParserTests
     )
 
     benchmark = (

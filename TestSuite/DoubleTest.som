@@ -87,6 +87,22 @@ DoubleTest = TestCase (
     
     self assert: 23453456.0 equals: (23453456.0 * 23453456.0) sqrt.
   )
+
+  testRaisedTo = (
+    self assert:    1.0 equals: ( 2.0 raisedTo: 0).
+    self assert:    2.0 equals: ( 2.0 raisedTo: 1).
+    self assert:    8.0 equals: ( 2.0 raisedTo: 3).
+    self assert:  256.0 equals: ( 2.0 raisedTo: 8).
+
+    self assert:  256.0 equals: (-2.0 raisedTo: 8).
+    self assert: -128.0 equals: (-2.0 raisedTo: 7).
+
+    self assert:   6.25 equals: ( 2.5 raisedTo: 2).
+    self assert: 5.0625 equals: ( 1.5 raisedTo: 4).
+
+    self assert:    0.0 equals: ( 0.0 raisedTo: 5).
+    self assert:    1.0 equals: ( 0.0 raisedTo: 0).
+  )
   
   testNegated = (
     self assert:  0.0 equals:  0.0 negated.

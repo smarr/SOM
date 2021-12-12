@@ -100,9 +100,8 @@ Vector = (
     )
 
     contains: anObject = (
-        first to: last - 1 do: [ :idx |
-            (storage at: idx) = anObject ifTrue: [ ^ true ]
-        ].
+        first to: last - 1 do: [ :i |
+            (storage at: i) = anObject ifTrue: [ ^ true ] ].
         ^ false
     )
 

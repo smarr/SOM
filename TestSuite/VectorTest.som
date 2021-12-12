@@ -54,7 +54,7 @@ VectorTest = TestCase (
       self assert: 1 equals: v first ].
 
     1 to: 10 do: [:i |
-      self assert: 1 equals: v first.
+      self assert: i equals: v first.
       v removeFirst ]
   )
 

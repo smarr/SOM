@@ -77,11 +77,12 @@ Vector = (
 
     "Removing"
     remove = (
-        (last > first)
-            ifTrue:  [ last := last - 1. ^storage at: last ]
-            ifFalse: [
-                self error:
-                    'Vector: Attempting to pop element from empty Vector' ]
+        | value |
+        self isEmpty ifTrue: [ self error: 'Vector: Attempting to pop element from empty Vector' ].
+        last := last - 1.
+        value := storage at: last.
+        storage at: last put: nil.
+        ^ value
     )
 
     remove: object = (
@@ -156,9 +157,12 @@ Vector = (
 
     "DeltaBlue"
     removeFirst = (
+        | value |
         self isEmpty ifTrue: [ self error: 'OrderedCollection is empty' ].
+        value := storage at: first.
+        storage at: first put: nil.
         first := first + 1.
-        ^ storage at: first - 1
+        ^ value
     )
 
     "Conversion"

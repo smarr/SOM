@@ -30,9 +30,13 @@ Vector = (
     | first last storage |
 
     "Accessing"
-    at: index = ( ^ self checkIndex: index ifValid: [ storage at: index ] )
+    at: index = (
+        index := index + first - 1.
+        ^ self checkIndex: index ifValid: [ storage at: index ]
+    )
 
     at: index put: value = (
+        index := index + first - 1.
         ^ self checkIndex: index ifValid: [ storage at: index put: value ]
     )
 
@@ -45,7 +49,7 @@ Vector = (
     )
 
     doIndexes: block = (
-        first to: last - 1 do: block
+        1 to: last - first do: block
     )
 
     "Adding"
@@ -107,7 +111,7 @@ Vector = (
      If it isn't, return -1."
     indexOf: anObject = (
         first to: last - 1 do: [ :i |
-            (storage at: i) = anObject ifTrue: [ ^ i ] ].
+            (storage at: i) = anObject ifTrue: [ ^ i - first + 1 ] ].
         ^ -1
     )
 
@@ -138,7 +142,7 @@ Vector = (
     )
 
     checkIndex: index ifValid: block = (
-        ^ ((first <= index) && (index <= last)
+        ^ ((first <= index) && (index < last)
             ifTrue: [ block value ]
             ifFalse: [
                 self error:

@@ -73,7 +73,32 @@ VectorTest = TestCase (
   )
 
   testContains = (
+    self assert: (a contains: 'hello').
+    self assert: (a contains: #world).
     self assert: (a contains: 23).
+    self deny: (a contains: #nono).
+  )
+  
+  testContainsAfterRemoveFirst = (
+    a removeFirst.
+    
+    self deny: (a contains: 'hello').
+    self assert: (a contains: #world).
+    self assert: (a contains: 23).
+    self deny: (a contains: #nono).
+    
+    a removeFirst.
+    
+    self deny: (a contains: 'hello').
+    self deny: (a contains: #world).
+    self assert: (a contains: 23).
+    self deny: (a contains: #nono).
+    
+    a removeFirst.
+    
+    self deny: (a contains: 'hello').
+    self deny: (a contains: #world).
+    self deny: (a contains: 23).
     self deny: (a contains: #nono).
   )
 

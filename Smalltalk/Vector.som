@@ -31,13 +31,15 @@ Vector = (
 
     "Accessing"
     at: index = (
-        index := index + first - 1.
-        ^ self checkIndex: index ifValid: [ storage at: index ]
+        | storeIdx |
+        storeIdx := index + first - 1.
+        ^ self checkIndex: storeIdx ifValid: [ storage at: storeIdx ]
     )
 
     at: index put: value = (
-        index := index + first - 1.
-        ^ self checkIndex: index ifValid: [ storage at: index put: value ]
+        | storeIdx |
+        storeIdx := index + first - 1.
+        ^ self checkIndex: storeIdx ifValid: [ storage at: storeIdx put: value ]
     )
 
     first = ( ^ (self size > 0) ifTrue: [storage at: 1] ifFalse: [nil] )

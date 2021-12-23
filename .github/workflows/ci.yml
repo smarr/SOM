@@ -5,6 +5,7 @@ on: [push, pull_request]
 jobs:
   test_soms:
     runs-on: ubuntu-20.04 # ubuntu-latest
+    continue-on-error: ${{ matrix.not-up-to-date }}
     strategy:
       fail-fast: false # we want all jobs to run, because they may fail independently
       matrix:
@@ -14,6 +15,7 @@ jobs:
             apt: libcppunit-dev
             build: "cmake . && make SOM++"
             som:   "./som.sh"
+            not-up-to-date: true
 
           - name: CSOM
             repo: CSOM.git
@@ -22,20 +24,24 @@ jobs:
               export ARCH=64bit
               make
             som:   "./som.sh"
+            not-up-to-date: true
 
           - name: JsSOM
             repo: JsSOM.git
             build: ""
             som:   "./som.sh"
+            not-up-to-date: true
 
           - name: PySOM
             repo: PySOM.git
             som: "PYTHON=python SOM_INTERP=BC ./som.sh"
+            not-up-to-date: false
 
           - name: SOM (Java)
             build: make
             som:  ./som.sh
             repo: som-java.git
+            not-up-to-date: false
 
           - name: TruffleSOM
             repo: TruffleSOM.git
@@ -43,21 +49,25 @@ jobs:
               export JAVA_HOME=$JAVA_HOME_8_X64
               ant jar
             som: "JAVA_HOME=$JAVA_HOME_8_X64 ./som -G"
+            not-up-to-date: false
 
           - name: Specification Tests
             som:  spec
+            not-up-to-date: false
 
           - name: SOM-RS
             repo: som-rs.git
             build: "cargo build --release -p som-interpreter-bc"
             som: "./target/release/som-interpreter-bc"
             som-tests: " -c ../Smalltalk ../TestSuite -- TestHarness"
+            not-up-to-date: false
 
           - name: ykSOM
             repo: yksom.git
             build: "cargo build"
             som:   "cargo run -- "
             som-tests: "--cp ../Smalltalk ../TestSuite/TestHarness.som"
+            not-up-to-date: true
 
     name: ${{ matrix.name }}
     steps:

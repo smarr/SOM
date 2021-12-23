@@ -103,7 +103,7 @@ Vector = (
         ^ storage contains: anObject
     )
 
-    "If anObject is in vector, return index of first occurance.
+    "If anObject is in vector, return index of first occurrence.
      If it isn't, return -1."
     indexOf: anObject = (
         first to: last - 1 do: [ :i |

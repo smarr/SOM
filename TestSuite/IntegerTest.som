@@ -243,6 +243,32 @@ IntegerTest = TestCase (
     self assert: Integer equals: (25 sqrt class).
   )
 
+  testRaisedTo = (
+    self assert:                               1 equals: ( 2 raisedTo:   0).
+    self assert:                               2 equals: ( 2 raisedTo:   1).
+    self assert:                               8 equals: ( 2 raisedTo:   3).
+    self assert:                             256 equals: ( 2 raisedTo:   8).
+    self assert: 1267650600228229401496703205376 equals: ( 2 raisedTo: 100).
+
+    self assert:                             256 equals: (-2 raisedTo:   8).
+    self assert:                            -128 equals: (-2 raisedTo:   7).
+
+    self assert:                               0 equals: ( 0 raisedTo:   5).
+    self assert:                               1 equals: ( 0 raisedTo:   0).
+    
+    "Negative exponents are not yet supported"
+    self assert:                               1 equals: ( 0 raisedTo:  -1).
+    self assert:                               1 equals: ( 0 raisedTo:  -2).
+    self assert:                               1 equals: (10 raisedTo:  -1).
+    self assert:                               1 equals: (10 raisedTo:  -2).
+    
+    "Double exponents are not yet supported"
+    self assert:                               2 equals: ( 2 raisedTo:  1.5).
+    self assert:                               4 equals: ( 2 raisedTo:  2.4).
+    self assert:                               4 equals: ( 2 raisedTo:  2.9).
+    self assert:                               1 equals: ( 2 raisedTo:  -2.2).
+  )
+
   testAnd = (
     self assert: 0 equals: (2 & 1).
     self assert: 2 equals: (2 & 2).

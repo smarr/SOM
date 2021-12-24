@@ -39,6 +39,17 @@ Double = (
     cos         = primitive
     sin         = primitive
 
+    raisedTo: exponent = (
+        "Raise the receiver to the given exponent.
+         Currently only positive integer exponents
+         are fully supported."
+        | output |
+        output := 1.0.
+        exponent asInteger 
+          timesRepeat: [ output := output * self ].
+        ^ output
+    )
+
     "Comparing"
     =  argument = primitive
     <  argument = primitive

@@ -43,6 +43,37 @@ VectorTest = TestCase (
     self assert: #world equals: (a at: 2).
     self assert:     23 equals: (a at: 3).
   )
+  
+  testAtPut = (
+    self assert: 'hello' equals: (a at: 1).
+    a at: 1 put: 11.
+    
+    self assert: 11 equals: (a at: 1).
+    
+    self assert: #world equals: (a at: 2).
+    self assert:     23 equals: (a at: 3).
+    
+    a at: 3 put: 33.
+    self assert: 33 equals: (a at: 3).
+  )
+  
+  testAtAfterRemoveFirst = (
+    self assert: 'hello' equals: (a at: 1).
+    a removeFirst.
+    self assert: #world equals: (a at: 1).
+    self assert:     23 equals: (a at: 2).
+  )
+  
+  testAtPutAfterRemoveFirst = (
+    a removeFirst.
+    a at: 1 put: 11.
+    a at: 2 put: 22.
+    
+    self assert: 11 equals: (a at: 1).
+    self assert: 22 equals: (a at: 2).
+    
+    self assert: 2 equals: a size
+  )
 
   testFirst = (
     | v |
@@ -174,6 +205,21 @@ VectorTest = TestCase (
     self assert: 2 equals: (arr at: 2).
   )
   
+  testAsArrayAfterRemoveFirst = (
+    | v arr |
+    v := Vector new.
+    v append: 1.
+    v append: 2.
+    v append: 5.
+    
+    v removeFirst.
+
+    arr := v asArray.
+    self assert: 2 equals: arr length.
+    self assert: 2 equals: (arr at: 1).
+    self assert: 5 equals: (arr at: 2).
+  )
+  
   testAsSet = (
     | v set |
     v := Vector new.
@@ -257,6 +303,21 @@ VectorTest = TestCase (
       i := i + 1.
     ].
     self assert: 6 equals: i.
+  )
+  
+  testDoIndexesAfterRemoveFirst = (
+    | i v |
+    v := Vector new.
+    v appendAll: #(1 2 3 4 5).
+    
+    v removeFirst.
+    
+    i := 1.
+    v doIndexes: [:j |
+      self assert: i equals: j.
+      i := i + 1 ].
+    
+    self assert: 5 equals: i.
   )
   
   testDo = (

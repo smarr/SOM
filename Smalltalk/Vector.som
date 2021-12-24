@@ -36,7 +36,7 @@ Vector = (
         ^ self checkIndex: index ifValid: [ storage at: index put: value ]
     )
 
-    first = ( ^ (self size > 0) ifTrue: [storage at: 1] ifFalse: [nil] )
+    first = ( ^ (self size > 0) ifTrue: [storage at: first] ifFalse: [nil] )
     last  = ( ^ (self size > 0) ifTrue: [storage at: last - 1] ifFalse: [nil] )
 
     "Iterating"
@@ -100,7 +100,9 @@ Vector = (
     )
 
     contains: anObject = (
-        ^ storage contains: anObject
+        self do: [ :element |
+            element = anObject ifTrue: [ ^ true ] ].
+        ^ false
     )
 
     "If anObject is in vector, return index of first occurrence.

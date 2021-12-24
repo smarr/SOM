@@ -54,7 +54,7 @@ VectorTest = TestCase (
       self assert: 1 equals: v first ].
 
     1 to: 10 do: [:i |
-      self assert: 1 equals: v first.
+      self assert: i equals: v first.
       v removeFirst ]
   )
 
@@ -73,7 +73,32 @@ VectorTest = TestCase (
   )
 
   testContains = (
+    self assert: (a contains: 'hello').
+    self assert: (a contains: #world).
     self assert: (a contains: 23).
+    self deny: (a contains: #nono).
+  )
+  
+  testContainsAfterRemoveFirst = (
+    a removeFirst.
+    
+    self deny: (a contains: 'hello').
+    self assert: (a contains: #world).
+    self assert: (a contains: 23).
+    self deny: (a contains: #nono).
+    
+    a removeFirst.
+    
+    self deny: (a contains: 'hello').
+    self deny: (a contains: #world).
+    self assert: (a contains: 23).
+    self deny: (a contains: #nono).
+    
+    a removeFirst.
+    
+    self deny: (a contains: 'hello').
+    self deny: (a contains: #world).
+    self deny: (a contains: 23).
     self deny: (a contains: #nono).
   )
 

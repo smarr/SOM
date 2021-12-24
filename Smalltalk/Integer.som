@@ -42,9 +42,13 @@ Integer = (
     negated     = ( ^0 - self )
 
     raisedTo: exponent = (
+        "Raise the receiver to the given exponent.
+         Currently only positive integer exponents
+         are fully supported."
         | output |
         output := 1.
-        exponent timesRepeat: [ output := output * self ].
+        exponent asInteger
+          timesRepeat: [ output := output * self ].
         ^ output
     )
 

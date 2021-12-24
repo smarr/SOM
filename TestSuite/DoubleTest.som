@@ -102,6 +102,18 @@ DoubleTest = TestCase (
 
     self assert:    0.0 equals: ( 0.0 raisedTo: 5).
     self assert:    1.0 equals: ( 0.0 raisedTo: 0).
+    
+    "Negative exponents are not yet supported"
+    self assert: 1.0 equals: ( 0.0 raisedTo:  -1).
+    self assert: 1.0 equals: ( 0.0 raisedTo:  -2).
+    self assert: 1.0 equals: (10.0 raisedTo:  -1).
+    self assert: 1.0 equals: (10.0 raisedTo:  -2).
+    
+    "Double exponents are not yet supported"
+    self assert: 2.0 equals: ( 2.0 raisedTo:  1.5).
+    self assert: 4.0 equals: ( 2.0 raisedTo:  2.4).
+    self assert: 4.0 equals: ( 2.0 raisedTo:  2.9).
+    self assert: 1.0 equals: ( 2.0 raisedTo:  -2.2).
   )
   
   testNegated = (

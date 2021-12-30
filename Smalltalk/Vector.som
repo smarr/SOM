@@ -78,7 +78,7 @@ Vector = (
     "Removing"
     remove = (
         | value |
-        self isEmpty ifTrue: [ self error: 'Vector: Attempting to pop element from empty Vector' ].
+        self isEmpty ifTrue: [ self error: 'Vector: Attempting to remove the last element from an empty Vector' ].
         last := last - 1.
         value := storage at: last.
         storage at: last put: nil.

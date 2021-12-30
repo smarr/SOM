@@ -132,6 +132,18 @@ VectorTest = TestCase (
     self deny: (a contains: 23).
     self deny: (a contains: #nono).
   )
+  
+  testContainsAfterRemovals = (
+    self deny: (a contains: nil).
+    
+    a removeFirst.
+    self deny: (a contains: nil).
+    
+    a remove.
+    self deny: (a contains: nil).
+    
+    self assert: (a contains: #world).
+  )
 
   testAppendAndRemoveFirst = (
     | v |

@@ -158,7 +158,7 @@ Vector = (
     "DeltaBlue"
     removeFirst = (
         | value |
-        self isEmpty ifTrue: [ self error: 'OrderedCollection is empty' ].
+        self isEmpty ifTrue: [ self error: 'Vector: Attempting to remove the first element from an empty Vector' ].
         value := storage at: first.
         storage at: first put: nil.
         first := first + 1.

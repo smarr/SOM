@@ -203,7 +203,7 @@ Test = Benchmark (
       "result do: [:e | e println ]."
       ^ (result at: 1) = 950 and: [
           (result at: 2) = 0 and: [
-            (result at: 3) = 950 and: [
+            (result at: 3) = 945 and: [
               (result at: 4) = 4960
         ] ] ]
     )

@@ -58,7 +58,7 @@ Vector = (
     , element = ( ^self append: element )
 
     append: element = (
-        (last >= storage length) ifTrue: [
+        (last > storage length) ifTrue: [
             "Need to expand capacity first"
             | newStorage |
             newStorage := Array new: (2 * storage length).

@@ -97,4 +97,20 @@ BooleanTest = TestCase (
       self assert: 'true'  equals: true asString.
       self assert: 'false' equals: false asString.
     )
+    
+    testIfNil = (
+      self assert: (nil ifNil: [ true ]).
+      self deny:   (nil ifNil: [ false ]).
+      
+      self assert: (self ifNil: [ #notExec ]) is: self.
+      self assert: (self ifNil: [ #notExec ]) is: self.
+    )
+    
+    testIfNotNil = (
+      self assert: (self ifNotNil: [ true ]).
+      self deny:   (self ifNotNil: [ false ]).
+      
+      self assert: (nil ifNotNil: [ #notExec ]) is: nil.
+      self assert: (nil ifNotNil: [ #notExec ]) is: nil.
+    )
 )

@@ -1,0 +1,80 @@
+"
+Copyright (c) 2022 see AUTHORS file
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the 'Software'), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+"
+SomInit = Benchmark (
+  | rnd vec benchHarn planner jsonLit jsonNum jsonStr jsonP parEx edge
+    lexer sblock sclass sdouble sinteger smethod sprimitive sstring |
+
+  oneTimeSetup = (
+    rnd     := Random new.
+    vec     := Vector new.
+    benchHarn := BenchmarkHarness new.
+    planner := Planner new.
+    jsonLit := JsonLiteral new.
+    jsonNum := JsonNumber new.
+    jsonStr := JsonString new.
+    jsonP   := JsonParser new.
+    parEx   := ParseException new.
+    edge    := Edge new.
+    
+    lexer  := Lexer new.
+    sblock := SBlock new.
+    sclass := SClass new.
+    
+    sdouble    := SDouble new.
+    sinteger   := SInteger new.
+    smethod    := SMethod new.
+    sprimitive := SPrimitive new.
+    sstring    := SString new.
+  )
+
+  benchmark = (
+    "Fannkuch new initialize: 1."
+    rnd initialize.
+    vec initialize: 1.
+    benchHarn initialize.
+    planner initialize.
+    
+    jsonLit initializeWith: 'null'.
+    jsonLit initializeWith: 'true'.
+    jsonLit initializeWith: 'false'.
+    jsonNum initializeWith: '123'.
+    jsonStr initializeWith: '123'.
+    jsonP initializeWith: '123'.
+
+    parEx initializeWith: 'msg' at: 1 line: 3 column: 55.
+    
+    edge initializeWith: self and: self.
+    lexer initialize: ''.
+    
+    sblock initialize: self in: self with: self.
+    sclass initialize: self.
+    sdouble initialize: 0.0.
+    sinteger initialize: 10.
+    smethod initializeWith: self bc: self literals: self numLocals: 1 maxStack: 1.
+    sprimitive initialize: #sym with: self.
+    sstring initializeWith: 'www'.
+  )
+  
+  verifyResult: result = (
+    ^ true
+  )
+)

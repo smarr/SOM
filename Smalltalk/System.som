@@ -88,6 +88,9 @@ System = (
 
     "Force Garbage Collection"
     fullGC = primitive
+    
+    gcStats = primitive
+    compilerTime = primitive
 
     ----------------------------------
 

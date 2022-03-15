@@ -77,6 +77,24 @@ SystemPrimitives = Primitives (
         frame push: (universe newInteger: ticks) ]).
 
     self installInstancePrimitive: (
+      SPrimitive new: 'gcStats' in: universe with: [:frame :interp |
+        | gcStats arr |
+        frame pop. "ignore"
+        gcStats := system gcStats.
+        arr := universe newArray: 2.
+        arr indexableField: 1 put: (universe newInteger: (gcStats at: 1)).
+        arr indexableField: 2 put: (universe newInteger: (gcStats at: 2)).
+        
+        frame push: arr ]).
+
+    self installInstancePrimitive: (
+      SPrimitive new: 'totalCompilationTime' in: universe with: [:frame :interp |
+        | cTime |
+        frame pop. "ignore"
+        cTime := system totalCompilationTime.
+        frame push: (universe newInteger: cTime) ]).
+
+    self installInstancePrimitive: (
       SPrimitive new: 'fullGC' in: universe with: [:frame :interp |
         frame pop. "ignore"
         system fullGC.

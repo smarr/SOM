@@ -88,6 +88,12 @@ System = (
 
     "Force Garbage Collection"
     fullGC = primitive
+    
+    "To be implemented by SOM implementations that gather such statistics."
+    gcStats = ( ^ #(
+        0 "Total number of GCs"
+        0 "Estimated total GC time in milliseconds") )  
+    totalCompilationTime = ( ^ 0 "Estimated total compilation time in milliseconds" )
 
     ----------------------------------
 

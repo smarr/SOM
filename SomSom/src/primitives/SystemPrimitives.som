@@ -88,10 +88,10 @@ SystemPrimitives = Primitives (
         frame push: arr ]).
 
     self installInstancePrimitive: (
-      SPrimitive new: 'compilerTime' in: universe with: [:frame :interp |
+      SPrimitive new: 'totalCompilationTime' in: universe with: [:frame :interp |
         | cTime |
         frame pop. "ignore"
-        cTime := system compilerTime.
+        cTime := system totalCompilationTime.
         frame push: (universe newInteger: cTime) ]).
 
     self installInstancePrimitive: (

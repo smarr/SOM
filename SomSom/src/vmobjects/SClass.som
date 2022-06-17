@@ -130,7 +130,7 @@ SClass = SObject (
 
   instanceFieldName: index = (
     "Get the name of the instance field with the given index"
-    index > self getNumberOfSuperInstanceFields
+    index > self numberOfSuperInstanceFields
       ifTrue: [
         | idx |
         "Adjust the index to account for fields defined in the super class"

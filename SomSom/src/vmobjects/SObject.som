@@ -19,12 +19,12 @@ SObject = SAbstractObject (
 
   fieldName: index = (
     "Get the name of the field with the given index"
-    ^ somClass instanceFieldName: index
+    ^ clazz instanceFieldName: index
   )
 
   fieldIndex: name = (
     "Get the index for the field with the given name"
-    ^ somClass lookupFieldIndex: name
+    ^ clazz lookupFieldIndex: name
   )
 
   numberOfFields = (

@@ -103,6 +103,15 @@ BlockTest = TestCase (
       ^ 0
     )
     
+    testToDoAsResultOfIfTrue = (
+      | result |
+      result := true ifTrue: [
+        1 to: 2 do: [:i | 4 ]
+      ].
+    
+      self assert: 1 equals: result
+    )
+    
     testReturnWithSomething = (
       | result |
       result := self returnVal: 3 predicate: nil.

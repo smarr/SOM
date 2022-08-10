@@ -28,6 +28,19 @@ BooleanTest = TestCase (
       self deny: b.
     )
     
+    testIfTrueWithValueBlock = (
+      | b block |
+      b := false.
+      block := [ b := true ].
+      
+      true ifTrue: block.
+      self assert: b.
+      
+      b := false.
+      false ifTrue: block.
+      self deny: b.
+    ) 
+    
     testIfFalse = (
       | b |
       b := false.
@@ -37,6 +50,19 @@ BooleanTest = TestCase (
       
       b := false.
       false ifFalse: [ b := true ].
+      self assert: b.
+    )
+
+    testIfFalseWithValueBlock = (
+      | b block |
+      b := false.
+      block := [ b := true ].
+      
+      true ifFalse: block.
+      self deny: b.
+      
+      b := false.
+      false ifFalse: block.
       self assert: b.
     )
     

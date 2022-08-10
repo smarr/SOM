@@ -97,4 +97,20 @@ BlockTest = TestCase (
       [ i >= 10 ] whileFalse: [ i := i + 1 ].
       self assert: 10 equals: i.
     )
+    
+    testSuperExpressionInBlock = (
+      | result |
+      result := BlockTest helperForTestSuperExpressionInBlock.
+      self assert: BlockTest is: result.
+    )
+    
+    ----
+    
+    doInTest: block = (
+      ^ block value
+    )
+    
+    helperForTestSuperExpressionInBlock = (
+      ^ self doInTest: [ (super new) class ]
+    )
 )

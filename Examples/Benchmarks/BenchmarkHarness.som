@@ -130,6 +130,7 @@ BenchmarkHarness = (
             printAll ifTrue: [
               bench name print. ': GC count:     ' print. (((endGcStats) at: 1) - ((startGcStats) at: 1)) print. 'n' println.
               bench name print. ': GC time:      ' print. (((endGcStats) at: 2) - ((startGcStats) at: 2)) print. 'ms' println.
+              bench name print. ': Allocated:    ' print. (((endGcStats) at: 3) - ((startGcStats) at: 3)) print. 'bytes' println.
               bench name print. ': Compile time: ' print. (endCompTime - startCompTime) print. 'ms' println.
               self print: bench run: runTime ].
         

@@ -81,10 +81,11 @@ SystemPrimitives = Primitives (
         | gcStats arr |
         frame pop. "ignore"
         gcStats := system gcStats.
-        arr := universe newArray: 2.
+        arr := universe newArray: 3.
         arr indexableField: 1 put: (universe newInteger: (gcStats at: 1)).
         arr indexableField: 2 put: (universe newInteger: (gcStats at: 2)).
-        
+        arr indexableField: 3 put: (universe newInteger: (gcStats at: 3)).
+
         frame push: arr ]).
 
     self installInstancePrimitive: (

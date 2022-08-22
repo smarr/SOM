@@ -92,7 +92,8 @@ System = (
     "To be implemented by SOM implementations that gather such statistics."
     gcStats = ( ^ #(
         0 "Total number of GCs"
-        0 "Estimated total GC time in milliseconds") )  
+        0 "Estimated total GC time in milliseconds"
+        0 "Approximate number of allocated bytes of current thread") )  
     totalCompilationTime = ( ^ 0 "Estimated total compilation time in milliseconds" )
 
     ----------------------------------

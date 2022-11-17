@@ -1,0 +1,190 @@
+ObjectModelTest = TestCase (
+  | field1  field2  field3  field4  field5  field6  field7  field8  field9  field10
+    field11 field12 field13 field14 field15 field16 field17 field18 field19 field20
+  |
+
+  testEmptyRead = (
+    self assert: field1  is: nil.
+    self assert: field2  is: nil.
+    self assert: field3  is: nil.
+    self assert: field4  is: nil.
+    self assert: field5  is: nil.
+    self assert: field6  is: nil.
+    self assert: field7  is: nil.
+    self assert: field8  is: nil.
+    self assert: field9  is: nil.
+    self assert: field10 is: nil.
+    self assert: field11 is: nil.
+    self assert: field12 is: nil.
+    self assert: field13 is: nil.
+    self assert: field14 is: nil.
+    self assert: field15 is: nil.
+    self assert: field16 is: nil.
+    self assert: field17 is: nil.
+    self assert: field18 is: nil.
+    self assert: field19 is: nil.
+    self assert: field20 is: nil.
+  )
+
+  read1 = (
+    ^ field1
+  )
+
+  set1: val = (
+    field1 := val
+  )
+
+  testSet1Field = (
+    self assert: self read1 is: nil.
+    self set1: 1.
+    self assert: self read1 equals: 1.
+
+    self set1: 45.5.
+    self assert: self read1 equals: 45.5.
+
+    self set1: #rr.
+    self assert: self read1 equals: #rr.
+  )
+
+  testSetPrimFields = (
+    field2 := 2.
+    field3 := 3.
+    field4 := 4.
+    field5 := 5.
+    field6 := 6.
+    field7 := 7.
+    field8 := 8.
+
+    self set1: 1.
+
+    self assert: 1 equals: field1.
+    self assert: 2 equals: field2.
+    self assert: 3 equals: field3.
+    self assert: 4 equals: field4.
+    self assert: 5 equals: field5.
+    self assert: 6 equals: field6.
+    self assert: 7 equals: field7.
+    self assert: 8 equals: field8.
+
+    self assert: nil is: field9 .
+    self assert: nil is: field10.
+    self assert: nil is: field11.
+    self assert: nil is: field12.
+    self assert: nil is: field13.
+    self assert: nil is: field14.
+    self assert: nil is: field15.
+    self assert: nil is: field16.
+    self assert: nil is: field17.
+    self assert: nil is: field18.
+    self assert: nil is: field19.
+    self assert: nil is: field20.
+
+    field3 := #rrr.
+
+    self assert: field1  equals: 1.
+    self assert: field2  equals: 2.
+    self assert: field3  equals: #rrr.
+    self assert: field4  equals: 4.
+    self assert: field5  equals: 5.
+    self assert: field6  equals: 6.
+    self assert: field7  equals: 7.
+    self assert: field8  equals: 8.
+
+    self assert: nil is: field9 .
+    self assert: nil is: field10.
+    self assert: nil is: field11.
+    self assert: nil is: field12.
+    self assert: nil is: field13.
+    self assert: nil is: field14.
+    self assert: nil is: field15.
+    self assert: nil is: field16.
+    self assert: nil is: field17.
+    self assert: nil is: field18.
+    self assert: nil is: field19.
+    self assert: nil is: field20.
+  )
+
+  testPrimFieldAndNil = (
+    field4 := 4.
+    self assert: 4 equals: field4.
+    field4 := nil.
+    self assert: nil is: field4.
+  )
+
+  testPrimToObjectFieldAndNil = (
+    field6 := 6.
+    self assert: 6 equals: field6.
+    field6 := 5.5.
+    self assert: 5.5 equals: field6.
+
+    field6 := nil.
+    self assert: nil is: field6.
+
+    field6 := #six.
+
+    self assert: #six is: field6.
+
+    field6 := nil.
+
+    self assert: nil is: field6.
+  )
+
+  testObjectFieldAndNil = (
+    self assert: field20 is: nil.
+    field20 := #foo.
+    self assert: field20 is: #foo.
+
+    field20 := nil.
+    self assert: field20 is: nil.
+  )
+
+ assertAll = (
+   self assert:  1 equals: field1.
+   self assert:  2 equals: field2.
+   self assert:  3 equals: field3.
+   self assert:  4 equals: field4.
+   self assert:  5 equals: field5.
+   self assert:  6 equals: field6.
+   self assert:  7 equals: field7.
+   self assert:  8 equals: field8.
+   self assert:  9 equals: field9.
+   self assert: 10 equals: field10.
+
+   self assert: #sym11 equals: field11.
+   self assert: #sym12 equals: field12.
+   self assert: #sym13 equals: field13.
+   self assert: #sym14 equals: field14.
+   self assert: #sym15 equals: field15.
+   self assert: #sym16 equals: field16.
+   self assert: #sym17 equals: field17.
+   self assert: #sym18 equals: field18.
+   self assert: #sym19 equals: field19.
+   self assert: #sym20 equals: field20.
+ )
+
+ testSetAllFieldsAndChangeLayout = (
+   field1 := 1.
+   field2 := 2.
+   field3 := 3.
+   field4 := 4.
+   field5 := 5.
+   field6 := 6.
+   field7 := 7.
+   field8 := 8.
+   field9 := 9.
+   field10 := 10.
+
+   field11 := #sym11.
+   field12 := #sym12.
+   field13 := #sym13.
+   field14 := #sym14.
+   field15 := #sym15.
+   field16 := #sym16.
+   field17 := #sym17.
+   field18 := #sym18.
+   field19 := #sym19.
+   field20 := #sym20.
+
+   self assertAll.
+ )
+)

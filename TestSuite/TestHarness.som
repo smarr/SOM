@@ -44,6 +44,8 @@ TestHarness = (
           GlobalTest,
           HashTest,
           IntegerTest,
+          ObjectModelTest,
+          ObjectModelDispatchTest,
           PreliminaryTest,
           ReflectionTest,
           SelfBlockTest,

@@ -196,13 +196,9 @@ Parser = (
     | s |
     s := text.
 
-    (self accept: #or) or: [
-    (self accept: #comma) or: [
-    (self accept: #minus) or: [
-    (self accept: #equal) or: [
     (self accept: #operatorSequence) or: [
     (self acceptOneOf: Parser singleOpSyms) or: [
-        self expect: #none ] ] ] ] ] ].
+        self expect: #none ] ].
 
     ^ universe symbolFor: s
   )
@@ -692,7 +688,7 @@ Parser = (
   singleOpSyms = (
     singleOpSyms == nil ifTrue: [
       singleOpSyms := #(#not #and #or #star #div #mod #plus #equal
-                        #more #less #comma #at #per #none) ].
+                        #more #less #comma #at #per #minus #none) ].
     ^ singleOpSyms
   )
 

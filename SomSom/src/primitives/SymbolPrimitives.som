@@ -7,14 +7,6 @@ SymbolPrimitives = Primitives (
         rcvr := frame pop.
 
         frame push: (universe newString: rcvr string) ]).
-
-    self installInstancePrimitive: (
-      SPrimitive new: '=' in: universe with: [:frame :interp |
-        | rcvr arg |
-        arg := frame pop.
-        rcvr := frame pop.
-
-        frame push: (self somBool: rcvr == arg) ] ) dontWarn: true.
   )
 
   ----

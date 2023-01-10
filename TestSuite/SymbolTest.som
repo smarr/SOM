@@ -41,7 +41,7 @@ SymbolTest = TestCase (
     self deny: #foo =  #fooo.
     self deny: #foo == #fooo.
 
-    self deny: #foo =  'foo'.
+    self assert: #foo = 'foo'.
     self deny: #foo == 'fooo'.
     self deny: #foo == #foo asString.
   )

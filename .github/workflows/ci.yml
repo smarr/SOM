@@ -72,7 +72,7 @@ jobs:
     name: ${{ matrix.name }}
     steps:
       - name: Checkout SOM Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Checkout SOM VM Repository
         if: matrix.som != 'spec'
@@ -82,7 +82,7 @@ jobs:
           export GITHUB_USER=${{ github.actor }}
           export PR_TARGET_USER=${{ github.repository_owner }}
           export REPO=${{ matrix.repo }}
-          
+
           GIT_CMDS=(
             "git clone --branch $BRANCH_NAME --depth 1 https://github.com/$GITHUB_USER/$REPO som-vm"
           )
@@ -93,12 +93,12 @@ jobs:
               "git clone --branch ${{ github.head_ref }} --depth 1 https://github.com/$GITHUB_USER/$REPO som-vm"
             )
           fi
-          
+
           GIT_CMDS+=(
             "git clone --depth 1 https://github.com/$GITHUB_USER/$REPO som-vm"
             "git clone --depth 1 https://github.com/$PR_TARGET_USER/$REPO som-vm"
           )
-          
+
           for ((i = 0; i < ${#GIT_CMDS[@]}; i++))
           do
             echo ""
@@ -124,19 +124,19 @@ jobs:
         run: |
           cd specification
           make test
-      
+
       - name: Check Whether Basic Interpreter Tests are Up to Date
         if: ${{ matrix.som == 'spec' }}
         run: |
           ./TestSuite/BasicInterpreterTests/number-of-tests.sh
-      
+
       - name: Build SOM VM
         if: ${{ matrix.som != 'spec' }}
         run: |
           export ST_DIR=`pwd`/Smalltalk
           cd som-vm
           git --no-pager log -n 1
-      
+
           echo Build ${{ matrix.repo }}
           ${{ matrix.build }}
 
@@ -151,7 +151,7 @@ jobs:
           else
             export SOM_TESTS="${{ matrix.som-tests }}"
           fi
-      
+
           echo "${{ matrix.som }} $SOM_TESTS"
           eval "${{ matrix.som }} $SOM_TESTS"
 

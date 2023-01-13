@@ -27,6 +27,11 @@ THE SOFTWARE.
 
 SymbolTest = TestCase (
 
+  testConcatenation = (
+    self assert: #a + #b is: #ab.
+    self assert: #a + 'b' is: #ab.
+  )
+
   testConversion = (
     self assert: 'gunk' equals: 'gunk' asSymbol asString.
     self assert: 'oink' equals: #oink asString.

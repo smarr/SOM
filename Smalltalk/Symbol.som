@@ -25,11 +25,13 @@ THE SOFTWARE.
 
 Symbol = String (
 
+    concatenate: argument = ( ^ (super concatenate: argument) asSymbol )
+
     "Converting"
     asString = primitive
     asSymbol = ( ^self )
-    
+
     "Printing"
     print    = ( '#' print. super print )
-    
+
 )

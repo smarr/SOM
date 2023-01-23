@@ -21,6 +21,12 @@ TestCase = (
              description: [self comparingStringBetween: expected and: actual]
     )
 
+    assert: expected equals: actual description: aStringOrBlock = (
+        "test value equality"
+        self assert: (expected = actual)
+             description: aStringOrBlock
+    )
+
     assert: expected is: actual = (
         "test reference equality"
         self assert: (expected == actual)

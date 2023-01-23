@@ -63,6 +63,22 @@ TestCase = (
         self assert: aBooleanOrBlock value not description: aString
     )
 
+    deny: expected equals: actual = (
+        "test value equality"
+        self deny: (expected = actual)
+             description: [
+                'Expected ' + expected asString +
+                ' to differ from ' + actual asString + '.' ]
+    )
+
+    deny: expected is: actual = (
+        "test value equality"
+        self deny: (expected == actual)
+             description: [
+                'Expected ' + expected asString +
+                ' to have different identity from ' + actual asString + '.' ]
+    )
+
     optional: aSymbol deny: aBoolean = (
         self optional: aSymbol assert: aBoolean not
     )

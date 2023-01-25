@@ -119,6 +119,39 @@ BooleanTest = TestCase (
       self deny:   self pipeBoolFalseFalse.
     )
 
+    testBlockSideEffectsOnLogicOps = (
+      | changed unused |
+      changed := false.
+
+      "#and:"
+      unused := true and: [ changed := #case1. true ].
+      self assert: changed is: #case1.
+
+      unused := false and: [ changed := #no. true ].
+      self assert: changed is: #case1.
+
+      "&&"
+      unused := true && [ changed := #case2. true ].
+      self assert: changed is: #case2.
+
+      unused := false && [ changed := #no. true ].
+      self assert: changed is: #case2.
+
+      "#or:"
+      unused := true or: [ changed := #no. true ].
+      self assert: changed is: #case2.
+
+      unused := false or: [ changed := #case3. true ].
+      self assert: changed is: #case3.
+
+      "||"
+      unused := true || [ changed := #no. true ].
+      self assert: changed is: #case3.
+
+      unused := false || [ changed := #case4. true ].
+      self assert: changed is: #case4.
+    )
+
     testAsString = (
       self assert: 'true'  equals: true asString.
       self assert: 'false' equals: false asString.

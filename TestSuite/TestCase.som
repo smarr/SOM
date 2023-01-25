@@ -21,6 +21,12 @@ TestCase = (
              description: [self comparingStringBetween: expected and: actual]
     )
 
+    assert: expected equals: actual description: aStringOrBlock = (
+        "test value equality"
+        self assert: (expected = actual)
+             description: aStringOrBlock
+    )
+
     assert: expected is: actual = (
         "test reference equality"
         self assert: (expected == actual)
@@ -55,6 +61,22 @@ TestCase = (
 
     deny: aBooleanOrBlock description: aString = (
         self assert: aBooleanOrBlock value not description: aString
+    )
+
+    deny: expected equals: actual = (
+        "test value equality"
+        self deny: (expected = actual)
+             description: [
+                'Expected ' + expected asString +
+                ' to differ from ' + actual asString + '.' ]
+    )
+
+    deny: expected is: actual = (
+        "test value equality"
+        self deny: (expected == actual)
+             description: [
+                'Expected ' + expected asString +
+                ' to have different identity from ' + actual asString + '.' ]
     )
 
     optional: aSymbol deny: aBoolean = (

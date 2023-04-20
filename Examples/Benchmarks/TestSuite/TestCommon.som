@@ -1,0 +1,94 @@
+"
+
+$Id: TestHarness.som 30 2009-07-31 12:20:25Z michael.haupt $
+
+Copyright (c) 2001-2013 see AUTHORS file
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the 'Software'), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+"
+
+TestCommon = Benchmark (
+    | failOnUnsupportedOptionals |
+
+    tests = ( "Now ordered by alphabetical order to improve maintainability"
+        self error: 'Implement in subclass'
+    )
+
+    numExecs = (
+      self error: 'Implement in subclass and return the number of times a test is executed'
+    )
+    
+    oneTimeSetup = (
+      "Load all Tests. We don't really want to benchmark the parser."
+      self tests
+    )
+
+    runAllSuites = (
+      | totalTestNum successfulTestNum unsupportedTestNum totalAssertionNum arr |
+      totalTestNum := 0.
+      unsupportedTestNum := 0.
+      successfulTestNum := 0.
+      totalAssertionNum := 0.
+
+      self tests do: [ :test |
+        | runner |
+        runner := TestRunner new.
+        runner initializeOn: test.
+        runner runAllTests.
+
+        totalTestNum       := totalTestNum + runner expectedPasses.
+        unsupportedTestNum := unsupportedTestNum + runner actualUnsupported.
+        successfulTestNum  := successfulTestNum + runner actualPasses.
+        totalAssertionNum  := totalAssertionNum + runner numAsserts.
+      ].
+
+      arr := Array new: 4.
+      arr at: 1 put: totalTestNum.
+      arr at: 2 put: unsupportedTestNum.
+      arr at: 3 put: successfulTestNum.
+      arr at: 4 put: totalAssertionNum.
+      ^ arr
+    )
+
+    runOneSuite: name = (
+      | testName runner |
+      testName := name.
+      (testName endsWith: 'Test') ifFalse: [
+        testName := testName + 'Test'].
+
+      runner := TestRunner new.
+      runner initializeOn: (system resolve: testName asSymbol).
+      runner run.
+      runner hasFailures ifTrue: [system exit: 1]
+    )
+    
+    benchmark = (
+        failOnUnsupportedOptionals := false.
+        ^ self runAllSuites
+    )
+    
+    verifyResult: result = (
+      "result do: [:e | e println ]."
+      ^ (result at: 1) = (190 * self numExecs) and: [
+          (result at: 2) = (0 * self numExecs) and: [
+            (result at: 3) = (189 * self numExecs) and: [
+              (result at: 4) = (992 * self numExecs)
+        ] ] ]
+    )
+)

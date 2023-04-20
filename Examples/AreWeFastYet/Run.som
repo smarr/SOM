@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 "
 Run = (
-  | total numIterations innerIterations benchmarkSuite name |
+  | total numIterations innerIterations benchmarkSuite name doGC |
 
   initialize: aName = (
     name            := aName.
@@ -43,6 +43,7 @@ Run = (
   benchmarkSuite: aSuite = ( benchmarkSuite  := aSuite )
   numIterations:   anInt = ( numIterations   := anInt )
   innerIterations: anInt = ( innerIterations := anInt )
+  doGC: aBool            = ( doGC := aBool )
 
   runBenchmark = (
     ('Starting ' + name + ' benchmark ... ') println.
@@ -54,16 +55,25 @@ Run = (
   )
 
   measure: bench = (
-    | startTime endTime runTime |
-    startTime := system ticks.
+    | startTime endTime runTime endGcStats startGcStats startCompTime endCompTime |
+    startGcStats  := system gcStats.
+    startCompTime := system totalCompilationTime.
+    startTime     := system ticks.
+
     (bench innerBenchmarkLoop: innerIterations) ifFalse: [
       self error: 'Benchmark failed with incorrect result'. ].
-    endTime   := system ticks.
+
+    endTime     := system ticks.
+    endGcStats  := system gcStats.
+    endCompTime := system totalCompilationTime.
 
     runTime := endTime - startTime.
-    self printResult: runTime.
+    self printResult: runTime startGc: startGcStats endGc: endGcStats compileTime: endCompTime - startCompTime.
 
     total := total + runTime.
+
+    doGC ifTrue: [
+      system fullGC ]
   )
 
   doRuns: bench = (
@@ -78,7 +88,12 @@ Run = (
      'us\n') println.
   )
 
-  printResult: runTime = (
+  printResult: runTime startGc: startGc endGc: endGc compileTime: compTime = (
+    name print. ': GC count:     ' print. (((endGc) at: 1) - ((startGc) at: 1)) print. 'n' println.
+    name print. ': GC time:      ' print. (((endGc) at: 2) - ((startGc) at: 2)) print. 'ms' println.
+    name print. ': Allocated:    ' print. (((endGc) at: 3) - ((startGc) at: 3)) print. 'bytes' println.
+    name print. ': Compile time: ' print. compTime print. 'ms' println.
+
     (name + ': iterations=1 runtime: ' + runTime + 'us') println
   )
 

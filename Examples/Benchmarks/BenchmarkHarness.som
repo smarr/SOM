@@ -115,9 +115,9 @@ BenchmarkHarness = (
     
         [ i < numIterations ] whileTrue: [
             | startTime endTime runTime endGcStats startGcStats startCompTime endCompTime |
-            startGcStats := system gcStats.
+            startGcStats  := system gcStats.
             startCompTime := system totalCompilationTime.
-            startTime := system ticks.
+            startTime     := system ticks.
 
             (bench innerBenchmarkLoop: innerIterations) ifFalse: [
               self error: 'Benchmark failed with incorrect result'. ].
@@ -128,11 +128,7 @@ BenchmarkHarness = (
 
             runTime := endTime - startTime.
             printAll ifTrue: [
-              bench name print. ': GC count:     ' print. (((endGcStats) at: 1) - ((startGcStats) at: 1)) print. 'n' println.
-              bench name print. ': GC time:      ' print. (((endGcStats) at: 2) - ((startGcStats) at: 2)) print. 'ms' println.
-              bench name print. ': Allocated:    ' print. (((endGcStats) at: 3) - ((startGcStats) at: 3)) print. 'bytes' println.
-              bench name print. ': Compile time: ' print. (endCompTime - startCompTime) print. 'ms' println.
-              self print: bench run: runTime ].
+              self print: bench run: runTime startGc: startGcStats endGc: endGcStats compileTime: endCompTime - startCompTime ].
         
             total := total + runTime.
             i := i + 1.
@@ -155,11 +151,13 @@ BenchmarkHarness = (
         'us' println.
     )
      
-    print: bench run: runTime = (
-        bench name print.
-        ': iterations=1 runtime: ' print.
-        runTime print.
-        'us' println
+    print: bench run: runTime startGc: startGc endGc: endGc compileTime: compTime = (
+        bench name print. ': GC count:     ' print. (((endGc) at: 1) - ((startGc) at: 1)) print. 'n' println.
+        bench name print. ': GC time:      ' print. (((endGc) at: 2) - ((startGc) at: 2)) print. 'ms' println.
+        bench name print. ': Allocated:    ' print. (((endGc) at: 3) - ((startGc) at: 3)) print. 'bytes' println.
+        bench name print. ': Compile time: ' print. compTime print. 'ms' println.
+
+        bench name print. ': iterations=1 runtime: ' print. runTime print. 'us' println
     )
         
     printTotal = (

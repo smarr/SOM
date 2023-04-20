@@ -20,9 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 "
 
-TestGC = Benchmark (
-    | failOnUnsupportedOptionals |
-
+TestGC = TestGCCommon (
     tests = ( "Now ordered by alphabetical order to improve maintainability"
         ^ EmptyTest,
           SpecialSelectorsTest,
@@ -147,56 +145,7 @@ TestGC = Benchmark (
           Vector5Test
     )
     
-    oneTimeSetup = (
-      "Load all Tests. We don't really want to benchmark the parser."
-      self tests
-    )
-
-    runAllSuites = (
-      | totalTestNum successfulTestNum unsupportedTestNum totalAssertionNum arr |
-      totalTestNum := 0.
-      unsupportedTestNum := 0.
-      successfulTestNum := 0.
-      totalAssertionNum := 0.
-
-      self tests do: [ :test |
-        | runner |
-        runner := TestRunner new.
-        runner initializeOn: test.
-        runner runAllTests.
-
-        totalTestNum       := totalTestNum + runner expectedPasses.
-        unsupportedTestNum := unsupportedTestNum + runner actualUnsupported.
-        successfulTestNum  := successfulTestNum + runner actualPasses.
-        totalAssertionNum  := totalAssertionNum + runner numAsserts.
-      ].
-
-      arr := Array new: 4.
-      arr at: 1 put: totalTestNum.
-      arr at: 2 put: unsupportedTestNum.
-      arr at: 3 put: successfulTestNum.
-      arr at: 4 put: totalAssertionNum.
-      ^ arr
-    )
-
-    runOneSuite: name = (
-      | testName runner |
-      testName := name.
-      (testName endsWith: 'Test') ifFalse: [
-        testName := testName + 'Test'].
-
-      runner := TestRunner new.
-      runner initializeOn: (system resolve: testName asSymbol).
-      runner run.
-      runner hasFailures ifTrue: [system exit: 1]
-    )
-    
     benchmark = (
       ^ system fullGC
-    )
-    
-    verifyResult: result = (
-      "We expect the GC to actually promise us that it did work"
-      ^ result
     )
 )

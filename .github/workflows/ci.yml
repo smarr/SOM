@@ -161,3 +161,12 @@ jobs:
         run: |
           cd som-vm
           ${{ matrix.som }} -cp ../Smalltalk:../TestSuite:../SomSom/src/compiler:../SomSom/src/interpreter:../SomSom/src/primitives:../SomSom/src/vm:../SomSom/src/vmobjects  ../SomSom/tests/SomSomTests.som
+      
+      - name: Test Unit Test Benchmark
+        if: ${{ matrix.repo == 'JsSOM.git' }}
+        run: |
+          cd Examples/Benchmarks/TestSuite
+          ./duplicate-tests.sh
+          cd ../../../som-vm
+          ${{ matrix.som }} -cp ../Smalltalk:../Examples/Benchmarks/TestSuite ../Examples/Benchmarks/BenchmarkHarness.som --gc TestGC100 1 1
+          ${{ matrix.som }} -cp ../Smalltalk:../Examples/Benchmarks/TestSuite ../Examples/Benchmarks/BenchmarkHarness.som Test100 1 1

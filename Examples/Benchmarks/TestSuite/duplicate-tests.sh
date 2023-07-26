@@ -1,8 +1,15 @@
-#!/bin/sh
+#!/bin/bash
+UNAME="$(uname -s)"
+
 echo "Currently, we can only do up to 10 classes, because otherwise, we have too many literals in a single method"
 for i in $(seq 1 100)
 do
-  echo $i
+  if [ $(($i % 20)) -eq "0" ]
+  then
+    echo ". $i"
+  else
+    echo -n "."
+  fi
 
   TESTS=("Array" "Block" "Boolean" "ClassLoading" "ClassStructure" "Closure" "Coercion"
          "CompilerReturn" "Dictionary" "DoesNotUnderstand" "Double" "Empty" "Global"
@@ -13,7 +20,11 @@ do
   for name in ${TESTS[@]}
   do
     cp "${name}Test.som" "${name}${i}Test.som"
-    sed -i '' "s/${name}Test =/${name}${i}Test =/g" "${name}${i}Test.som"
+    if [ "${UNAME}" = "Darwin" ]; then
+      sed -i '' "s/${name}Test =/${name}${i}Test =/g" "${name}${i}Test.som"
+    else
+      sed -i'' "s/${name}Test =/${name}${i}Test =/g" "${name}${i}Test.som"
+    fi
   done
 
   # Create TestGC${i}.som

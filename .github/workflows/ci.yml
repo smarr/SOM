@@ -163,7 +163,7 @@ jobs:
           ${{ matrix.som }} -cp ../Smalltalk:../TestSuite:../SomSom/src/compiler:../SomSom/src/interpreter:../SomSom/src/primitives:../SomSom/src/vm:../SomSom/src/vmobjects  ../SomSom/tests/SomSomTests.som
       
       - name: Test Unit Test Benchmark
-        if: ${{ matrix.repo == 'JsSOM.git' }}
+        if: ${{ matrix.repo == 'som-java.git' }}
         run: |
           cd Examples/Benchmarks/TestSuite
           ./duplicate-tests.sh

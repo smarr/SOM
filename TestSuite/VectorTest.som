@@ -103,6 +103,18 @@ VectorTest = TestCase (
       v remove ]
   )
 
+  testRemoveOnEmptyWithSubclass = (
+    | v |
+    v := VectorSubclass new.
+    self assert: #error is: v remove.
+  )
+
+  testRemoveFirstOnEmptyWithSubclass = (
+    | v |
+    v := VectorSubclass new.
+    self assert: #error is: v removeFirst.
+  )
+
   testContains = (
     self assert: (a contains: 'hello').
     self assert: (a contains: #world).

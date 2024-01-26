@@ -78,7 +78,7 @@ Vector = (
     "Removing"
     remove = (
         | value |
-        self isEmpty ifTrue: [ self error: 'Vector: Attempting to remove the last element from an empty Vector' ].
+        self isEmpty ifTrue: [ ^ self error: 'Vector: Attempting to remove the last element from an empty Vector' ].
         last := last - 1.
         value := storage at: last.
         storage at: last put: nil.
@@ -158,7 +158,7 @@ Vector = (
     "DeltaBlue"
     removeFirst = (
         | value |
-        self isEmpty ifTrue: [ self error: 'Vector: Attempting to remove the first element from an empty Vector' ].
+        self isEmpty ifTrue: [ ^ self error: 'Vector: Attempting to remove the first element from an empty Vector' ].
         value := storage at: first.
         storage at: first put: nil.
         first := first + 1.

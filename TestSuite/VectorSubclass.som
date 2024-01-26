@@ -1,0 +1,5 @@
+VectorSubclass = Vector (
+  error: string = (
+    ^ #error
+  )
+)

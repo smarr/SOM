@@ -47,7 +47,14 @@ jobs:
             repo: TruffleSOM.git
             build: |
               export JAVA_HOME=$JAVA_HOME_17_X64
-              ant jar
+              ./som --setup mx
+              export PATH=$PATH:`pwd`/../mx
+              ./som --setup labsjdk
+              mx sforceimport
+              rm libs/jvmci || true
+              ./som --setup labsjdk
+              mx build
+
             som: "JAVA_HOME=$JAVA_HOME_17_X64 ./som -G"
             not-up-to-date: false
 

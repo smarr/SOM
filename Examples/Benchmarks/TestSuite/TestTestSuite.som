@@ -1,0 +1,30 @@
+TestTestSuite = TestHarness (
+  tests = ( "Now ordered by alphabetical order to improve maintainability"
+        ^ Array1Test,
+          Block1Test,
+          Boolean1Test,
+          ClassLoading1Test,
+          ClassStructure1Test,
+          Closure1Test,
+          Coercion1Test,
+          CompilerReturn1Test,
+          Dictionary1Test,
+          DoesNotUnderstand1Test,
+          Double1Test,
+          Empty1Test,
+          Global1Test,
+          Hash1Test,
+          Integer1Test,
+          Preliminary1Test,
+          Reflection1Test,
+          SelfBlock1Test,
+          Set1Test,
+          SpecialSelectors1Test,
+          String1Test,
+          Super1Test,
+          Symbol1Test,
+          System1Test,
+          Vector1Test
+    )
+)
+

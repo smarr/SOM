@@ -14,7 +14,7 @@ jobs:
             repo: SOMpp.git
             apt: libcppunit-dev
             build: "cmake . && make SOM++"
-            som:   "./som.sh"
+            som: "./som.sh"
             not-up-to-date: true
 
           - name: CSOM
@@ -23,13 +23,13 @@ jobs:
               export COMPILER=gcc
               export ARCH=64bit
               make
-            som:   "./som.sh"
+            som: "./som.sh"
             not-up-to-date: true
 
           - name: JsSOM
             repo: JsSOM.git
             build: ""
-            som:   "./som.sh"
+            som: "./som.sh"
             not-up-to-date: true
 
           - name: PySOM
@@ -39,7 +39,7 @@ jobs:
 
           - name: SOM (Java)
             build: make
-            som:  ./som.sh
+            som: ./som.sh
             repo: som-java.git
             not-up-to-date: false
 
@@ -59,7 +59,7 @@ jobs:
             not-up-to-date: false
 
           - name: Specification Tests
-            som:  spec
+            som: spec
             not-up-to-date: false
 
           - name: SOM-RS
@@ -72,7 +72,7 @@ jobs:
           - name: ykSOM
             repo: yksom.git
             build: "cargo build"
-            som:   "cargo run -- "
+            som: "cargo run -- "
             som-tests: "--cp ../Smalltalk ../TestSuite/TestHarness.som"
             not-up-to-date: true
 
@@ -168,12 +168,13 @@ jobs:
         run: |
           cd som-vm
           ${{ matrix.som }} -cp ../Smalltalk:../TestSuite:../SomSom/src/compiler:../SomSom/src/interpreter:../SomSom/src/primitives:../SomSom/src/vm:../SomSom/src/vmobjects  ../SomSom/tests/SomSomTests.som
-      
+
       - name: Test Unit Test Benchmark
         if: ${{ matrix.repo == 'som-java.git' }}
         run: |
           cd Examples/Benchmarks/TestSuite
           ./duplicate-tests.sh
           cd ../../../som-vm
+          ${{ matrix.som }} -cp ../Smalltalk:../TestSuite ../Examples/Benchmarks/TestSuite/TestTestSuite.som
           ${{ matrix.som }} -cp ../Smalltalk:../Examples/Benchmarks/TestSuite ../Examples/Benchmarks/BenchmarkHarness.som --gc TestGC100 1 1
           ${{ matrix.som }} -cp ../Smalltalk:../Examples/Benchmarks/TestSuite ../Examples/Benchmarks/BenchmarkHarness.som Test100 1 1

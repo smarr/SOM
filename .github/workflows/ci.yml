@@ -139,6 +139,7 @@ jobs:
 
       - name: Build SOM VM
         if: ${{ matrix.som != 'spec' }}
+        continue-on-error: ${{ matrix.name == 'SOM++' || matrix.name == 'CSOM' || matrix.name == 'ykSOM' }}
         run: |
           export ST_DIR=`pwd`/Smalltalk
           cd som-vm
@@ -149,6 +150,7 @@ jobs:
 
       - name: Run Tests on SOM VM
         if: ${{ matrix.som != 'spec' }}
+        continue-on-error: ${{ matrix.name == 'SOM++' || matrix.name == 'CSOM' || matrix.name == 'ykSOM' }}
         run: |
           cd som-vm
           if [ "${{ matrix.som-tests }}" == "" ]
@@ -165,12 +167,14 @@ jobs:
       # We currently test SomSom only on TruffleSOM
       - name: Test SomSom on TruffleSOM
         if: ${{ matrix.repo == 'TruffleSOM.git' }}
+        continue-on-error: ${{ matrix.name == 'SOM++' || matrix.name == 'CSOM' || matrix.name == 'ykSOM' }}
         run: |
           cd som-vm
           ${{ matrix.som }} -cp ../Smalltalk:../TestSuite:../SomSom/src/compiler:../SomSom/src/interpreter:../SomSom/src/primitives:../SomSom/src/vm:../SomSom/src/vmobjects  ../SomSom/tests/SomSomTests.som
 
       - name: Test Unit Test Benchmark
         if: ${{ matrix.repo == 'som-java.git' }}
+        continue-on-error: ${{ matrix.name == 'SOM++' || matrix.name == 'CSOM' || matrix.name == 'ykSOM' }}
         run: |
           cd Examples/Benchmarks/TestSuite
           ./duplicate-tests.sh

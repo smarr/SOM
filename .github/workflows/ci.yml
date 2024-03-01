@@ -10,21 +10,21 @@ jobs:
       fail-fast: false # we want all jobs to run, because they may fail independently
       matrix:
         include:
-          - name: SOM++
-            repo: SOMpp.git
-            apt: libcppunit-dev
-            build: "cmake . && make SOM++"
-            som: "./som.sh"
-            not-up-to-date: true
+          # - name: SOM++
+          #   repo: SOMpp.git
+          #   apt: libcppunit-dev
+          #   build: "cmake . && make SOM++"
+          #   som: "./som.sh"
+          #   not-up-to-date: true
 
-          - name: CSOM
-            repo: CSOM.git
-            build: |
-              export COMPILER=gcc
-              export ARCH=64bit
-              make
-            som: "./som.sh"
-            not-up-to-date: true
+          # - name: CSOM
+          #   repo: CSOM.git
+          #   build: |
+          #     export COMPILER=gcc
+          #     export ARCH=64bit
+          #     make
+          #   som: "./som.sh"
+          #   not-up-to-date: true
 
           - name: JsSOM
             repo: JsSOM.git
@@ -69,12 +69,12 @@ jobs:
             som-tests: " -c ../Smalltalk ../TestSuite -- TestHarness"
             not-up-to-date: false
 
-          - name: ykSOM
-            repo: yksom.git
-            build: "cargo build"
-            som: "cargo run -- "
-            som-tests: "--cp ../Smalltalk ../TestSuite/TestHarness.som"
-            not-up-to-date: true
+          # - name: ykSOM
+          #   repo: yksom.git
+          #   build: "cargo build"
+          #   som: "cargo run -- "
+          #   som-tests: "--cp ../Smalltalk ../TestSuite/TestHarness.som"
+          #   not-up-to-date: true
 
     name: ${{ matrix.name }}
     steps:
@@ -139,7 +139,6 @@ jobs:
 
       - name: Build SOM VM
         if: ${{ matrix.som != 'spec' }}
-        continue-on-error: ${{ matrix.name == 'SOM++' || matrix.name == 'CSOM' || matrix.name == 'ykSOM' }}
         run: |
           export ST_DIR=`pwd`/Smalltalk
           cd som-vm
@@ -150,7 +149,6 @@ jobs:
 
       - name: Run Tests on SOM VM
         if: ${{ matrix.som != 'spec' }}
-        continue-on-error: ${{ matrix.name == 'SOM++' || matrix.name == 'CSOM' || matrix.name == 'ykSOM' }}
         run: |
           cd som-vm
           if [ "${{ matrix.som-tests }}" == "" ]
@@ -167,14 +165,12 @@ jobs:
       # We currently test SomSom only on TruffleSOM
       - name: Test SomSom on TruffleSOM
         if: ${{ matrix.repo == 'TruffleSOM.git' }}
-        continue-on-error: ${{ matrix.name == 'SOM++' || matrix.name == 'CSOM' || matrix.name == 'ykSOM' }}
         run: |
           cd som-vm
           ${{ matrix.som }} -cp ../Smalltalk:../TestSuite:../SomSom/src/compiler:../SomSom/src/interpreter:../SomSom/src/primitives:../SomSom/src/vm:../SomSom/src/vmobjects  ../SomSom/tests/SomSomTests.som
 
       - name: Test Unit Test Benchmark
         if: ${{ matrix.repo == 'som-java.git' }}
-        continue-on-error: ${{ matrix.name == 'SOM++' || matrix.name == 'CSOM' || matrix.name == 'ykSOM' }}
         run: |
           cd Examples/Benchmarks/TestSuite
           ./duplicate-tests.sh

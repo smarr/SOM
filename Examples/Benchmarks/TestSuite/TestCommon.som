@@ -33,7 +33,7 @@ TestCommon = Benchmark (
     numExecs = (
       self error: 'Implement in subclass and return the number of times a test is executed'
     )
-    
+
     oneTimeSetup = (
       "Load all Tests. We don't really want to benchmark the parser."
       self tests
@@ -77,17 +77,17 @@ TestCommon = Benchmark (
       runner run.
       runner hasFailures ifTrue: [system exit: 1]
     )
-    
+
     benchmark = (
         failOnUnsupportedOptionals := false.
         ^ self runAllSuites
     )
-    
+
     verifyResult: result = (
       "result do: [:e | e println ]."
       ^ (result at: 1) = (190 * self numExecs) and: [
           (result at: 2) = (0 * self numExecs) and: [
-            (result at: 3) = (189 * self numExecs) and: [
+            (result at: 3) = (190 * self numExecs) and: [
               (result at: 4) = (992 * self numExecs)
         ] ] ]
     )

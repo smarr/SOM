@@ -20,57 +20,55 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 "
 
-"Microbenchmark: measure writing a constant to local variable in inlined loop"
-LocalLoopStore = Benchmark (
+"Microbenchmark: measure addition and access to local variables in inlined loop"
+LocalReadIncWrite = Benchmark (
     benchmark = ( | counter iter |
         counter := 0.
         iter := 20000.
 
         [ iter > 0 ] whileTrue: [
           iter := iter - 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          counter := counter + 1.
+          counter := counter + 1.
+          counter := counter + 1.
+          counter := counter + 1.
+          counter := counter + 1.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          counter := counter + 1.
+          counter := counter + 1.
+          counter := counter + 1.
+          counter := counter + 1.
+          counter := counter + 1.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          counter := counter + 1.
+          counter := counter + 1.
+          counter := counter + 1.
+          counter := counter + 1.
+          counter := counter + 1.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          counter := counter + 1.
+          counter := counter + 1.
+          counter := counter + 1.
+          counter := counter + 1.
+          counter := counter + 1.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          counter := counter + 1.
+          counter := counter + 1.
+          counter := counter + 1.
+          counter := counter + 1.
+          counter := counter + 1.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-
+          counter := counter + 1.
+          counter := counter + 1.
+          counter := counter + 1.
+          counter := counter + 1.
+          counter := counter + 1.
         ].
 
         ^ counter
     )
 
     verifyResult: result = (
-      ^ 1 = result
+      ^ 600000 = result
     )
-
 )

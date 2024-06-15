@@ -21,7 +21,7 @@ THE SOFTWARE.
 "
 
 "Microbenchmark: measure dispatch of a trivial method in inlined loop"
-LoopTrivialDispatch = Benchmark (
+SelfSend0 = Benchmark (
     trivial = ( ^ 1 )
 
     benchmark = ( | counter iter |
@@ -65,7 +65,6 @@ LoopTrivialDispatch = Benchmark (
           self trivial.
           self trivial.
           self trivial.
-
         ].
 
         ^ counter
@@ -74,5 +73,4 @@ LoopTrivialDispatch = Benchmark (
     verifyResult: result = (
       ^ 0 = result
     )
-
 )

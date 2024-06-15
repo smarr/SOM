@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 "
 
-"Microbenchmark: measure dispatch of a trivial method in inlined loop"
+"Microbenchmark: self send message without argument"
 SelfSend0 = Benchmark (
     trivial = ( ^ 1 )
 

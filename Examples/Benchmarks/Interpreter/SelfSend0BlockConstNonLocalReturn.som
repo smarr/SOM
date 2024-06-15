@@ -20,55 +20,57 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 "
 
-"Microbenchmark: write constant to local"
-LocalConstWrite = Benchmark (
+"Microbenchmark: self send message, which returns nonlocally from an embedded block"
+SelfSend0BlockConstNonLocalReturn = Benchmark (
+    trivial = ( [ ^ 42 ] value )
+
     benchmark = ( | counter iter |
         counter := 0.
         iter := 20000.
 
         [ iter > 0 ] whileTrue: [
           iter := iter - 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          self trivial.
+          self trivial.
+          self trivial.
+          self trivial.
+          self trivial.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          self trivial.
+          self trivial.
+          self trivial.
+          self trivial.
+          self trivial.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          self trivial.
+          self trivial.
+          self trivial.
+          self trivial.
+          self trivial.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          self trivial.
+          self trivial.
+          self trivial.
+          self trivial.
+          self trivial.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          self trivial.
+          self trivial.
+          self trivial.
+          self trivial.
+          self trivial.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          self trivial.
+          self trivial.
+          self trivial.
+          self trivial.
+          self trivial.
         ].
 
-        ^ counter
+        ^ self trivial.
     )
 
     verifyResult: result = (
-      ^ 1 = result
+      ^ 42 = result
     )
 )

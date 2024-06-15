@@ -20,55 +20,54 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 "
 
-"Microbenchmark: write constant to local"
-LocalConstWrite = Benchmark (
-    benchmark = ( | counter iter |
-        counter := 0.
+"Microbenchmark: reading a literal"
+Const = Benchmark (
+    benchmark = ( | iter |
         iter := 20000.
 
         [ iter > 0 ] whileTrue: [
           iter := iter - 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          42.
+          42.
+          42.
+          42.
+          42.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          42.
+          42.
+          42.
+          42.
+          42.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          42.
+          42.
+          42.
+          42.
+          42.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          42.
+          42.
+          42.
+          42.
+          42.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          42.
+          42.
+          42.
+          42.
+          42.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          42.
+          42.
+          42.
+          42.
+          42.
         ].
 
-        ^ counter
+        ^ 42
     )
 
     verifyResult: result = (
-      ^ 1 = result
+      ^ 42 = result
     )
 )

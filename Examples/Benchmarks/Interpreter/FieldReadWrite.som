@@ -20,55 +20,57 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 "
 
-"Microbenchmark: write constant to local"
-LocalConstWrite = Benchmark (
-    benchmark = ( | counter iter |
+"Microbenchmark: read field and write to field"
+FieldReadWrite = Benchmark (
+    | counter |
+
+    benchmark = ( | iter |
         counter := 0.
         iter := 20000.
 
         [ iter > 0 ] whileTrue: [
           iter := iter - 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          counter := counter.
+          counter := counter.
+          counter := counter.
+          counter := counter.
+          counter := counter.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          counter := counter.
+          counter := counter.
+          counter := counter.
+          counter := counter.
+          counter := counter.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          counter := counter.
+          counter := counter.
+          counter := counter.
+          counter := counter.
+          counter := counter.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          counter := counter.
+          counter := counter.
+          counter := counter.
+          counter := counter.
+          counter := counter.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          counter := counter.
+          counter := counter.
+          counter := counter.
+          counter := counter.
+          counter := counter.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          counter := counter.
+          counter := counter.
+          counter := counter.
+          counter := counter.
+          counter := counter.
         ].
 
         ^ counter
     )
 
     verifyResult: result = (
-      ^ 1 = result
+      ^ 0 = result
     )
 )

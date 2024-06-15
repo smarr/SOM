@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 "
 
-"Microbenchmark: measure access to local variable in inlined loop"
+"Microbenchmark: read and write local"
 LocalReadWrite = Benchmark (
     benchmark = ( | counter iter |
         counter := 0.

@@ -20,55 +20,55 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 "
 
-"Microbenchmark: write constant to local"
-LocalConstWrite = Benchmark (
-    benchmark = ( | counter iter |
-        counter := 0.
+"Microbenchmark: measure reading an array at contant index"
+ArrayReadConst = Benchmark (
+    benchmark = ( | arr iter |
+        arr := #(42).
         iter := 20000.
 
         [ iter > 0 ] whileTrue: [
           iter := iter - 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          arr at: 1.
+          arr at: 1.
+          arr at: 1.
+          arr at: 1.
+          arr at: 1.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          arr at: 1.
+          arr at: 1.
+          arr at: 1.
+          arr at: 1.
+          arr at: 1.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          arr at: 1.
+          arr at: 1.
+          arr at: 1.
+          arr at: 1.
+          arr at: 1.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          arr at: 1.
+          arr at: 1.
+          arr at: 1.
+          arr at: 1.
+          arr at: 1.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          arr at: 1.
+          arr at: 1.
+          arr at: 1.
+          arr at: 1.
+          arr at: 1.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          arr at: 1.
+          arr at: 1.
+          arr at: 1.
+          arr at: 1.
+          arr at: 1.
         ].
 
-        ^ counter
+        ^ arr at: 1
     )
 
     verifyResult: result = (
-      ^ 1 = result
+      ^ 42 = result
     )
 )

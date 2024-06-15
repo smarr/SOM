@@ -20,55 +20,58 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 "
 
-"Microbenchmark: write constant to local"
-LocalConstWrite = Benchmark (
-    benchmark = ( | counter iter |
-        counter := 0.
+"Microbenchmark: reading a method argument"
+ArgRead = Benchmark (
+    benchmark = (
+      ^ self benchmark: 0
+    )
+
+    benchmark: counter = ( | iter |
         iter := 20000.
 
         [ iter > 0 ] whileTrue: [
           iter := iter - 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          counter.
+          counter.
+          counter.
+          counter.
+          counter.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          counter.
+          counter.
+          counter.
+          counter.
+          counter.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          counter.
+          counter.
+          counter.
+          counter.
+          counter.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          counter.
+          counter.
+          counter.
+          counter.
+          counter.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          counter.
+          counter.
+          counter.
+          counter.
+          counter.
 
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
-          counter := 1.
+          counter.
+          counter.
+          counter.
+          counter.
+          counter.
         ].
 
         ^ counter
     )
 
     verifyResult: result = (
-      ^ 1 = result
+      ^ 0 = result
     )
 )

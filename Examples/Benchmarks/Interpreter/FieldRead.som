@@ -20,50 +20,51 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 "
 
-"Microbenchmark: measure access to local variable in inlined loop"
-LocalLoopNop = Benchmark (
-    benchmark = ( | counter iter |
+"Microbenchmark: read field"
+FieldRead = Benchmark (
+    | counter |
+
+    benchmark = ( | iter |
         counter := 0.
         iter := 20000.
 
         [ iter > 0 ] whileTrue: [
           iter := iter - 1.
-          counter := counter.
-          counter := counter.
-          counter := counter.
-          counter := counter.
-          counter := counter.
+          counter.
+          counter.
+          counter.
+          counter.
+          counter.
 
-          counter := counter.
-          counter := counter.
-          counter := counter.
-          counter := counter.
-          counter := counter.
+          counter.
+          counter.
+          counter.
+          counter.
+          counter.
 
-          counter := counter.
-          counter := counter.
-          counter := counter.
-          counter := counter.
-          counter := counter.
+          counter.
+          counter.
+          counter.
+          counter.
+          counter.
 
-          counter := counter.
-          counter := counter.
-          counter := counter.
-          counter := counter.
-          counter := counter.
+          counter.
+          counter.
+          counter.
+          counter.
+          counter.
 
-          counter := counter.
-          counter := counter.
-          counter := counter.
-          counter := counter.
-          counter := counter.
+          counter.
+          counter.
+          counter.
+          counter.
+          counter.
 
-          counter := counter.
-          counter := counter.
-          counter := counter.
-          counter := counter.
-          counter := counter.
-
+          counter.
+          counter.
+          counter.
+          counter.
+          counter.
         ].
 
         ^ counter
@@ -72,5 +73,4 @@ LocalLoopNop = Benchmark (
     verifyResult: result = (
       ^ 0 = result
     )
-
 )

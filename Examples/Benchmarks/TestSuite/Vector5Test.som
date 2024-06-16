@@ -54,7 +54,7 @@ Vector5Test = TestCase (
       self assert: 1 equals: v first ].
 
     1 to: 10 do: [:i |
-      self assert: 1 equals: v first.
+      self assert: i equals: v first.
       v removeFirst ]
   )
 
@@ -148,7 +148,7 @@ Vector5Test = TestCase (
     self assert: 1 equals: (arr at: 1).
     self assert: 2 equals: (arr at: 2).
   )
-  
+
   testAsSet = (
     | v set |
     v := Vector new.
@@ -157,38 +157,38 @@ Vector5Test = TestCase (
     v append: 3.
     v append: 4.
     self assert: 4 equals: v size.
-    
+
     set := v asSet.
     self assert: 4 equals: set size.
-    
+
     v append: 1.
     v append: 1.
     v append: 1.
-    
+
     self assert: 4 + 3 equals: v size.
-    
+
     set := v asSet.
     self assert: 4 equals: set size.
   )
-  
+
   testIsEmpty = (
     | v |
     v := Vector new.
     self assert: v isEmpty.
-    
+
     v append: 1.
     self deny: v isEmpty.
-    
+
     v removeFirst.
     self assert: v isEmpty.
-    
+
     v append: #ee.
     self deny: v isEmpty.
-    
+
     v removeFirst.
-    self assert: v isEmpty.    
+    self assert: v isEmpty.
   )
-  
+
   testRemoveObj = (
     | v |
     v := Vector new.
@@ -200,31 +200,31 @@ Vector5Test = TestCase (
     v append: #f.
     v append: #g.
     v append: #h.
-    
+
     self assert: 8 equals: v size.
-    
+
     self deny: (v remove: #aa).
     self assert: (v remove: #e).
     self assert: 7 equals: v size.
   )
-  
+
   testAppendComma = (
     | v |
     v := Vector new.
     v, #a.
     v, #b.
-    
+
     self assert: 2 equals: v size.
     self assert: (v contains: #a).
     self assert: (v contains: #b).
   )
-  
+
   testDoIndexes = (
     | i v |
     v := Vector new.
     v doIndexes: [:j |
       self assert: false ].
-    
+
     v appendAll: #(1 2 3 4 5).
     i := 1.
     v doIndexes: [:j |
@@ -233,7 +233,7 @@ Vector5Test = TestCase (
     ].
     self assert: 6 equals: i.
   )
-  
+
   testDo = (
     | i v |
     v := Vector new.

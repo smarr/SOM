@@ -20,59 +20,55 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 "
 
-"Microbenchmark: measure dispatch of a trivial method in inlined loop"
-LoopTrivialDispatch = Benchmark (
-    trivial = ( ^ 1 )
-
+"Microbenchmark: write constant to local"
+LocalConstWrite = Benchmark (
     benchmark = ( | counter iter |
         counter := 0.
         iter := 20000.
 
         [ iter > 0 ] whileTrue: [
           iter := iter - 1.
-          self trivial.
-          self trivial.
-          self trivial.
-          self trivial.
-          self trivial.
+          counter := 1.
+          counter := 1.
+          counter := 1.
+          counter := 1.
+          counter := 1.
 
-          self trivial.
-          self trivial.
-          self trivial.
-          self trivial.
-          self trivial.
+          counter := 1.
+          counter := 1.
+          counter := 1.
+          counter := 1.
+          counter := 1.
 
-          self trivial.
-          self trivial.
-          self trivial.
-          self trivial.
-          self trivial.
+          counter := 1.
+          counter := 1.
+          counter := 1.
+          counter := 1.
+          counter := 1.
 
-          self trivial.
-          self trivial.
-          self trivial.
-          self trivial.
-          self trivial.
+          counter := 1.
+          counter := 1.
+          counter := 1.
+          counter := 1.
+          counter := 1.
 
-          self trivial.
-          self trivial.
-          self trivial.
-          self trivial.
-          self trivial.
+          counter := 1.
+          counter := 1.
+          counter := 1.
+          counter := 1.
+          counter := 1.
 
-          self trivial.
-          self trivial.
-          self trivial.
-          self trivial.
-          self trivial.
-
+          counter := 1.
+          counter := 1.
+          counter := 1.
+          counter := 1.
+          counter := 1.
         ].
 
         ^ counter
     )
 
     verifyResult: result = (
-      ^ 0 = result
+      ^ 1 = result
     )
-
 )

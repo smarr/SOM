@@ -20,63 +20,57 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 "
 
-All = BenchmarkHarness (
-    | summedAverage |
+All = Benchmark (
+    oneTimeSetup = (
+        self all do: [:pair |
+            system load: (pair at: 1)
+        ]
+    )
 
     all = (
-        ^ Fibonacci, Dispatch, Bounce, Loop, Permute, Queens, List, Recurse,
-          Storage, Sieve, BubbleSort, QuickSort, Sum, Towers, TreeSort,
-          IntegerLoop, FieldLoop
+        ^ #(#Richards 1),
+          #(#DeltaBlue 100),
+          #(#NBody 1000),
+          #(#Json 1),
+          #(#GraphSearch 7),
+          #(#PageRank 75),
+          #(#Fannkuch 7),
+          #(#Fibonacci 10),
+          #(#Dispatch 10),
+          #(#Bounce 10),
+          #(#Loop 100),
+          #(#Permute 10),
+          #(#Queens 10),
+          #(#List 2),
+          #(#Recurse 12),
+          #(#Storage 8),
+          #(#Sieve 20),
+          #(#BubbleSort 15),
+          #(#QuickSort 15),
+          #(#Sum 40),
+          #(#Towers 2),
+          #(#TreeSort 7),
+          #(#IntegerLoop 7),
+          #(#FieldLoop 1),
+          #(#WhileLoop 30),
+          #(#Mandelbrot 50),
+          #(#Test 1)
     )
-    
-    run: params = (
-        params length < 2
-            ifTrue:  [ self exec: 100 ]
-            ifFalse: [ self exec: (params at: 2) asInteger ]
-    )
-    
-    printUsage = (
-      './som.sh -cp Smalltalk Examples/Benchmarks/All.som [number-of-iterations]' println.
-      '' println.
-      '  number-of-iterations - the number of time each benchmark is executed, default: 1' println.
-    )
-    
-    initialize = (
-        super initialize.
-        summedAverage := 0.
-    )
-    
-    exec: iterations = (
-        'Start execution of all benchmarks. Iterations: ' print.
-        iterations println.
-        
-        self all do: [:cls |
-            self initialize.
-            self benchmarkClass: cls.
-            self printAll: false.
-            self maxRuntime: 3. "seconds"
-            self numIterations: iterations.
-            self warmUp: 10.
 
-            self runBenchmark.
+    benchmark = (
+        self all do: [:pair |
+            | benchName size benchClass bench |
+            benchName := pair at: 1.
+            size := pair at: 2.
+
+            benchClass := system load: benchName.
+            bench := benchClass new.
+            bench oneTimeSetup.
+            (bench innerBenchmarkLoop: size) ifFalse: [
+              self error: benchName + ' failed with incorrect result' ].
         ].
-        self printTotal.
+        ^ true
     )
-    
-    reportBenchmark: bench result: total = (
-        '' println.
-        'Benchmark: ' print.
-        bench name println.
 
-        ('   Iterations: ' + numIterations + ' (elapsed time ' + (total // 1000) round
-            + ' ms)') println.
-        ('   AVERAGE: ' + ((total // numIterations) // 1000) round + ' ms') println.
-        
-        summedAverage := summedAverage + (total // numIterations).
-    )
-    
-    printTotal = (
-        ('Summed Average Runtime: ' + (summedAverage // 1000) round asString + ' ms') println.
-    )
-    
+    verifyResult: result = ( ^ result )
 )

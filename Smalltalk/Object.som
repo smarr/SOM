@@ -51,7 +51,8 @@ Object = nil (
     ifNil: aBlock = (^self)
     ifNotNil: aBlock = (^aBlock value)
     ifNil: noGoBlock ifNotNil: goBlock = (^goBlock value)
-    
+    ifNotNil: goBlock ifNil: noGoBlock = (^goBlock value)
+
     "Printing"
     print     = ( self asString print )
     println   = ( self print. system printNewline )

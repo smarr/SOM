@@ -27,7 +27,7 @@ Nil = (
 
     "Converting"
     asString = ( ^'nil' )
-    
+
     "Comparing"
     isNil    = ( ^true )
     notNil   = ( ^false )
@@ -36,5 +36,5 @@ Nil = (
     ifNil: aBlock = (^aBlock value)
     ifNotNil: aBlock = (^self)
     ifNil: goBlock ifNotNil: noGoBlock = (^goBlock value)
-
+    ifNotNil: noGoBlock ifNil: goBlock = (^goBlock value)
 )

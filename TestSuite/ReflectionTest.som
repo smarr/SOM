@@ -31,7 +31,7 @@ ReflectionTest = TestCase (
     self assert: (23 respondsTo: #isNil).
     self assert: (23 respondsTo: #+).
   )
-  
+
   testMethods = (
     "First method in Object should be #class."
     self assert: #class equals: (Object methods at: 1) signature.
@@ -42,50 +42,50 @@ ReflectionTest = TestCase (
     | o |
     self assert: Integer equals: (23 perform: #class).
     self assert: (23 perform: #between:and: withArguments: (Array with: 22 with: 24)).
-    
+
     o := SuperTest new.
     self assert: #super equals: (o perform: #something inSuperclass: SuperTestSuperClass).
-    
+
     "Trying to see whether the stack in bytecode-based SOMs works properly"
     self assert: #a equals: ((23 perform: #class) = Integer ifTrue: [#a] ifFalse: [#b]).
 
     self assert: 28 equals: 5 + (23 perform: #value).
   )
-  
+
   testInstVarAtAndPut = (
     | tmp |
     "Testing #at: and #at:put:"
     tmp := Pair withKey: 3 andValue: 42.
-    
+
     self assert: tmp key equals: (tmp instVarAt: 1).
-    
+
     tmp instVarAt: 1 put: #foo.
     self assert: #foo    equals: tmp key.
   )
-  
+
   testName = (
     self assert: #Object equals: Object name.
     self assert: #'Object class' equals: Object class name.
     self assert: #Integer equals: 1 class name.
   )
-  
+
   testAsString = (
     self assert: 'Object' equals: Object asString.
     self assert: 'Object class' equals: Object class asString.
     self assert: 'Integer' equals: 1 class asString.
   )
-  
+
   testSelectors = (
     | sels |
     sels := Object selectors.
-    self assert: 32 equals: sels length.
-    
+    self assert: 33 equals: sels length.
+
     sels contains: #=.
     self assert: (Object hasMethod: #=).
-    
+
     sels contains: #value.
     self assert: (Object hasMethod: #value).
-    
+
     sels contains: #notNil.
     self assert: (Object hasMethod: #notNil).
   )

@@ -26,7 +26,7 @@ THE SOFTWARE.
 Object = nil (
     class      = primitive
     objectSize = primitive  "size in bytes"
-    
+
     "Comparing"
 
     " If you override =, you MUST override hashcode as well.  The rule
@@ -38,20 +38,21 @@ Object = nil (
     ~= other    = (^ (self == other) not )
     isNil       = ( ^false )
     notNil      = ( ^true )
-    
+
     "Converting"
     asString  = ( ^'instance of ' + (self class) )
     , element = ( ^(Vector new append: self) append: element )
     hashcode  = primitive
-    
+
     "Evaluating"
     value     = ( ^self )
-    
+
     "Convenience"
     ifNil: aBlock = (^self)
     ifNotNil: aBlock = (^aBlock value)
     ifNil: noGoBlock ifNotNil: goBlock = (^goBlock value)
-    
+    ifNotNil: goBlock ifNil: noGoBlock = (^goBlock value)
+
     "Printing"
     print     = ( self asString print )
     println   = ( self print. system printNewline )
@@ -59,27 +60,27 @@ Object = nil (
     "Debugging"
     inspect   = primitive
     halt      = primitive
-    
+
     "Error handling"
     error: string = ( '' println. ('ERROR: ' + string) println. system exit: 1 )
-    
+
     "Abstract method support"
     subclassResponsibility = (
         self error: 'This method is abstract and should be overridden'
     )
-    
+
     "Error recovering"
     doesNotUnderstand: selector arguments: arguments = (
         self error:
             ('Method ' + selector + ' not found in class ' + self class name)
     )
-    
+
     escapedBlock: block = (
         self error: 'Block has escaped and cannot be executed'
     )
-    
+
     unknownGlobal: name = ( ^system resolve: name )
-    
+
     "Reflection"
     respondsTo: aSymbol = (
         (self class hasMethod: aSymbol)
@@ -92,13 +93,13 @@ Object = nil (
                         ifFalse: [ cls := cls superclass ] ].
                 ^ false ]
     )
-    
+
     perform: aSymbol = primitive
     perform: aSymbol withArguments: args = primitive
-    
+
     perform: aSymbol inSuperclass: cls = primitive
     perform: aSymbol withArguments: args inSuperclass: cls = primitive
-    
+
     instVarAt: idx          = primitive
     instVarAt: idx put: obj = primitive
     instVarNamed: sym       = primitive

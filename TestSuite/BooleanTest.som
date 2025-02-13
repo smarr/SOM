@@ -172,4 +172,14 @@ BooleanTest = TestCase (
       self assert: (nil ifNotNil: [ #notExec ]) is: nil.
       self assert: (nil ifNotNil: [ #notExec ]) is: nil.
     )
+
+    testIfNilIfNotNil = (
+      self assert: (nil ifNil: [ #exec ] ifNotNil: [ #notExec ]) is: #exec.
+      self assert: (self ifNil: [ #notExec ] ifNotNil: [ #exec ]) is: #exec.
+    )
+
+    testIfNotNilIfNil = (
+      self assert: (nil ifNotNil: [ #exec ] ifNil: [ #notExec ]) is: #notExec.
+      self assert: (self ifNotNil: [ #exec ] ifNil: [ #notExec ]) is: #exec.
+    )
 )

@@ -78,8 +78,8 @@ ReflectionTest = TestCase (
   testSelectors = (
     | sels |
     sels := Object selectors.
-    self assert: 32 equals: sels length.
-    
+    self assert: 33 equals: sels length.
+
     sels contains: #=.
     self assert: (Object hasMethod: #=).
     

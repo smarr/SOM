@@ -28,17 +28,17 @@ BlockTest = TestCase (
     escapingBlock = (
       ^ [ ^ 42 ]
     )
-    
+
     escapingNestedBlock = (
       [ [ ^ [ ^ 43 ] ] value ] value
     )
-    
+
     testSimpleBlocks = (
       self assert: 42 equals: self simpleBlock value.
       self assert: 4  equals: (self incBlock value: 3).
       self assert: 43 equals: ((self adderBlock: 13) value: 30).
     )
-    
+
     testClosure = (
       | counter |
       counter := self counterBlock.
@@ -47,28 +47,28 @@ BlockTest = TestCase (
       self assert: 1 equals: self counterBlock value. "make sure each copy is independent"
       self assert: 3 equals: counter value.
     )
-    
+
     testSelfInBlock = (
       | test_inst |
       test_inst := BlockTest new.
       self assert: test_inst equals: test_inst selfKeeper value.
       self assert: self      equals: self selfKeeper value.
     )
-    
+
     testEscapedBlock = (
       | escaping_block |
 
       escape_count := 0.
 
       escaping_block := self escapingBlock.
-      
+
       self assert: 0 equals: escape_count.
       self assert: 666 equals: escaping_block value.
       self assert: 1 equals: escape_count.
-      
+
       self assert: escaping_block is: escaped_block.
-      
-      
+
+
       escaping_block := self escapingNestedBlock.
       self assert: 1 equals: escape_count.
       self assert: 666 equals: escaping_block value.
@@ -83,56 +83,56 @@ BlockTest = TestCase (
       "return some dummy value to the object that sent 'value' to block"
       ^666
     )
-    
+
     testWhileTrue = (
       | i |
       i := 1.
       [ i < 10 ] whileTrue: [ i := i + 1 ].
       self assert: 10 equals: i.
     )
-    
+
     testWhileFalse = (
       | i |
       i := 1.
       [ i >= 10 ] whileFalse: [ i := i + 1 ].
       self assert: 10 equals: i.
     )
-    
+
     returnVal: val predicate: p = (
       p ifNil: [ ^ val ].
       ^ 0
     )
-    
+
     testToDoAsResultOfIfTrue = (
       | result |
       result := true ifTrue: [
         1 to: 2 do: [:i | 4 ]
       ].
-    
+
       self assert: 1 equals: result
     )
-    
+
     testReturnWithSomething = (
       | result |
       result := self returnVal: 3 predicate: nil.
       self assert: 3 equals: result.
-      
+
       result := self returnVal: 4 predicate: self.
       self assert: 0 equals: result.
     )
-    
+
     testSuperExpressionInBlock = (
       | result |
       result := BlockTest helperForTestSuperExpressionInBlock.
       self assert: BlockTest is: result.
     )
-    
+
     ----
-    
+
     doInTest: block = (
       ^ block value
     )
-    
+
     helperForTestSuperExpressionInBlock = (
       ^ self doInTest: [ (super new) class ]
     )

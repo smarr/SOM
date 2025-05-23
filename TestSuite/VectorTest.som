@@ -343,7 +343,45 @@ VectorTest = TestCase (
     
     self assert: 5 equals: i.
   )
-  
+
+  testRemoveFirstBasic = (
+    | v |
+    v := Vector new.
+    v appendAll: #(1 2 3 4 5).
+
+    v removeFirst.
+    self assert: 2 equals: (v at: 1).
+    self assert: 2 equals: v first.
+
+    v removeFirst.
+    self assert: 3 equals: (v at: 1).
+    self assert: 3 equals: v first.
+  )
+
+  testDoIndexesAfterRemoveFirstNTimes = (
+    1 to: 9 do: [:nTimes |
+      | i v expectedVal |
+      v := Vector new.
+      v appendAll: #(1 2 3 4 5 6 7 8 9 10).
+
+      nTimes timesRepeat: [ v removeFirst ].
+
+      self assert: 10 - nTimes equals: v size description: [
+        'Size expected: ' + (10 - nTimes) asString + ' but was: ' + v size asString
+      ].
+
+      i := 1.
+      expectedVal := nTimes.
+      v doIndexes: [:j |
+        | val |
+        val := v at: j.
+        self assert: nTimes + i equals: val.
+        i := i + 1 ].
+
+      self assert: 10 equals: expectedVal + i - 1.
+    ]
+  )
+
   testDo = (
     | i v |
     v := Vector new.

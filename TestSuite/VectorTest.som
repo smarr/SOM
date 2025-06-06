@@ -401,4 +401,16 @@ VectorTest = TestCase (
     ].
     self assert: 6 equals: i.
   )
+
+  "doIndexes iterates from 1 rather then start check core-lib/Vector implementation"
+  testDoIndexesDoubleRemove = (
+    | v |
+    v := Vector new.
+    1 to: 10 do: [:i | v , i].
+
+    v removeFirst.
+    v removeFirst.
+
+    v doIndexes: [:i | self assert: i equals: ((v at: i)-2)]
+  )
 )

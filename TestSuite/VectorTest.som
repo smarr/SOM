@@ -40,11 +40,16 @@ VectorTest = TestCase (
   )
 
   testAt = (
+    | sub |
     self assert: #world equals: (a at: 2).
     self assert:     23 equals: (a at: 3).
+
+    sub := VectorSubclass new.
+    self assert: #error is: (sub at: 1).
   )
   
   testAtPut = (
+    | sub |
     self assert: 'hello' equals: (a at: 1).
     a at: 1 put: 11.
     
@@ -55,6 +60,9 @@ VectorTest = TestCase (
     
     a at: 3 put: 33.
     self assert: 33 equals: (a at: 3).
+
+    sub := VectorSubclass new.
+    self assert: #error is: (sub at: 10 put: 1).
   )
   
   testAtAfterRemoveFirst = (
@@ -281,7 +289,7 @@ VectorTest = TestCase (
     self deny: v isEmpty.
     
     v removeFirst.
-    self assert: v isEmpty.    
+    self assert: v isEmpty.
   )
   
   testRemoveObj = (

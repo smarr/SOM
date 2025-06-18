@@ -413,4 +413,17 @@ VectorTest = TestCase (
 
     v doIndexes: [:i | self assert: i equals: ((v at: i)-2)]
   )
+
+  "Check that asArray copies and does not overwrite"
+  testAsArray = (
+    | vec arr |
+    vec := Vector new.
+    vec append: 1.
+    vec append: 2.
+    
+    arr := vec asArray.
+    arr at: 1 put: 44.
+    
+    self assert: (vec at: 1) equals: 1.
+  )
 )

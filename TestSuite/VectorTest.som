@@ -426,4 +426,5 @@ VectorTest = TestCase (
 
     v doIndexes: [:i | self assert: i equals: ((v at: i)-2)]
   )
+
 )

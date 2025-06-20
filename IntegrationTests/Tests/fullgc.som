@@ -1,0 +1,11 @@
+"
+VM:
+  status: success
+  stdout: false
+"
+
+fullgc = (
+    run = (
+        system fullGC println.
+    )
+)

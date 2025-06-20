@@ -1,0 +1,13 @@
+"
+VM:
+  status: success
+  stderr: xy
+  stdout:
+"
+
+errorprintln = (
+    run = (
+        system errorPrint: 'x'.
+        system errorPrint: 'y'.
+    )
+)

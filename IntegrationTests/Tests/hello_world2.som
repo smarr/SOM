@@ -1,0 +1,14 @@
+"
+VM:
+  status: success
+  stdout: Hello world
+"
+
+Hello = (
+    run = (
+        | t1 t2 |
+        t1 := 'Hello '.
+        t2 := t1 concatenate: 'world'.
+        t2 println.
+    )
+)

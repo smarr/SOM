@@ -4,7 +4,6 @@ VM:
   stderr:
     ...
     Expected object of type 'Int' but got type 'Double'.
-    IGNORE
 "
 
 double13 = (

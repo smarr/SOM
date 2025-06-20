@@ -3,7 +3,7 @@ VM:
   status: error
   stderr:
     ...
-    Floating point exception (core dumped)
+    Division by zero.
 "
 
 int5 = (

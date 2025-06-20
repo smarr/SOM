@@ -6,7 +6,6 @@ VM:
     2
     4
     3
-    IGNORE
 "
 
 test = test_super (

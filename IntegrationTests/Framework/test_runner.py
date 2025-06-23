@@ -2,20 +2,41 @@ import subprocess
 from pathlib import Path
 
 location = "./core-lib/IntegrationTests/Tests"
+locations = {"build": "", "executable": "", "classpath": "", "inttesting-loc": "", "cleanup": ""}
 
 def test_main():
     """
     Runs the main test function
-    Locates the SOM++ executable and locates all compatible test files
+    Locates SOM executable, loads classpaths and tests runs them and reports back
     """
 
+    # First locate the classpaths file
+    classpaths_file = Path("./classpaths")
+    if not classpaths_file.exists():
+        raise FileNotFoundError("classpaths file not found. Please ensure it exists in the root directory.")
+    with open(classpaths_file, 'r') as f:
+        classpaths = f.read()
+        lines = classpaths.split("\n")
+        for line in lines:
+            if line.startswith("build:"):
+                locations["build"] = line.split(":", 1)[1].strip()
+            elif line.startswith("executable:"):
+                locations["executable"] = line.split(":", 1)[1].strip()
+            elif line.startswith("classpath:"):
+                locations["classpath"] = line.split(":", 1)[1].strip()
+            elif line.startswith("inttesting-loc:"):
+                locations["inttesting-loc"] = line.split(":", 1)[1].strip()
+            elif line.startswith("cleanup:"):
+                locations["cleanup"] = line.split(":", 1)[1].strip()
+
+
     # First open any tests to be ignored
-    with open("./core-lib/IntegrationTests/ignored_tests.txt", "r") as f:
+    with open(f"{locations["inttesting-loc"]}ignored_tests.txt", "r") as f:
         ignoredTests = [Path(line.strip()) for line in f.readlines()]
 
     testFiles = []
-    readDirectory(location, testFiles, ignoredTests)
-    testsToBeRun = assembleTestDictionary(testFiles)
+    readDirectory(location, testFiles, ignoredTests) # locate tests
+    testsToBeRun = assembleTestDictionary(testFiles) # parse tests
     
     # Run the tests
     runTests(testsToBeRun)
@@ -24,26 +45,28 @@ def test_main():
     for ignoredTest in ignoredTests:
         print(f"Test {ignoredTest} was ignored")
 
+    print("\n\nSummary of tests:")
+    print(f"Total tests passed: {len(testFiles)}")
+    print(f"Total tests ignored: {len(ignoredTests)}")
+    print("\nCheck above for a full list of ignored tests and ran tests")
+
 def locateTests(path, testFiles, ignoredTests):
     """
     Locate all test files that exist in the given directory
+    Ignore any tests which are in the ignoredTests directory
     Return a list of paths to the test files
     """
 
     # To ID a file will be opened and at the top there should be a comment which starts with VM:
     for file in Path(path).glob("*.som"):
-
         # Check if the file is in the ignored tests (Check via path, multiple tests named test.som)
-        print(type(ignoredTests[1]))
         if (file in ignoredTests):
-            print(f"Skipping ignored test: {file}")
             continue
         else:
             with open(file, 'r') as f:
                 contents = f.read()
                 if "VM" in contents:
                     testFiles.append(file)
-                    print(f"Found test file: {file}")
 
     return testFiles
 
@@ -52,6 +75,7 @@ def readDirectory(path, testFiles, ignoredTests):
     Recursively read all sub directories
     Path is the directory we are currently in
     testFiles is the list of test files we are building up
+    ignoredTests is the list of test files that should be ignored
     """
     for directory in Path(path).iterdir():
         if directory.is_dir():
@@ -103,7 +127,7 @@ def parseTestFile(testFile):
                 stdErr = stdErr[:stdOutInx]
             stdErr = stdErr.replace("...", "")
             stdErrL = stdErr.split("\n")
-            stdErrL = [line.strip() for line in stdErrL if line.strip()]  # Remove empty lines
+            stdErrL = [line.strip() for line in stdErrL if line.strip()]
             testDict["stderr"] = stdErrL
 
     return testDict
@@ -113,25 +137,29 @@ def parseTestFile(testFile):
 def runTests(testsToBeRun):
     """
     Take an array of dictionaries with test file names and expected output
-    Run all of the tests and report back on the results
+    Build the SOM executable if required
+    Run all of the tests and check the output
+    Cleanup the build directory if required
     """
 
-    # Define the command
-    sompp_path = Path("./cmake-build/SOM++")  # Adjust if it's elsewhere or not executable
-    classpath = "./core-lib/Smalltalk"
+    # check if we are using a compiled language or a interpreted language
+    if locations["build"] != "NaN":
+        subprocess.run(locations["build"], shell=True)
 
-    print("\n\nRunning tests")
+    print("\n\nRunning tests\n")
 
     count = 0
     for x in testsToBeRun:
         count += 1
         print(f"Running test {count}/{len(testsToBeRun)}: {x['name']}")
-        # Run the process
         result = subprocess.run(
-            [str(sompp_path), "-cp", classpath, x["name"]],
+            [str(locations["executable"]), "-cp", locations["classpath"], x["name"]],
             capture_output=True,
-            text=True  # Decode output as string (Python 3.7+)
+            text=True 
         )
 
+        # SOM level errors will be raised in stdout only SOM++ errors are in stderr (Most tests are for SOM level errors) STILL NEEDS MORE WORK
         assert all(element in result.stdout for element in x['stdout']) or all(element in result.stderr for element in x['stdout']), f"Expected output ({x['stdout']}) not found in stdout for test {x['name']}"
-        # assert all(element in result.stderr for element in x['stderr']) or all(element in result.stdout for element in x['stderr']), f"ERROR message ({x['stderr']}) not contained in stderr for test {x['name']}"
+
+    if locations["cleanup"] != "NaN":
+        subprocess.run(locations["cleanup"], shell=True)

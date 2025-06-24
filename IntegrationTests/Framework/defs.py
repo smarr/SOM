@@ -22,7 +22,7 @@ INSTRUCTIONS = {
     },
     "som-java": {
         "build": ["ant jar"],
-        "run": "$ ./som.sh",
+        "run": "./som.sh",
         "inttesting-loc": "./core-lib/IntegrationTests",
         "cleanup": "NaN"
     }

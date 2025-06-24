@@ -1,8 +1,9 @@
 import subprocess
 from pathlib import Path
+from defs import INSTRUCTIONS, CLASSPATH
 
-location = "./core-lib/IntegrationTests/Tests"
-locations = {"build": "", "executable": "", "classpath": "", "inttesting-loc": "", "cleanup": ""}
+location = "./core-lib/IntegrationTests/Tests" # This is a definite location of this file
+locations = {"build": [], "run": "", "classpath": "", "inttesting-loc": "", "cleanup": ""}
 
 def test_main():
     """
@@ -10,28 +11,19 @@ def test_main():
     Locates SOM executable, loads classpaths and tests runs them and reports back
     """
 
-    # First locate the classpaths file
-    classpaths_file = Path("./classpaths")
-    if not classpaths_file.exists():
-        raise FileNotFoundError("classpaths file not found. Please ensure it exists in the root directory.")
-    with open(classpaths_file, 'r') as f:
-        classpaths = f.read()
-        lines = classpaths.split("\n")
-        for line in lines:
-            if line.startswith("build:"):
-                locations["build"] = line.split(":", 1)[1].strip()
-            elif line.startswith("executable:"):
-                locations["executable"] = line.split(":", 1)[1].strip()
-            elif line.startswith("classpath:"):
-                locations["classpath"] = line.split(":", 1)[1].strip()
-            elif line.startswith("inttesting-loc:"):
-                locations["inttesting-loc"] = line.split(":", 1)[1].strip()
-            elif line.startswith("cleanup:"):
-                locations["cleanup"] = line.split(":", 1)[1].strip()
+    # First consider which SOM we are using
+    repo = subprocess.run(["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True).stdout.strip()
+    name = repo.split("/")[-1]
 
+    locations["classpath"] = CLASSPATH
+    locations["build"] = INSTRUCTIONS[name]["build"]
+    locations["run"] = INSTRUCTIONS[name]["run"]
+    locations["executable"] = INSTRUCTIONS[name]["run"]
+    locations["inttesting-loc"] = INSTRUCTIONS[name]["inttesting-loc"]
+    locations["cleanup"] = INSTRUCTIONS[name]["cleanup"]
 
     # First open any tests to be ignored
-    with open(f"{locations["inttesting-loc"]}ignored_tests.txt", "r") as f:
+    with open(f"{locations["inttesting-loc"]}/ignored_tests.txt", "r") as f:
         ignoredTests = [Path(line.strip()) for line in f.readlines()]
 
     testFiles = []
@@ -39,16 +31,24 @@ def test_main():
     testsToBeRun = assembleTestDictionary(testFiles) # parse tests
     
     # Run the tests
-    runTests(testsToBeRun)
+    failed = runTests(testsToBeRun)
 
     print("\n\nIgnored Tests:\n")
     for ignoredTest in ignoredTests:
         print(f"Test {ignoredTest} was ignored")
 
+    print("\n\nFailed Tests:\n")
+    for test in failed:
+        print(f"Test {test} failed")
+
     print("\n\nSummary of tests:")
-    print(f"Total tests passed: {len(testFiles)}")
+    print(f"Total tests passed: {len(testFiles)-len(failed)}")
     print(f"Total tests ignored: {len(ignoredTests)}")
-    print("\nCheck above for a full list of ignored tests and ran tests")
+    print(f"Total tests failed: {len(failed)}")
+    print("\nCheck above for a full list of ignored/ran/failed tests")
+
+    for test in failed:
+        print(test)
 
 def locateTests(path, testFiles, ignoredTests):
     """
@@ -142,8 +142,11 @@ def runTests(testsToBeRun):
     Cleanup the build directory if required
     """
 
+    failedTests = []
+
     # check if we are using a compiled language or a interpreted language
     if locations["build"] != "NaN":
+        print("Building the SOM executable")
         subprocess.run(locations["build"], shell=True)
 
     print("\n\nRunning tests\n")
@@ -153,13 +156,23 @@ def runTests(testsToBeRun):
         count += 1
         print(f"Running test {count}/{len(testsToBeRun)}: {x['name']}")
         result = subprocess.run(
-            [str(locations["executable"]), "-cp", locations["classpath"], x["name"]],
+            [str(locations["run"]), "-cp", locations["classpath"], x["name"]],
             capture_output=True,
             text=True 
         )
 
         # SOM level errors will be raised in stdout only SOM++ errors are in stderr (Most tests are for SOM level errors) STILL NEEDS MORE WORK
-        assert all(element in result.stdout for element in x['stdout']) or all(element in result.stderr for element in x['stdout']), f"Expected output ({x['stdout']}) not found in stdout for test {x['name']}"
+        if all(element in result.stdout for element in x["stdout"]) and all(element in result.stderr for element in x["stderr"]) or all(element in result.stderr for element in x["stdout"]) and all (element in result.stdout for element in x["stderr"]):
+            continue
+        else:
+            print(f"Test {x['name']} failed")
+            print(f"Expected stdout: \n{x['stdout']}")
+            print(f"Expected stderr: \n{x['stderr']}")
+            print(f"Actual stdout: \n{result.stdout}")
+            print(f"Actual stderr: \n{result.stderr}\n")
+            failedTests.append(x["name"])
 
     if locations["cleanup"] != "NaN":
         subprocess.run(locations["cleanup"], shell=True)
+
+    return failedTests

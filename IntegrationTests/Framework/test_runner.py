@@ -3,7 +3,7 @@ from pathlib import Path
 from defs import INSTRUCTIONS, CLASSPATH
 
 location = "./core-lib/IntegrationTests/Tests" # This is a definite location of this file
-locations = {"build": [], "run": "", "classpath": "", "inttesting-loc": "", "cleanup": ""}
+locations = {"build": [], "run": [], "classpath": "", "inttesting-loc": "", "cleanup": ""}
 
 def test_main():
     """
@@ -46,9 +46,6 @@ def test_main():
     print(f"Total tests ignored: {len(ignoredTests)}")
     print(f"Total tests failed: {len(failed)}")
     print("\nCheck above for a full list of ignored/ran/failed tests")
-
-    for test in failed:
-        print(test)
 
 def locateTests(path, testFiles, ignoredTests):
     """
@@ -153,12 +150,15 @@ def runTests(testsToBeRun):
 
     count = 0
     for x in testsToBeRun:
+        print("----" * 20)
+        command = f"{locations['run']} -cp {locations['classpath']} {x['name']}"
         count += 1
         print(f"Running test {count}/{len(testsToBeRun)}: {x['name']}")
         result = subprocess.run(
-            [str(locations["run"]), "-cp", locations["classpath"], x["name"]],
+            command,
             capture_output=True,
-            text=True 
+            text=True,
+            shell=True
         )
 
         # SOM level errors will be raised in stdout only SOM++ errors are in stderr (Most tests are for SOM level errors) STILL NEEDS MORE WORK

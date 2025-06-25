@@ -29,5 +29,5 @@ INSTRUCTIONS = {
 }
 
 # depends on whether symlinks have been preserved
-CLASSPATH = "core-lib/Smalltalk"
+CLASSPATH = "./core-lib/Smalltalk"
 CLASSPATH_LINUX = "Smalltalk"

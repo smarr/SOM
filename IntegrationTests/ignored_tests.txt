@@ -102,3 +102,7 @@ core-lib/IntegrationTests/Tests/int25.som
 core-lib/IntegrationTests/Tests/array_at_idx_err.som
 core-lib/IntegrationTests/Tests/int17.som
 core-lib/IntegrationTests/Tests/int15.som
+core-lib/IntegrationTests/Tests/inst_var_at_put.som
+core-lib/IntegrationTests/Tests/system_global_unset_global.som
+core-lib/IntegrationTests/Tests/methods.som
+core-lib/IntegrationTests/Tests/perform_in_superclass_with_args.som

@@ -26,6 +26,15 @@ def test_main():
     with open(f"{locations["inttesting-loc"]}/ignored_tests.txt", "r") as f:
         ignoredTests = [Path(line.strip()) for line in f.readlines()]
 
+    # Now check if we have any supplementary implementation specific tests to ignore
+    if (Path(f"./pignore").exists()):
+        with open("./pignore", "r") as f:
+            for line in f.readlines():
+                if line not in ignoredTests:
+                    ignoredTests.append(Path(line.strip()))
+                else:
+                    continue
+
     testFiles = []
     readDirectory(location, testFiles, ignoredTests) # locate tests
     testsToBeRun = assembleTestDictionary(testFiles) # parse tests

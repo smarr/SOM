@@ -1,0 +1,18 @@
+"
+VM:
+    status: success
+    customCP: ./core-lib/Examples/AreWeFastYet/Core:./core-lib/Smalltalk
+    stdout:
+        ERROR: Vector: Index out of bounds
+
+"
+
+vector_awfy2 = (
+    run = (
+        | vec |
+        vec := Vector new.
+        vec append: 10.
+        vec append: 20.
+        (vec at: 51) println.
+    )
+)

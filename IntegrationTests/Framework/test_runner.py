@@ -110,12 +110,22 @@ def parseTestFile(testFile):
     """
     parse the test file to extract the important information
     """
-    testDict = {"name": testFile, "stdout": [], "stderr": []}
+    testDict = {"name": testFile, "stdout": [], "stderr": [], "customCP": "NaN"}
     with open(testFile, 'r') as f:
         contents = f.read()
-        if "IGNORE" in contents:
-            return None
         comment = contents.split("\"")[1]
+
+        # Make sure if using a custom test classpath that it is above
+        # Stdout and Stderr
+        if "customCP" in comment:
+            print(comment)
+            commentLines = comment.split("\n")
+            for line in commentLines:
+                if "customCP" in line:
+                    testDict["customCP"] = line.split("customCP:")[1].strip()
+                    print(f"Using custom classpath: {testDict['customCP']}")
+                    continue
+
         if "stdout" in comment:
             stdOut = comment.split("stdout:")[1]
             if "stderr" in stdOut:
@@ -160,7 +170,12 @@ def runTests(testsToBeRun):
     count = 0
     for x in testsToBeRun:
         print("----" * 20)
-        command = f"{locations['run']} -cp {locations['classpath']} {x['name']}"
+        if (x["customCP"] != "NaN"):
+            print(f"Running with custom classpath")
+            command = f"{locations['run']} -cp {x['customCP']} {x['name']}"
+        else:
+            print(f"Running with default classpath")
+            command = f"{locations['run']} -cp {locations['classpath']} {x['name']}"
         count += 1
         print(f"Running test {count}/{len(testsToBeRun)}: {x['name']}")
         result = subprocess.run(

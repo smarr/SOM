@@ -1,29 +1,39 @@
 import subprocess
 from pathlib import Path
-from defs import INSTRUCTIONS, CLASSPATH
+from defs import INSTRUCTIONS
+import os
+import sys
+
+global CLASSPATH
+global EXECUTABLE
 
 location = "./core-lib/IntegrationTests/Tests" # This is a definite location of this file
-locations = {"build": [], "run": [], "classpath": "", "inttesting-loc": "", "cleanup": ""}
 
 def test_main():
+    global CLASSPATH, EXECUTABLE
     """
     Runs the main test function
     Locates SOM executable, loads classpaths and tests runs them and reports back
     """
 
+    if "CLASSPATH" not in os.environ:
+        sys.exit("Please set the CLASSPATH environment variable")
+
+    if "EXECUTABLE" not in os.environ:
+        sys.exit("Please set the EXECUTABLE environment variable")
+
+    CLASSPATH = os.environ["CLASSPATH"]
+    EXECUTABLE = os.environ["EXECUTABLE"]
+    print(f"\n\nUsing classpath: {CLASSPATH}")
+    print(f"Using executable: {EXECUTABLE}")
+
     # First consider which SOM we are using
     repo = subprocess.run(["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True).stdout.strip()
     name = repo.split("/")[-1]
 
-    locations["classpath"] = CLASSPATH
-    locations["build"] = INSTRUCTIONS[name]["build"]
-    locations["run"] = INSTRUCTIONS[name]["run"]
-    locations["executable"] = INSTRUCTIONS[name]["run"]
-    locations["inttesting-loc"] = INSTRUCTIONS[name]["inttesting-loc"]
-    locations["cleanup"] = INSTRUCTIONS[name]["cleanup"]
 
     # First open any tests to be ignored
-    with open(f"{locations["inttesting-loc"]}/ignored_tests.txt", "r") as f:
+    with open(f"./core-lib/IntegrationTests/ignored_tests.txt", "r") as f:
         ignoredTests = [Path(line.strip()) for line in f.readlines()]
 
     # Now check if we have any supplementary implementation specific tests to ignore
@@ -118,7 +128,6 @@ def parseTestFile(testFile):
         # Make sure if using a custom test classpath that it is above
         # Stdout and Stderr
         if "customCP" in comment:
-            print(comment)
             commentLines = comment.split("\n")
             for line in commentLines:
                 if "customCP" in line:
@@ -153,17 +162,12 @@ def parseTestFile(testFile):
 def runTests(testsToBeRun):
     """
     Take an array of dictionaries with test file names and expected output
-    Build the SOM executable if required
     Run all of the tests and check the output
     Cleanup the build directory if required
     """
+    global EXECUTABLE, CLASSPATH
 
     failedTests = []
-
-    # check if we are using a compiled language or a interpreted language
-    if locations["build"] != "NaN":
-        print("Building the SOM executable")
-        subprocess.run(locations["build"], shell=True)
 
     print("\n\nRunning tests\n")
 
@@ -172,10 +176,10 @@ def runTests(testsToBeRun):
         print("----" * 20)
         if (x["customCP"] != "NaN"):
             print(f"Running with custom classpath")
-            command = f"{locations['run']} -cp {x['customCP']} {x['name']}"
+            command = f"{EXECUTABLE} -cp {x['customCP']} {x['name']}"
         else:
             print(f"Running with default classpath")
-            command = f"{locations['run']} -cp {locations['classpath']} {x['name']}"
+            command = f"{EXECUTABLE} -cp {CLASSPATH} {x['name']}"
         count += 1
         print(f"Running test {count}/{len(testsToBeRun)}: {x['name']}")
         result = subprocess.run(
@@ -195,8 +199,5 @@ def runTests(testsToBeRun):
             print(f"Actual stdout: \n{result.stdout}")
             print(f"Actual stderr: \n{result.stderr}\n")
             failedTests.append(x["name"])
-
-    if locations["cleanup"] != "NaN":
-        subprocess.run(locations["cleanup"], shell=True)
 
     return failedTests

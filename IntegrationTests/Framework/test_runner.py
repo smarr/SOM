@@ -3,68 +3,11 @@ from pathlib import Path
 from defs import INSTRUCTIONS
 import os
 import sys
+import pytest
 
 global CLASSPATH
 global EXECUTABLE
-
-location = "./core-lib/IntegrationTests/Tests" # This is a definite location of this file
-
-def test_main():
-    global CLASSPATH, EXECUTABLE
-    """
-    Runs the main test function
-    Locates SOM executable, loads classpaths and tests runs them and reports back
-    """
-
-    if "CLASSPATH" not in os.environ:
-        sys.exit("Please set the CLASSPATH environment variable")
-
-    if "EXECUTABLE" not in os.environ:
-        sys.exit("Please set the EXECUTABLE environment variable")
-
-    CLASSPATH = os.environ["CLASSPATH"]
-    EXECUTABLE = os.environ["EXECUTABLE"]
-    print(f"\n\nUsing classpath: {CLASSPATH}")
-    print(f"Using executable: {EXECUTABLE}")
-
-    # First consider which SOM we are using
-    repo = subprocess.run(["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True).stdout.strip()
-    name = repo.split("/")[-1]
-
-
-    # First open any tests to be ignored
-    with open(f"./core-lib/IntegrationTests/ignored_tests.txt", "r") as f:
-        ignoredTests = [Path(line.strip()) for line in f.readlines()]
-
-    # Now check if we have any supplementary implementation specific tests to ignore
-    if (Path(f"./pignore").exists()):
-        with open("./pignore", "r") as f:
-            for line in f.readlines():
-                if line not in ignoredTests:
-                    ignoredTests.append(Path(line.strip()))
-                else:
-                    continue
-
-    testFiles = []
-    readDirectory(location, testFiles, ignoredTests) # locate tests
-    testsToBeRun = assembleTestDictionary(testFiles) # parse tests
-    
-    # Run the tests
-    failed = runTests(testsToBeRun)
-
-    print("\n\nIgnored Tests:\n")
-    for ignoredTest in ignoredTests:
-        print(f"Test {ignoredTest} was ignored")
-
-    print("\n\nFailed Tests:\n")
-    for test in failed:
-        print(f"Test {test} failed")
-
-    print("\n\nSummary of tests:")
-    print(f"Total tests passed: {len(testFiles)-len(failed)}")
-    print(f"Total tests ignored: {len(ignoredTests)}")
-    print(f"Total tests failed: {len(failed)}")
-    print("\nCheck above for a full list of ignored/ran/failed tests")
+global TESTS_LIST
 
 def locateTests(path, testFiles, ignoredTests):
     """
@@ -155,11 +98,45 @@ def parseTestFile(testFile):
             stdErrL = [line.strip() for line in stdErrL if line.strip()]
             testDict["stderr"] = stdErrL
 
-    return testDict
+        testTuple = (testDict["name"], testDict["stdout"], testDict["stderr"], testDict["customCP"])
+
+    return testTuple
+
+location = "./core-lib/IntegrationTests/Tests" # This is a definite location of this file
+
+if "CLASSPATH" not in os.environ:
+    sys.exit("Please set the CLASSPATH environment variable")
+
+if "EXECUTABLE" not in os.environ:
+    sys.exit("Please set the EXECUTABLE environment variable")
+
+CLASSPATH = os.environ["CLASSPATH"]
+EXECUTABLE = os.environ["EXECUTABLE"]
+print(f"\n\nUsing classpath: {CLASSPATH}")
+print(f"Using executable: {EXECUTABLE}")
+
+# First open any tests to be ignored
+with open(f"./core-lib/IntegrationTests/ignored_tests.txt", "r") as f:
+    ignoredTests = [Path(line.strip()) for line in f.readlines()]
+
+# Now check if we have any supplementary implementation specific tests to ignore
+if (Path(f"./pignore").exists()):
+    with open("./pignore", "r") as f:
+        for line in f.readlines():
+            if line not in ignoredTests:
+                ignoredTests.append(Path(line.strip()))
+            else:
+                continue
+
+testFiles = []
+readDirectory(location, testFiles, ignoredTests)
+TESTS_LIST = assembleTestDictionary(testFiles)
+
+
 
     
-
-def runTests(testsToBeRun):
+@pytest.mark.parametrize("name,stdout,stderr,customCP", TESTS_LIST)
+def tests_runner(name, stdout, stderr, customCP):
     """
     Take an array of dictionaries with test file names and expected output
     Run all of the tests and check the output
@@ -169,35 +146,20 @@ def runTests(testsToBeRun):
 
     failedTests = []
 
-    print("\n\nRunning tests\n")
 
-    count = 0
-    for x in testsToBeRun:
-        print("----" * 20)
-        if (x["customCP"] != "NaN"):
-            print(f"Running with custom classpath")
-            command = f"{EXECUTABLE} -cp {x['customCP']} {x['name']}"
-        else:
-            print(f"Running with default classpath")
-            command = f"{EXECUTABLE} -cp {CLASSPATH} {x['name']}"
-        count += 1
-        print(f"Running test {count}/{len(testsToBeRun)}: {x['name']}")
-        result = subprocess.run(
-            command,
-            capture_output=True,
-            text=True,
-            shell=True
-        )
+    if (customCP != "NaN"):
+        print(f"Running with custom classpath")
+        command = f"{EXECUTABLE} -cp {customCP} {name}"
+    else:
+        print(f"Running with default classpath")
+        command = f"{EXECUTABLE} -cp {CLASSPATH} {name}"
 
-        # SOM level errors will be raised in stdout only SOM++ errors are in stderr (Most tests are for SOM level errors) STILL NEEDS MORE WORK
-        if all(element in result.stdout for element in x["stdout"]) and all(element in result.stderr for element in x["stderr"]) or all(element in result.stderr for element in x["stdout"]) and all (element in result.stdout for element in x["stderr"]):
-            continue
-        else:
-            print(f"Test {x['name']} failed")
-            print(f"Expected stdout: \n{x['stdout']}")
-            print(f"Expected stderr: \n{x['stderr']}")
-            print(f"Actual stdout: \n{result.stdout}")
-            print(f"Actual stderr: \n{result.stderr}\n")
-            failedTests.append(x["name"])
+    result = subprocess.run(
+        command,
+        capture_output=True,
+        text=True,
+        shell=True
+    )
 
-    return failedTests
+    # SOM level errors will be raised in stdout only SOM++ errors are in stderr (Most tests are for SOM level errors) STILL NEEDS MORE WORK
+    assert all(element in result.stdout for element in stdout) and all(element in result.stderr for element in stderr) or all(element in result.stderr for element in stdout) and all (element in result.stdout for element in stderr), "Test failed for: " + name

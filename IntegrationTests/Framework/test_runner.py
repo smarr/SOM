@@ -75,7 +75,6 @@ def parseTestFile(testFile):
             for line in commentLines:
                 if "customCP" in line:
                     testDict["customCP"] = line.split("customCP:")[1].strip()
-                    print(f"Using custom classpath: {testDict['customCP']}")
                     continue
 
         if "stdout" in comment:
@@ -102,6 +101,16 @@ def parseTestFile(testFile):
 
     return testTuple
 
+def idfn(name):
+    """
+    Generate a unique ID for each test based on the test name
+    Tests that are in IntegrationTests/Tests are just their filename
+    Tests that are in subdirectories will have their relative path preserved
+    """
+    finalName = str(name).replace("core-lib/IntegrationTests/Tests/", "")
+    return finalName
+
+
 location = "./core-lib/IntegrationTests/Tests" # This is a definite location of this file
 
 if "CLASSPATH" not in os.environ:
@@ -112,8 +121,6 @@ if "EXECUTABLE" not in os.environ:
 
 CLASSPATH = os.environ["CLASSPATH"]
 EXECUTABLE = os.environ["EXECUTABLE"]
-print(f"\n\nUsing classpath: {CLASSPATH}")
-print(f"Using executable: {EXECUTABLE}")
 
 # First open any tests to be ignored
 with open(f"./core-lib/IntegrationTests/ignored_tests.txt", "r") as f:
@@ -134,8 +141,7 @@ TESTS_LIST = assembleTestDictionary(testFiles)
 
 
 
-    
-@pytest.mark.parametrize("name,stdout,stderr,customCP", TESTS_LIST)
+@pytest.mark.parametrize("name,stdout,stderr,customCP", TESTS_LIST, ids=idfn)
 def tests_runner(name, stdout, stderr, customCP):
     """
     Take an array of dictionaries with test file names and expected output
@@ -148,10 +154,8 @@ def tests_runner(name, stdout, stderr, customCP):
 
 
     if (customCP != "NaN"):
-        print(f"Running with custom classpath")
         command = f"{EXECUTABLE} -cp {customCP} {name}"
     else:
-        print(f"Running with default classpath")
         command = f"{EXECUTABLE} -cp {CLASSPATH} {name}"
 
     result = subprocess.run(

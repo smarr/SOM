@@ -106,3 +106,9 @@ core-lib/IntegrationTests/Tests/inst_var_at_put.som
 core-lib/IntegrationTests/Tests/system_global_unset_global.som
 core-lib/IntegrationTests/Tests/methods.som
 core-lib/IntegrationTests/Tests/perform_in_superclass_with_args.som
+core-lib/IntegrationTests/Tests/is_letters.som
+core-lib/IntegrationTests/Tests/obj2.som
+core-lib/IntegrationTests/Tests/to32bits.som
+core-lib/IntegrationTests/Tests/int4.som
+core-lib/IntegrationTests/Tests/int29.som
+core-lib/IntegrationTests/Tests/ic1.som

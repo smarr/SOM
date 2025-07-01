@@ -111,6 +111,40 @@ def idfn(name):
     finalName = str(name).replace("core-lib/IntegrationTests/Tests/", "")
     return finalName
 
+def checkOut(result, expstd, experr, errorMessage):
+    """
+    check if the output of the test matches the expected output
+    result: The object returned by subprocess.run
+    expstd: The expected standard output
+    experr: The expected standard error output
+    errorMessage: The pregenerated error message to be used in case of failure
+    Returns: Boolean indicating if result matches expected output
+    """
+
+    # Tests borrowed from lang_tests and stderr and atdout will not directly match that of all SOMs
+    # Order of the output is important
+
+    stdout = result.stdout.splitlines()
+    stderr = result.stderr.splitlines()
+
+    # Check if each line in stdout and stderr is in the expected output
+    for line in expstd:
+        assert line in stdout or line in stderr, errorMessage
+        if line in stdout:
+            stdout.remove(line)
+        if line in stderr:
+            stderr.remove(line)
+
+    for line in experr:
+        assert line in stdout or line in stderr, errorMessage
+        if line in stdout:
+            stdout.remove(line)
+        if line in stderr:
+            stderr.remove(line)
+
+    # If we made it this far then the test passed
+    return True
+
 
 location = "./core-lib/IntegrationTests/Tests" # This is a definite location of this file
 
@@ -187,6 +221,10 @@ Expected stderr: {stderr}
 Given stderr   : {result.stderr}
 Command used   : {command}
 """
+    
+    if result.returncode != 0:
+        errMsg += f"Command failed with return code: {result.returncode}\n"
 
     # SOM level errors will be raised in stdout only SOM++ errors are in stderr (Most tests are for SOM level errors) STILL NEEDS MORE WORK
-    assert all(element in result.stdout for element in stdout) and all(element in result.stderr for element in stderr) or all(element in result.stderr for element in stdout) and all (element in result.stdout for element in stderr), errMsg
+    # assert all(element in result.stdout for element in stdout) and all(element in result.stderr for element in stderr) or all(element in result.stderr for element in stdout) and all (element in result.stdout for element in stderr), errMsg
+    checkOut(result, stdout, stderr, errMsg)

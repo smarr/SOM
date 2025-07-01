@@ -1,6 +1,7 @@
 import subprocess
 from pathlib import Path
 from defs import INSTRUCTIONS
+from debug import debug, debugList
 import os
 import sys
 import pytest
@@ -119,14 +120,22 @@ if "CLASSPATH" not in os.environ:
 if "EXECUTABLE" not in os.environ:
     sys.exit("Please set the EXECUTABLE environment variable")
 
+DEBUG = False
+if "DEBUG" in os.environ:
+    DEBUG = os.environ["DEBUG"].lower() == "true"
+
 CLASSPATH = os.environ["CLASSPATH"]
 EXECUTABLE = os.environ["EXECUTABLE"]
 
+debug(f"DEBUG is set to: {DEBUG}\nCLASSPATH is set to: {CLASSPATH}\nEXECUTABLE is set to: {EXECUTABLE}", DEBUG)
+
 # First open any tests to be ignored
+debug(f"Locating SOM ignored tests", DEBUG)
 with open(f"./core-lib/IntegrationTests/ignored_tests.txt", "r") as f:
     ignoredTests = [Path(line.strip()) for line in f.readlines()]
 
 # Now check if we have any supplementary implementation specific tests to ignore
+debug(f"Locating implementation specific ignored tests", DEBUG)
 if (Path(f"./pignore").exists()):
     with open("./pignore", "r") as f:
         for line in f.readlines():
@@ -135,11 +144,11 @@ if (Path(f"./pignore").exists()):
             else:
                 continue
 
+debugList(ignoredTests, DEBUG, prefix="Ignored test: ")
+
 testFiles = []
 readDirectory(location, testFiles, ignoredTests)
 TESTS_LIST = assembleTestDictionary(testFiles)
-
-
 
 @pytest.mark.parametrize("name,stdout,stderr,customCP", TESTS_LIST, ids=idfn)
 def tests_runner(name, stdout, stderr, customCP):
@@ -150,13 +159,17 @@ def tests_runner(name, stdout, stderr, customCP):
     """
     global EXECUTABLE, CLASSPATH
 
-    failedTests = []
-
+    debug(f"\n----------------------------------------------------\n", DEBUG)
 
     if (customCP != "NaN"):
+        debug(f"Using standard classpath: {CLASSPATH}", DEBUG)
         command = f"{EXECUTABLE} -cp {customCP} {name}"
     else:
+        debug(f"Using custom classpath: {customCP}", DEBUG)
         command = f"{EXECUTABLE} -cp {CLASSPATH} {name}"
+
+    debug(f"Running test: {name}", DEBUG)
+    debug(f"Command: {command}", DEBUG)
 
     result = subprocess.run(
         command,
@@ -165,5 +178,15 @@ def tests_runner(name, stdout, stderr, customCP):
         shell=True
     )
 
+    # Produce potential error messages now and then run assertion
+    errMsg = f"""
+Test failed for: {name}
+Expected stdout: {stdout}
+Given stdout   : {result.stdout}
+Expected stderr: {stderr}
+Given stderr   : {result.stderr}
+Command used   : {command}
+"""
+
     # SOM level errors will be raised in stdout only SOM++ errors are in stderr (Most tests are for SOM level errors) STILL NEEDS MORE WORK
-    assert all(element in result.stdout for element in stdout) and all(element in result.stderr for element in stderr) or all(element in result.stderr for element in stdout) and all (element in result.stdout for element in stderr), "Test failed for: " + name
+    assert all(element in result.stdout for element in stdout) and all(element in result.stderr for element in stderr) or all(element in result.stderr for element in stdout) and all (element in result.stdout for element in stderr), errMsg

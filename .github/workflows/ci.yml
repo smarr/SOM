@@ -121,6 +121,11 @@ jobs:
             fi
           done
 
+          if [ ! -d som-vm ]; then
+            echo "All clone attempts failed, falling back to SOM-st"
+            git clone --depth 1 https://github.com/SOM-st/$REPO som-vm
+          fi
+
       - name: Install Apt Packages
         if: ${{ matrix.apt != '' }}
         run: |

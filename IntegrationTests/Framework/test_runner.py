@@ -129,14 +129,14 @@ def checkOut(result, expstd, experr, errorMessage):
 
     # Check if each line in stdout and stderr is in the expected output
     for line in expstd:
-        assert line in stdout or line in stderr, errorMessage
+        assert any(line in out_line for out_line in stdout), errorMessage
         if line in stdout:
             stdout.remove(line)
         if line in stderr:
             stderr.remove(line)
 
     for line in experr:
-        assert line in stdout or line in stderr, errorMessage
+        assert any(line in err_line for err_line in stderr), errorMessage
         if line in stdout:
             stdout.remove(line)
         if line in stderr:

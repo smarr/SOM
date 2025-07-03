@@ -3,7 +3,7 @@ VM:
     status: success
     customCP: ./core-lib/Examples/AreWeFastYet/Core:./core-lib/Smalltalk
     stdout:
-        ERROR: Vector: Index out of bounds
+        nil
 
 "
 

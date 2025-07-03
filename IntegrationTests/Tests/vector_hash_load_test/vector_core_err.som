@@ -2,7 +2,7 @@
 VM:
     status: success
     stdout:
-        ERROR: Vector: Index out of bounds
+        ERROR: Vector[1..3]: Index 20 out of bounds
 
 "
 

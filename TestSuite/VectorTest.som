@@ -251,7 +251,20 @@ VectorTest = TestCase (
     self assert: 2 equals: (arr at: 1).
     self assert: 5 equals: (arr at: 2).
   )
-  
+
+  "Check that asArray copies storage and a later access does not overwrite the vec's content"
+  testAsArrayEnsureItCopiesStorageArray = (
+    | vec arr |
+    vec := Vector new.
+    vec append: 1.
+    vec append: 2.
+
+    arr := vec asArray.
+    arr at: 1 put: 44.
+
+    self assert: (vec at: 1) equals: 1.
+  )
+
   testAsSet = (
     | v set |
     v := Vector new.
@@ -400,5 +413,17 @@ VectorTest = TestCase (
       i := i + 1.
     ].
     self assert: 6 equals: i.
+  )
+
+  "doIndexes iterates from 1 rather then start check core-lib/Vector implementation"
+  testDoIndexesDoubleRemove = (
+    | v |
+    v := Vector new.
+    1 to: 10 do: [:i | v , i].
+
+    v removeFirst.
+    v removeFirst.
+
+    v doIndexes: [:i | self assert: i equals: ((v at: i)-2)]
   )
 )

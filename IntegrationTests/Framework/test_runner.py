@@ -10,6 +10,7 @@ global CLASSPATH
 global EXECUTABLE
 global TESTS_LIST
 
+
 def locateTests(path, testFiles, ignoredTests):
     """
     Locate all test files that exist in the given directory
@@ -20,15 +21,16 @@ def locateTests(path, testFiles, ignoredTests):
     # To ID a file will be opened and at the top there should be a comment which starts with VM:
     for file in Path(path).glob("*.som"):
         # Check if the file is in the ignored tests (Check via path, multiple tests named test.som)
-        if (file in ignoredTests):
+        if file in ignoredTests:
             continue
         else:
-            with open(file, 'r') as f:
+            with open(file, "r") as f:
                 contents = f.read()
                 if "VM" in contents:
                     testFiles.append(file)
 
     return testFiles
+
 
 def readDirectory(path, testFiles, ignoredTests):
     """
@@ -45,6 +47,7 @@ def readDirectory(path, testFiles, ignoredTests):
 
     locateTests(path, testFiles, ignoredTests)
 
+
 def assembleTestDictionary(testFiles):
     """
     Assemble a dictionary of
@@ -54,20 +57,21 @@ def assembleTestDictionary(testFiles):
     tests = []
     for file in testFiles:
         testDict = parseTestFile(file)
-        if (testDict is None):
+        if testDict is None:
             continue
         tests.append(testDict)
-        
+
     return tests
+
 
 def parseTestFile(testFile):
     """
     parse the test file to extract the important information
     """
     testDict = {"name": testFile, "stdout": [], "stderr": [], "customCP": "NaN"}
-    with open(testFile, 'r') as f:
+    with open(testFile, "r") as f:
         contents = f.read()
-        comment = contents.split("\"")[1]
+        comment = contents.split('"')[1]
 
         # Make sure if using a custom test classpath that it is above
         # Stdout and Stderr
@@ -98,9 +102,15 @@ def parseTestFile(testFile):
             stdErrL = [line.strip() for line in stdErrL if line.strip()]
             testDict["stderr"] = stdErrL
 
-        testTuple = (testDict["name"], testDict["stdout"], testDict["stderr"], testDict["customCP"])
+        testTuple = (
+            testDict["name"],
+            testDict["stdout"],
+            testDict["stderr"],
+            testDict["customCP"],
+        )
 
     return testTuple
+
 
 def idfn(name):
     """
@@ -110,6 +120,7 @@ def idfn(name):
     """
     finalName = str(name).replace("core-lib/IntegrationTests/Tests/", "")
     return finalName
+
 
 def checkOut(result, expstd, experr, errorMessage):
     """
@@ -146,7 +157,9 @@ def checkOut(result, expstd, experr, errorMessage):
     return True
 
 
-location = "./core-lib/IntegrationTests/Tests" # This is a definite location of this file
+location = (
+    "./core-lib/IntegrationTests/Tests"  # This is a definite location of this file
+)
 
 if "CLASSPATH" not in os.environ:
     sys.exit("Please set the CLASSPATH environment variable")
@@ -161,7 +174,10 @@ if "DEBUG" in os.environ:
 CLASSPATH = os.environ["CLASSPATH"]
 EXECUTABLE = os.environ["EXECUTABLE"]
 
-debug(f"DEBUG is set to: {DEBUG}\nCLASSPATH is set to: {CLASSPATH}\nEXECUTABLE is set to: {EXECUTABLE}", DEBUG)
+debug(
+    f"DEBUG is set to: {DEBUG}\nCLASSPATH is set to: {CLASSPATH}\nEXECUTABLE is set to: {EXECUTABLE}",
+    DEBUG,
+)
 
 # First open any tests to be ignored
 debug(f"Locating SOM ignored tests", DEBUG)
@@ -170,7 +186,7 @@ with open(f"./core-lib/IntegrationTests/ignored_tests.txt", "r") as f:
 
 # Now check if we have any supplementary implementation specific tests to ignore
 debug(f"Locating implementation specific ignored tests", DEBUG)
-if (Path(f"./pignore").exists()):
+if Path(f"./pignore").exists():
     with open("./pignore", "r") as f:
         for line in f.readlines():
             if line not in ignoredTests:
@@ -184,6 +200,7 @@ testFiles = []
 readDirectory(location, testFiles, ignoredTests)
 TESTS_LIST = assembleTestDictionary(testFiles)
 
+
 @pytest.mark.parametrize("name,stdout,stderr,customCP", TESTS_LIST, ids=idfn)
 def tests_runner(name, stdout, stderr, customCP):
     """
@@ -195,7 +212,7 @@ def tests_runner(name, stdout, stderr, customCP):
 
     debug(f"\n----------------------------------------------------\n", DEBUG)
 
-    if (customCP != "NaN"):
+    if customCP != "NaN":
         debug(f"Using standard classpath: {CLASSPATH}", DEBUG)
         command = f"{EXECUTABLE} -cp {customCP} {name}"
     else:
@@ -205,12 +222,7 @@ def tests_runner(name, stdout, stderr, customCP):
     debug(f"Running test: {name}", DEBUG)
     debug(f"Command: {command}", DEBUG)
 
-    result = subprocess.run(
-        command,
-        capture_output=True,
-        text=True,
-        shell=True
-    )
+    result = subprocess.run(command, capture_output=True, text=True, shell=True)
 
     # Produce potential error messages now and then run assertion
     errMsg = f"""
@@ -221,7 +233,7 @@ Expected stderr: {stderr}
 Given stderr   : {result.stderr}
 Command used   : {command}
 """
-    
+
     if result.returncode != 0:
         errMsg += f"Command failed with return code: {result.returncode}\n"
 

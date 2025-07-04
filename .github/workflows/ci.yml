@@ -4,6 +4,15 @@ on: [push, pull_request]
 
 jobs:
   test_soms:
+    name: Install black
+    steps:
+      - name: Pip install black for integration tests
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install black
+          - name: Run black
+            run: |
+              black ./IntegrationTests/Framework --check
     runs-on: ubuntu-24.04 # ubuntu-latest
     continue-on-error: ${{ matrix.not-up-to-date }}
     strategy:
@@ -75,15 +84,6 @@ jobs:
           #   som: "cargo run -- "
           #   som-tests: "--cp ../Smalltalk ../TestSuite/TestHarness.som"
           #   not-up-to-date: true
-
-          - name: Pip install black for integration tests
-            run: |
-              python -m pip install --upgrade pip
-              python -m pip install black
-
-          - name: Run Integration Tests
-            run: |
-              black IntegrationTests/Framework --check
 
     name: ${{ matrix.name }}
     steps:

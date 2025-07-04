@@ -1,6 +1,5 @@
 import subprocess
 from pathlib import Path
-from defs import INSTRUCTIONS
 from debug import debug, debugList
 import os
 import sys

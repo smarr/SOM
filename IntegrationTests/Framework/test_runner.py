@@ -180,8 +180,8 @@ debug(
 
 # First open any tests to be ignored
 debug(f"Locating SOM ignored tests", DEBUG)
-with open(f"./core-lib/IntegrationTests/ignored_tests.txt", "r") as f:
-    ignoredTests = [Path(line.strip()) for line in f.readlines()]
+# with open(f"./core-lib/IntegrationTests/ignored_tests.txt", "r") as f:
+    ignoredTests = [] # [Path(line.strip()) for line in f.readlines()]
 
 # Now check if we have any supplementary implementation specific tests to ignore
 debug(f"Locating implementation specific ignored tests", DEBUG)

@@ -182,6 +182,13 @@ jobs:
 
           echo "${{ matrix.som }} $SOM_TESTS"
           eval "${{ matrix.som }} $SOM_TESTS"
+      
+      - name: Run Integration Tests
+        if: ${{ matrix.som != 'spec' }}
+        run: |
+          export EXECUTABLE="som-vm/${{ matrix.som }}"
+          export CLASSPATH="-cp Smalltalk"
+          pytest IntegrationTests/Framework
 
       # We currently test SomSom only on TruffleSOM
       - name: Test SomSom on TruffleSOM

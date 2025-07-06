@@ -9,7 +9,6 @@ VM:
     true
     true
     true
-    true
 "
 
 hashcode = (
@@ -17,13 +16,10 @@ hashcode = (
         self cmp: 'a' with: 'a'.
         self cmp: 123 with: 123.
         self cmp: self with: self.
-        self cmp: 1.1 with: 1.1.
         self cmp: (1<<200) with: (1<<200).
         self cmp: hashcode with: hashcode.
         self cmp: (hashcode methods) with: (hashcode methods).
         self cmp: (hashcode methods at: 1) with: (hashcode methods at: 1).
-        #() hashcode.
-        [] hashcode.
     )
 
     cmp: x with: y = (

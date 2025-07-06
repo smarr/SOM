@@ -6,7 +6,7 @@ VM:
     Can't represent as double.
 "
 
-double6 = (
+double8 = (
     run = (
         (1 << 2000) / 1.1.
     )

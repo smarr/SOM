@@ -4,7 +4,7 @@ VM:
   stdout: Hello world
 "
 
-instance_vars = (
+instance_vars1 = (
     | hello |
 
     assign_hello = ( hello := 'Hello' )

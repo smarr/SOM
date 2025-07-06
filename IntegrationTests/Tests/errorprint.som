@@ -5,7 +5,7 @@ VM:
   stdout:
 "
 
-errorprintln = (
+errorprint = (
     run = (
         system errorPrint: 'x'.
         system errorPrint: 'y'.

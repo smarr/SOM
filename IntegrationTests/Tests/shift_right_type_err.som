@@ -7,7 +7,7 @@ VM:
     Expected a numeric type but got type 'String_'.
 "
 
-shift_right = (
+shift_right_type_err = (
     run = (
         (1 >>> 'a') println.
     )

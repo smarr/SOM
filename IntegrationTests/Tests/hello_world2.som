@@ -4,7 +4,7 @@ VM:
   stdout: Hello world
 "
 
-Hello = (
+hello_world2 = (
     run = (
         | t1 t2 |
         t1 := 'Hello '.

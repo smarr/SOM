@@ -7,6 +7,6 @@ VM:
     Field 'a' has already been defined in this class.
 "
 
-instance_field_overlap2 = (
+instance_fields_overlap2 = (
     | a a |
 )

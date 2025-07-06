@@ -6,7 +6,7 @@ VM:
     Division by zero.
 "
 
-int9 = (
+int23 = (
     run = (
         1 / 0.0
     )

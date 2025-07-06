@@ -4,7 +4,7 @@ VM:
     a
 "
 
-block7 = (
+block_7 = (
     f = (
         [ [ ^ 'a' ] value ] value.
         ^'b'

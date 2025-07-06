@@ -2,10 +2,10 @@
 VM:
   stdout:
     false 0
-    instance of block12
+    instance of block_12
 "
 
-block12 = (
+block_12 = (
     | i |
     r: b = (
         | x |

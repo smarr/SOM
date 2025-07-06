@@ -4,7 +4,7 @@ VM:
     2
 "
 
-block5 = (
+block_5 = (
     f = (
        | x y |
        x := '1'.

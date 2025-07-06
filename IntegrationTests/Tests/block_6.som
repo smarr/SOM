@@ -4,13 +4,11 @@ VM:
     a
 "
 
-block8 = (
+block_6 = (
     f = (
-        self g: [ ^ 'a' ].
+        [ [ ^ 'a' ] ] value value.
         ^'b'
     )
-
-    g: block = ( ^block value )
 
     run = (
         self f println

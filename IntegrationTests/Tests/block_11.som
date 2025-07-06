@@ -5,7 +5,7 @@ VM:
     3
 "
 
-block11 = (
+block_11 = (
     f = (
         | x y |
         x := 1.

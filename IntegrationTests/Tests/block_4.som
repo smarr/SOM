@@ -4,7 +4,7 @@ VM:
     woo
 "
 
-block4 = (
+block_4 = (
     run = (
        |x y|
        x := 'Hello world'.

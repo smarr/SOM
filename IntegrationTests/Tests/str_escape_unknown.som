@@ -9,6 +9,6 @@ VM:
 
 str_escape_unknown = (
     run = (
-        '\a'.
+        '\a' println
     )
 )

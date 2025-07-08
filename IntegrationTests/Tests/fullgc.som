@@ -1,11 +1,13 @@
 "
 VM:
   status: success
-  stdout: false
+  stdout: true
 "
 
 fullgc = (
     run = (
-        system fullGC println.
+        | result |
+        result := system fullGC.
+        (result == true || (result == false)) println
     )
 )

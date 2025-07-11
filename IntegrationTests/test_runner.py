@@ -68,7 +68,7 @@ def parse_test_file(test_file):
         "name": test_file,
         "stdout": [],
         "stderr": [],
-        "custom_classpath": "None",
+        "custom_classpath": None,
         "case_sensitive": False,
     }
     with open(test_file, "r", encoding="utf-8") as open_file:
@@ -92,7 +92,7 @@ def parse_test_file(test_file):
             for line in comment_lines:
                 if "case_sensitive" in line:
                     test_info_dict["case_sensitive"] = bool(
-                        line.split("case_sensitive")[1].strip()
+                        line.split("case_sensitive:")[1].strip().lower() == "true"
                     )
 
         if "stdout" in comment:
@@ -132,6 +132,43 @@ def parse_test_file(test_file):
         )
 
     return test_tuple
+
+
+def make_a_diff(expected, given):
+    """
+    Creates a string that represents the difference between two
+    lists of Strings.
+    """
+    diff_string = ""
+    for diff in ndiff(expected, given):
+        diff_string += f"\n{str(diff)}"
+
+    return diff_string
+
+
+# pylint: disable=too-many-positional-arguments
+# pylint: disable=too-many-arguments
+def build_error_message(
+    stdout, stderr, exp_stdout, exp_stderr, command, case_sensitive
+):
+    """
+    Build an error message for the test runner
+    """
+
+    error_message = f"""\n
+Command: {command}
+Case Sensitive: {case_sensitive}
+    """
+
+    if stdout.strip() != "":
+        error_message += "\nstdout diff with stdout expected\n"
+        error_message += make_a_diff(exp_stdout, stdout.strip().split("\n"))
+
+    if stderr.strip() != "":
+        error_message += "\nstderr diff with stderr expected\n"
+        error_message += make_a_diff(exp_stderr, stderr.strip().split("\n"))
+
+    return error_message
 
 
 def check_exp_given(given, expected):
@@ -197,29 +234,112 @@ def check_output(test_outputs, expected_std_out, expected_std_err):
 
     passing += check_exp_given(given_std_out, expected_std_out)
     passing += check_exp_given(given_std_err, expected_std_err)
-    passing += check_exp_given(given_std_out, expected_std_err)
-    passing += check_exp_given(given_std_err, expected_std_out)
 
-    if passing >= 3:
-        # If we have at least 2 then a pass has succeeded on at least both so should be ok
+    if passing == 2:
+        # If we have two passing then we know we have what we expect
         return True
 
     return False
 
 
-# Code below here runs before pytest finds it's methods
+# Read the test exceptions file and set the variables correctly
+# pylint: disable=too-many-branches
+def read_test_exceptions(filename):
+    """
+    Read a TEST_EXCEPTIONS file and extract the core information
+    Filename should be either a relative path from CWD to file
+    or an abolute path.
+    """
+    if filename:
+        path = os.path.relpath(os.path.dirname(__file__))
 
-location = os.path.relpath(os.path.dirname(__file__) + "/Tests")
+        with open(f"{filename}", "r", encoding="utf-8") as file:
+            yaml_file = yaml.safe_load(file)
+
+            if yaml_file is not None:
+                if "known_failures" in yaml_file:
+                    external_vars.known_failures = yaml_file["known_failures"]
+                    if external_vars.known_failures is None:
+                        external_vars.known_failures = []
+
+                else:
+                    external_vars.known_failures = []
+
+                if "failing_as_unspecified" in yaml_file:
+                    external_vars.failing_as_unspecified = yaml_file[
+                        "failing_as_unspecified"
+                    ]
+                    if external_vars.failing_as_unspecified is None:
+                        external_vars.failing_as_unspecified = []
+
+                else:
+                    external_vars.failing_as_unspecified = []
+
+                if "unsupported" in yaml_file:
+                    external_vars.unsupported = yaml_file["unsupported"]
+                    if external_vars.unsupported is None:
+                        external_vars.unsupported = []
+
+                else:
+                    external_vars.unsupported = []
+
+                if "do_not_run" in yaml_file:
+                    external_vars.do_not_run = yaml_file["do_not_run"]
+                    if external_vars.do_not_run is None:
+                        external_vars.do_not_run = []
+
+                else:
+                    external_vars.do_not_run = []
+            else:
+                external_vars.known_failures = []
+                external_vars.failing_as_unspecified = []
+                external_vars.unsupported = []
+                external_vars.do_not_run = []
+
+        if (
+            external_vars.known_failures is not None
+            and external_vars.known_failures != [None]
+        ):
+            external_vars.known_failures = [
+                os.path.join(path, test) for test in external_vars.known_failures
+            ]
+        if (
+            external_vars.failing_as_unspecified is not None
+            and external_vars.failing_as_unspecified != [None]
+        ):
+            external_vars.failing_as_unspecified = [
+                os.path.join(path, test)
+                for test in external_vars.failing_as_unspecified
+            ]
+        if external_vars.unsupported is not None and external_vars.unsupported != [
+            None
+        ]:
+            external_vars.unsupported = [
+                os.path.join(path, test) for test in external_vars.unsupported
+            ]
+        if external_vars.do_not_run is not None and external_vars.do_not_run != [None]:
+            external_vars.do_not_run = [
+                os.path.join(path, test) for test in external_vars.do_not_run
+            ]
+
+
+# START, ENTRY, BEGIN, MAIN
+# Code below here runs before pytest finds it's methods
+location = os.path.relpath(os.path.dirname(__file__))
+if not os.path.exists(location + "/Tests"):
+    pytest.exit(
+        "/Tests directory not found. Please make sure the lang_tests are installed"
+    )
 
 # Work out settings for the application (They are labelled REQUIRED or OPTIONAL)
 if "CLASSPATH" not in os.environ:  # REQUIRED
     sys.exit("Please set the CLASSPATH environment variable")
 
-if "EXECUTABLE" not in os.environ:  # REQUIRED
-    sys.exit("Please set the EXECUTABLE environment variable")
+if "VM" not in os.environ:  # REQUIRED
+    sys.exit("Please set the VM environment variable")
 
 if "TEST_EXCEPTIONS" in os.environ:  # OPTIONAL
-    external_vars.TEST_EXCEPTIONS = os.environ["TEST_EXCEPTIONS"]
+    external_vars.TEST_EXCEPTIONS = location + "/" + os.environ["TEST_EXCEPTIONS"]
 
 if "GENERATE_REPORT" in os.environ:  # OPTIONAL
     # Value is the location
@@ -227,39 +347,9 @@ if "GENERATE_REPORT" in os.environ:  # OPTIONAL
     external_vars.GENERATE_REPORT = os.environ["GENERATE_REPORT"]
 
 external_vars.CLASSPATH = os.environ["CLASSPATH"]
-external_vars.EXECUTABLE = os.environ["EXECUTABLE"]
+external_vars.VM = os.environ["VM"]
 
-if external_vars.TEST_EXCEPTIONS:
-    with open(f"{external_vars.TEST_EXCEPTIONS}", "r", encoding="utf-8") as file:
-        yamlFile = yaml.safe_load(file)
-
-        if "known_failures" in yamlFile.keys():
-            external_vars.known_failures = yamlFile["known_failures"]
-            if external_vars.known_failures is None:
-                external_vars.known_failures = []
-        else:
-            external_vars.known_failures = []
-
-        if "failing_as_unspecified" in yamlFile.keys():
-            external_vars.failing_as_unspecified = yamlFile["failing_as_unspecified"]
-            if external_vars.failing_as_unspecified is None:
-                external_vars.failing_as_unspecified = []
-        else:
-            external_vars.failing_as_unspecified = []
-
-        if "unsupported" in yamlFile.keys():
-            external_vars.unsupported = yamlFile["unsupported"]
-            if external_vars.unsupported is None:
-                external_vars.unsupported = []
-        else:
-            external_vars.unsupported = []
-
-        if "do_not_run" in yamlFile.keys():
-            external_vars.do_not_run = yamlFile["do_not_run"]
-            if external_vars.do_not_run is None:
-                external_vars.do_not_run = []
-        else:
-            external_vars.do_not_run = []
+read_test_exceptions(external_vars.TEST_EXCEPTIONS)
 
 
 def prepare_tests():
@@ -268,7 +358,7 @@ def prepare_tests():
     so that the test runner understands each test
     """
     test_files = []
-    read_directory(location, test_files)
+    read_directory(location + "/Tests", test_files)
     test_files = sorted(test_files)
     return collect_tests(test_files)
 
@@ -290,19 +380,16 @@ def tests_runner(name, stdout, stderr, custom_classpath, case_sensitive):
     if str(name) in external_vars.do_not_run:
         pytest.skip("Test included in do_not_run")
 
-    if custom_classpath != "None":
-        command = f"{external_vars.EXECUTABLE} -cp {custom_classpath} {name}"
+    if custom_classpath is not None:
+        command = f"{external_vars.VM} -cp {custom_classpath} {name}"
     else:
-        command = f"{external_vars.EXECUTABLE} -cp {external_vars.CLASSPATH} {name}"
-
-    print(f"Running test: {name}")
+        command = f"{external_vars.VM} -cp {external_vars.CLASSPATH} {name}"
 
     try:
         result = subprocess.run(
             command, capture_output=True, text=True, shell=True, check=False
         )
-    except UnicodeDecodeError as e:
-        print(f"Error decoding output for test {name}: {e}")
+    except UnicodeDecodeError:
         pytest.skip(
             "Test output could not be decoded SOM may not support "
             "full Unicode. Result object not generated."
@@ -314,24 +401,10 @@ def tests_runner(name, stdout, stderr, custom_classpath, case_sensitive):
         result.stderr = str(result.stderr).lower()
 
     # Produce potential error messages now and then run assertion
-    error_message = f"""
-Expected stdout: \n{"\n".join(f"{i + 1}|    {line}" for i, line in enumerate(stdout))}
-Given stdout   : \n{"\n"
-                    .join(f"{i + 1}|    {line}" for i, line in enumerate(
-                        result.stdout.split("\n")))}
-Expected stderr: \n{"\n".join(f"{i + 1}|    {line}" for i, line in enumerate(stderr))}
-Given stderr   : \n{"\n"
-                    .join(f"{i + 1}|    {line}" for i, line in enumerate(
-                        result.stderr.split("\n")))}
-Command used   : {command}
-Case sensitive : {case_sensitive}
-Stdout diff    : \n{''.join(ndiff("\n"
-                                  .join(stdout).splitlines(keepends=True),
-                                  result.stdout.splitlines(keepends=True)))}
-Stderr diff    : \n{''.join(ndiff("\n"
-                                  .join(stderr).splitlines(keepends=True),
-                                  result.stderr.splitlines(keepends=True)))}
-"""
+    error_message = build_error_message(
+        result.stdout, result.stderr, stdout, stderr, command, case_sensitive
+    )
+
     # Related to above line (Rather than change how stdout and stderr are
     # represented just joining and then splitting again)
 
@@ -345,21 +418,19 @@ Stderr diff    : \n{''.join(ndiff("\n"
         name in external_vars.known_failures and test_pass_bool
     ):  # Test passed when it is not expected to
         external_vars.tests_passed_unexpectedly.append(name)
-        assert False, f"Test {name} is in known_failures but passed \n{error_message}"
+        assert False, f"Test {name} is in known_failures but passed"
 
     if (
         str(name) in external_vars.failing_as_unspecified and test_pass_bool
     ):  # Test passed when it is not expected tp
         external_vars.tests_passed_unexpectedly.append(name)
-        assert (
-            False
-        ), f"Test {name} is in failing_as_unspecified but passed \n{error_message}"
+        assert False, f"Test {name} is in failing_as_unspecified but passed"
 
     if (
         name in external_vars.unsupported and test_pass_bool
     ):  # Test passed when it is not expected tp
         external_vars.tests_passed_unexpectedly.append(name)
-        assert False, f"Test {name} is in unsupported but passed \n{error_message}"
+        assert False, f"Test {name} is in unsupported but passed"
 
     if (
         name not in external_vars.unsupported

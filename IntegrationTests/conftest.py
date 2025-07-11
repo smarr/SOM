@@ -20,9 +20,37 @@ do_not_run = []
 
 # Environment variables
 CLASSPATH = ""
-EXECUTABLE = ""
+VM = ""
 TEST_EXCEPTIONS = ""
 GENERATE_REPORT = ""
+
+
+def pytest_configure(config):
+    """
+    Add a marker to pytest
+    """
+    config.addinivalue_line("markers", "tester: test the testing framework")
+
+
+def pytest_collection_modifyitems(config, items):
+    """
+    Make sure the correct tests are being selected for the mode that is running
+    """
+    # Check if "-m tester" was specified
+    marker_expr = config.getoption("-m")
+    run_tester_selected = False
+
+    if marker_expr:
+        # Simplistic check: if "tester" is anywhere in the -m expression
+        # (You can improve parsing if needed)
+        run_tester_selected = "tester" in marker_expr.split(" or ")
+
+    if not run_tester_selected:
+        deselected = [item for item in items if "tester" in item.keywords]
+        if deselected:
+            for item in deselected:
+                items.remove(item)
+            config.hook.pytest_deselected(items=deselected)
 
 
 # Log data
@@ -49,8 +77,6 @@ def pytest_sessionfinish(exitstatus):
     Generate report based on test run
     """
     if GENERATE_REPORT:
-        print("Generating report for the test run")
-
         # To make the report useful it will add the tests which have failed-
         # -unexpectedly to known_failures
         # It will also remove those that have passed from any of those lists
@@ -75,7 +101,7 @@ def pytest_sessionfinish(exitstatus):
                 "tests_passed": tests_passed,
                 "tests_failed": tests_failed,
                 "tests_skipped": tests_skipped,
-                "pytest_exitstatus": exitstatus,
+                "pytest_exitstatus": str(exitstatus),
                 "note": "Totals include expected failures",
             },
             "unexpected": {
@@ -83,7 +109,7 @@ def pytest_sessionfinish(exitstatus):
                 "failed": [str(test) for test in tests_failed_unexpectedly],
             },
             "environment": {
-                "executable": EXECUTABLE,
+                "virtual machine": VM,
                 "classpath": CLASSPATH,
                 "test_exceptions": TEST_EXCEPTIONS,
                 "generate_report_location": GENERATE_REPORT,
@@ -93,6 +119,5 @@ def pytest_sessionfinish(exitstatus):
             "unsupported": unsupported,
             "do_not_run": do_not_run,
         }
-        print(f"Report location {GENERATE_REPORT}")
         with open(f"{GENERATE_REPORT}", "w", encoding="utf-8") as f:
             yaml.dump(report_data, f, default_flow_style=False, sort_keys=False)

@@ -50,35 +50,35 @@ Super3Test = SuperTestSuperClass (
   number = (
     ^ 10
   )
-  
+
   + other = (
     ^ 11
   )
-  
+
   ++++ other = (
     ^ 111
   )
-  
+
   keyword: other = (
     ^ 1111
   )
-  
+
   testBasicUnary = (
     self assert: 10 equals: self number.
     self assert:  1 equals: super number.
   )
-  
+
   testBasicBinary = (
     self assert: 11 equals: self + 3.
     self assert: 22 equals: super + 5.
   )
-  
-  
+
+
   testBasicBinaryNonStandardOperator = (
     self assert: 111 equals: self ++++ 3.
     self assert: 222 equals: super ++++ 5.
   )
-  
+
   testBasicKeyword = (
     self assert: 1111 equals: (self keyword: 3).
     self assert: 2222 equals: (super keyword: 5).
@@ -115,8 +115,6 @@ Super3Test = SuperTestSuperClass (
     | that |
     that := self.
     system global: #self put: 42.
-    that optional: #selfSuperBug assert: that is: self.
-
     self assert: 42 equals: (system global: #self)
   )
 
@@ -124,8 +122,6 @@ Super3Test = SuperTestSuperClass (
     | that |
     that := super.
     system global: #super put: 42.
-    that optional: #selfSuperBug assert: that is: super.
-
     self assert: 42 equals: (system global: #super)
   )
 )

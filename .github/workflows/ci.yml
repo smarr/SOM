@@ -10,12 +10,12 @@ jobs:
       fail-fast: false # we want all jobs to run, because they may fail independently
       matrix:
         include:
-          # - name: SOM++
-          #   repo: SOMpp.git
-          #   apt: libcppunit-dev
-          #   build: "cmake . && make SOM++"
-          #   som: "./som.sh"
-          #   not-up-to-date: true
+          - name: SOM++
+            repo: SOMpp.git
+            apt: libcppunit-dev
+            build: "cmake . && make SOM++"
+            som: "./SOM++"
+            not-up-to-date: false
 
           # - name: CSOM
           #   repo: CSOM.git
@@ -30,7 +30,7 @@ jobs:
             repo: JsSOM.git
             build: ""
             som: "./som.sh"
-            not-up-to-date: true
+            not-up-to-date: false
 
           - name: PySOM
             repo: PySOM.git
@@ -185,8 +185,7 @@ jobs:
           ${{ matrix.som }} -cp ../Smalltalk:../Examples/Benchmarks/TestSuite ../Examples/Benchmarks/BenchmarkHarness.som Test100 1 1
 
       - name: Test All Benchmark
-        # ignore VMs that give slighly different results for tests
-        if: ${{ matrix.repo != 'som-rs.git' && matrix.som != 'spec' && matrix.repo != 'JsSOM.git' && matrix.repo != 'PySOM.git' }}
+        if: ${{ matrix.som != 'spec' }}
         run: |
           cd som-vm
           ${{ matrix.som }} -cp ../Smalltalk:../Examples/Benchmarks/TestSuite:../Examples/Benchmarks/Richards:../Examples/Benchmarks/DeltaBlue:../Examples/Benchmarks/NBody:../Examples/Benchmarks/Json:../Examples/Benchmarks/GraphSearch:../Examples/Benchmarks/LanguageFeatures ../Examples/Benchmarks/BenchmarkHarness.som All 1 1

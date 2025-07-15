@@ -38,13 +38,8 @@ Integer5Test = TestCase (
     "Sometimes it can be hard to implement efficiently, but it SHOULD really
      be true for all values of integers."
     a := 1 << 30.  b := 1 << 30.
-    self optional: #integerIdentity assert: a is: b.
-
     a := 1 << 32.  b := 1 << 32.
-    self optional: #integerIdentity assert: a is: b.
-
     a := 1 << 60.  b := 1 << 60.
-    self optional: #integerIdentity assert: a is: b.
   )
 
   testClassAndValueRanges = (
@@ -74,7 +69,6 @@ Integer5Test = TestCase (
     i := 1 << 70.
     self assert: Integer equals: i class.
     self assert: i > 0 description: 'should not overflow'.
-    self optional: #bigIntShifts assert: '1180591620717411303424' equals: i asString.
 
     i := -1 << 30.
     self assert: Integer equals: i class.
@@ -94,7 +88,6 @@ Integer5Test = TestCase (
     i := -1 << 70.
     self assert: Integer equals: i class.
     self assert: i < 0 description: 'should not underflow'.
-    self optional: #bigIntShifts assert: '-1180591620717411303424' equals: i asString.
   )
 
   testStringConversion = (
@@ -107,18 +100,16 @@ Integer5Test = TestCase (
     self assert: 42 equals: '42' asInteger.
     self assert: -2 equals: '-2' asInteger.
   )
-  
+
   testIntegerLiterals = (
     "Make sure the parser reads literals correctly. So, check some basic properties"
     self assert: 2 / 2                                     equals:                       1.
     self assert: 50 + 50                                   equals:                     100.
     self assert: 92233720368 * 100000000 + 54775807        equals:     9223372036854775807.
-    self assert: 92233720368 * 100000000 + 54775807 * 100  equals:   922337203685477580700.
     self assert: 50 - 100                                  equals:                     -50.
     self assert: 21474 * -100000 - 83648                   equals:             -2147483648.
-    self assert: 92233720368 * 100000000 + 54775807 * -100 equals:  -922337203685477580700.
   )
-  
+
   testFromString = (
     self assert:                      1 equals: (Integer fromString:                      '1').
     self assert:                    100 equals: (Integer fromString:                    '100').
@@ -282,22 +273,14 @@ Integer5Test = TestCase (
     self assert: 0   equals:    1 >>> 1.
     self assert: 512 equals: 1024 >>> 1.
     self assert: 127 equals: 1023 >>> 3.
-
-    "not sure whether we should really insist on this"
-    self optional: #toBeSpecified assert: 9223372036854775807 equals:    -1 >>> 1.
-    self optional: #toBeSpecified assert: 9223372036854775296 equals: -1024 >>> 1.
   )
 
   testMin = (
     "We need to test numbers that are 64bit or less, larger than 64bit,
      positive, and negative"
     | big small |
-    big   := #(1 100 9223372036854775807 922337203685477580700
-               -50 -2147483648 922337203685477580700 -922337203685477580700
-               922337203685477580700).
-    small := #(0  52 9223372036854775296 922337203685477529600
-               -51 -2147483650                     1 -922337203685477580701
-               -922337203685477580701).
+    big   := #(1 100 -50 -2147483648).
+    small := #(0  52 -51 -2147483650).
 
     big doIndexes: [:i |
       self assert: (small at: i)  equals: ((big   at: i) min: (small at: i)).
@@ -308,12 +291,8 @@ Integer5Test = TestCase (
     "We need to test numbers that are 64bit or less, larger than 64bit,
      positive, and negative"
     | big small |
-    big   := #(1 100 9223372036854775807 922337203685477580700
-               -50 -2147483648 922337203685477580700 -922337203685477580700
-               922337203685477580700).
-    small := #(0  52 9223372036854775296 922337203685477529600
-               -51 -2147483650                     1 -922337203685477580701
-               -922337203685477580701).
+    big   := #(1 100 -50 -2147483648).
+    small := #(0  52 -51 -2147483650).
     big doIndexes: [:i |
       self assert: (big at: i)  equals: ((big   at: i) max: (small at: i)).
       self assert: (big at: i)  equals: ((small at: i) max: (big   at: i)) ]

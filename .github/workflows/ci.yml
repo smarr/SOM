@@ -10,12 +10,12 @@ jobs:
       fail-fast: false # we want all jobs to run, because they may fail independently
       matrix:
         include:
-          # - name: SOM++
-          #   repo: SOMpp.git
-          #   apt: libcppunit-dev
-          #   build: "cmake . && make SOM++"
-          #   som: "./som.sh"
-          #   not-up-to-date: true
+          - name: SOM++
+            repo: SOMpp.git
+            apt: libcppunit-dev
+            build: "cmake . && make SOM++"
+            som: "./SOM++"
+            not-up-to-date: false
 
           # - name: CSOM
           #   repo: CSOM.git
@@ -30,7 +30,7 @@ jobs:
             repo: JsSOM.git
             build: ""
             som: "./som.sh"
-            not-up-to-date: true
+            not-up-to-date: false
 
           - name: PySOM
             repo: PySOM.git

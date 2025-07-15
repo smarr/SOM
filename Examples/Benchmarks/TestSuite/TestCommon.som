@@ -24,8 +24,6 @@ THE SOFTWARE.
 "
 
 TestCommon = Benchmark (
-    | failOnUnsupportedOptionals |
-
     tests = ( "Now ordered by alphabetical order to improve maintainability"
         self error: 'Implement in subclass'
     )
@@ -40,9 +38,8 @@ TestCommon = Benchmark (
     )
 
     runAllSuites = (
-      | totalTestNum successfulTestNum unsupportedTestNum totalAssertionNum arr |
+      | totalTestNum successfulTestNum totalAssertionNum arr |
       totalTestNum := 0.
-      unsupportedTestNum := 0.
       successfulTestNum := 0.
       totalAssertionNum := 0.
 
@@ -53,14 +50,13 @@ TestCommon = Benchmark (
         runner runAllTests.
 
         totalTestNum       := totalTestNum + runner expectedPasses.
-        unsupportedTestNum := unsupportedTestNum + runner actualUnsupported.
         successfulTestNum  := successfulTestNum + runner actualPasses.
         totalAssertionNum  := totalAssertionNum + runner numAsserts.
       ].
 
       arr := Array new: 4.
       arr at: 1 put: totalTestNum.
-      arr at: 2 put: unsupportedTestNum.
+      arr at: 2 put: 0. "was 'unsupported', but for the benchmark, I removed this to be able to run on all VMs"
       arr at: 3 put: successfulTestNum.
       arr at: 4 put: totalAssertionNum.
       ^ arr
@@ -79,16 +75,15 @@ TestCommon = Benchmark (
     )
 
     benchmark = (
-        failOnUnsupportedOptionals := false.
         ^ self runAllSuites
     )
 
     verifyResult: result = (
-      "result do: [:e | e println ]."
-      ^ (result at: 1) = (190 * self numExecs) and: [
+      "result do: [:e | e print. '  // numExecs: ' print. (e // self numExecs) println ]."
+      ^ (result at: 1) = (189 * self numExecs) and: [
           (result at: 2) = (0 * self numExecs) and: [
-            (result at: 3) = (190 * self numExecs) and: [
-              (result at: 4) = (992 * self numExecs)
+            (result at: 3) = (189 * self numExecs) and: [
+              (result at: 4) = (958 * self numExecs)
         ] ] ]
     )
 )

@@ -21,21 +21,18 @@ THE SOFTWARE.
 "
 
 TestGCCommon = Benchmark (
-    | failOnUnsupportedOptionals |
-
     tests = ( "Now ordered by alphabetical order to improve maintainability"
         self error: 'Implement in subclass'
     )
-    
+
     oneTimeSetup = (
       "Load all Tests. We don't really want to benchmark the parser."
       self tests
     )
 
     runAllSuites = (
-      | totalTestNum successfulTestNum unsupportedTestNum totalAssertionNum arr |
+      | totalTestNum successfulTestNum totalAssertionNum arr |
       totalTestNum := 0.
-      unsupportedTestNum := 0.
       successfulTestNum := 0.
       totalAssertionNum := 0.
 
@@ -46,14 +43,13 @@ TestGCCommon = Benchmark (
         runner runAllTests.
 
         totalTestNum       := totalTestNum + runner expectedPasses.
-        unsupportedTestNum := unsupportedTestNum + runner actualUnsupported.
         successfulTestNum  := successfulTestNum + runner actualPasses.
         totalAssertionNum  := totalAssertionNum + runner numAsserts.
       ].
 
       arr := Array new: 4.
       arr at: 1 put: totalTestNum.
-      arr at: 2 put: unsupportedTestNum.
+      arr at: 2 put: 0. "was 'unsupported', but for the benchmark, I removed this to be able to run on all VMs"
       arr at: 3 put: successfulTestNum.
       arr at: 4 put: totalAssertionNum.
       ^ arr
@@ -70,11 +66,11 @@ TestGCCommon = Benchmark (
       runner run.
       runner hasFailures ifTrue: [system exit: 1]
     )
-    
+
     benchmark = (
       ^ system fullGC
     )
-    
+
     verifyResult: result = (
       "We expect the GC to actually promise us that it did work"
       ^ result

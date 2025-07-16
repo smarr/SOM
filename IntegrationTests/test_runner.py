@@ -170,6 +170,38 @@ Case Sensitive: {case_sensitive}
 
     return error_message
 
+def check_partial_word(word, exp_word):
+    """
+    Check a partial expected String against a line
+
+    returns True if the line matches
+    """
+
+    # Creates a list of words that are expected
+    exp_word_needed = exp_word.split("***")[0]
+    exp_word_optional = exp_word.split("***")[1]
+
+    if exp_word_needed in word:
+        where = word.find(exp_word_needed)+len(exp_word_needed)
+        counter = 0
+        for character in exp_word_optional:
+
+            if counter+where > len(word)-1:
+                return True
+
+            if word[counter+where] == character:
+                counter += 1
+                continue
+            else:
+                return False
+    else:
+        return False
+    
+    if counter+where < len(word):
+        return False
+    
+    return True
+            
 
 def check_exp_given(given, expected):
     """
@@ -192,6 +224,16 @@ def check_exp_given(given, expected):
             exp_std_inx += 1
             continue
 
+        # This is incompaptible with ... for line skipping
+        if "***" in expected[exp_std_inx]:
+            # Now do some partial checking
+            partial_output = check_partial_word(g_out, expected[exp_std_inx])
+            if partial_output is True:
+                exp_std_inx += 1
+                continue
+            else:
+                continue
+
         if g_out.strip() != expected[exp_std_inx].strip():
             # Check if expected has ...
             if "..." in expected[exp_std_inx]:
@@ -199,6 +241,8 @@ def check_exp_given(given, expected):
                 without_gap = expected[exp_std_inx].split("...")
                 if all(without_gap in g_out for without_gap in without_gap):
                     exp_std_inx += 1
+                    continue
+
             # If the output does not match, continue without incrementing
             continue
 

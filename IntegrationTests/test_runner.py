@@ -1,3 +1,4 @@
+# pylint: disable=missing-function-docstring
 """
 This is the SOM integration test runner file. Pytest automatically discovers
 this file and will find all .som test files in the below directories.
@@ -291,113 +292,69 @@ def read_test_exceptions(filename):
     Filename should be either a relative path from CWD to file
     or an absolute path.
     """
-    if filename:
-        path = os.path.relpath(os.path.dirname(__file__))
+    if not filename:
+        return
 
-        with open(f"{filename}", "r", encoding="utf-8") as file:
-            yaml_file = yaml.safe_load(file)
+    with open(f"{filename}", "r", encoding="utf-8") as file:
+        yaml_file = yaml.safe_load(file)
 
-            if yaml_file is not None:
-                if "known_failures" in yaml_file:
-                    external_vars.known_failures = yaml_file["known_failures"]
-                    if external_vars.known_failures is None:
-                        external_vars.known_failures = []
+        if yaml_file is not None:
+            external_vars.known_failures = yaml_file.get("known_failures", []) or []
+            external_vars.failing_as_unspecified = (
+                yaml_file.get("failing_as_unspecified", []) or []
+            )
+            external_vars.unsupported = yaml_file.get("unsupported", []) or []
+            external_vars.do_not_run = yaml_file.get("do_not_run", []) or []
 
-                else:
-                    external_vars.known_failures = []
+            path = os.path.relpath(os.path.dirname(__file__))
 
-                if "failing_as_unspecified" in yaml_file:
-                    external_vars.failing_as_unspecified = yaml_file[
-                        "failing_as_unspecified"
-                    ]
-                    if external_vars.failing_as_unspecified is None:
-                        external_vars.failing_as_unspecified = []
-
-                else:
-                    external_vars.failing_as_unspecified = []
-
-                if "unsupported" in yaml_file:
-                    external_vars.unsupported = yaml_file["unsupported"]
-                    if external_vars.unsupported is None:
-                        external_vars.unsupported = []
-
-                else:
-                    external_vars.unsupported = []
-
-                if "do_not_run" in yaml_file:
-                    external_vars.do_not_run = yaml_file["do_not_run"]
-                    if external_vars.do_not_run is None:
-                        external_vars.do_not_run = []
-
-                else:
-                    external_vars.do_not_run = []
-            else:
-                external_vars.known_failures = []
-                external_vars.failing_as_unspecified = []
-                external_vars.unsupported = []
-                external_vars.do_not_run = []
-
-        if (
-            external_vars.known_failures is not None
-            and external_vars.known_failures != [None]
-        ):
             external_vars.known_failures = [
-                os.path.join(path, test) for test in external_vars.known_failures
+                os.path.join(path, test)
+                for test in external_vars.known_failures
+                if test is not None
             ]
-        if (
-            external_vars.failing_as_unspecified is not None
-            and external_vars.failing_as_unspecified != [None]
-        ):
             external_vars.failing_as_unspecified = [
                 os.path.join(path, test)
                 for test in external_vars.failing_as_unspecified
+                if test is not None
             ]
-        if external_vars.unsupported is not None and external_vars.unsupported != [
-            None
-        ]:
             external_vars.unsupported = [
-                os.path.join(path, test) for test in external_vars.unsupported
+                os.path.join(path, test)
+                for test in external_vars.unsupported
+                if test is not None
             ]
-        if external_vars.do_not_run is not None and external_vars.do_not_run != [None]:
             external_vars.do_not_run = [
-                os.path.join(path, test) for test in external_vars.do_not_run
+                os.path.join(path, test)
+                for test in external_vars.do_not_run
+                if test is not None
             ]
-
-
-# START, ENTRY, BEGIN, MAIN
-# Code below here runs before pytest finds it's methods
-location = os.path.relpath(os.path.dirname(__file__))
-if not os.path.exists(location + "/Tests"):
-    pytest.exit(
-        "/Tests directory not found. Please make sure the lang_tests are installed"
-    )
-
-# Work out settings for the application (They are labelled REQUIRED or OPTIONAL)
-if "CLASSPATH" not in os.environ:  # REQUIRED
-    sys.exit("Please set the CLASSPATH environment variable")
-
-if "VM" not in os.environ:  # REQUIRED
-    sys.exit("Please set the VM environment variable")
-
-if "TEST_EXCEPTIONS" in os.environ:  # OPTIONAL
-    external_vars.TEST_EXCEPTIONS = location + "/" + os.environ["TEST_EXCEPTIONS"]
-
-if "GENERATE_REPORT" in os.environ:  # OPTIONAL
-    # Value is the location
-    # Its prescense in env variables signifies intent to save
-    external_vars.GENERATE_REPORT = os.environ["GENERATE_REPORT"]
-
-external_vars.CLASSPATH = os.environ["CLASSPATH"]
-external_vars.VM = os.environ["VM"]
-
-read_test_exceptions(external_vars.TEST_EXCEPTIONS)
 
 
 def prepare_tests():
-    """
-    Prepare all of the tests and their relevent information into a dictionary
-    so that the test runner understands each test
-    """
+    location = os.path.relpath(os.path.dirname(__file__))
+    if not os.path.exists(location + "/Tests"):
+        pytest.fail(
+            "`Tests` directory not found. Please make sure the lang_tests are installed"
+        )
+
+    # Work out settings for the application (They are labelled REQUIRED or OPTIONAL)
+    if "CLASSPATH" not in os.environ:  # REQUIRED
+        pytest.fail("Please set the CLASSPATH environment variable")
+
+    if "VM" not in os.environ:  # REQUIRED
+        pytest.fail("Please set the VM environment variable")
+
+    if "TEST_EXCEPTIONS" in os.environ:  # OPTIONAL
+        external_vars.TEST_EXCEPTIONS = location + "/" + os.environ["TEST_EXCEPTIONS"]
+
+    if "GENERATE_REPORT" in os.environ:  # OPTIONAL
+        external_vars.GENERATE_REPORT = os.environ["GENERATE_REPORT"]
+
+    external_vars.CLASSPATH = os.environ["CLASSPATH"]
+    external_vars.VM = os.environ["VM"]
+
+    read_test_exceptions(external_vars.TEST_EXCEPTIONS)
+
     test_files = []
     read_directory(location + "/Tests", test_files)
     test_files = sorted(test_files)

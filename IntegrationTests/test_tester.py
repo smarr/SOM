@@ -237,50 +237,26 @@ def test_different_yaml():
 
     # Read a yaml file with null after each tag (Should all be [])
     read_test_exceptions(yaml_for_testing_location + "/set_to_be_null.yaml")
-    assert external_vars.known_failures == [
-        None
-    ], "known_failures was not [] in set_to_be_null.yaml"
-    assert external_vars.failing_as_unspecified == [
-        None
-    ], "failing_as_unspecified was not [] in set_to_be_null.yaml"
-    assert external_vars.unsupported == [
-        None
-    ], "unsupported was not [] in set_to_be_null.yaml"
-    assert external_vars.do_not_run == [
-        None
-    ], "do_not_run was not [] in set_to_be_null.yaml"
+    assert external_vars.known_failures == []
+    assert external_vars.failing_as_unspecified == []
+    assert external_vars.unsupported == []
+    assert external_vars.do_not_run == []
 
     # Read a yaml file where the yamlFile object will evaluate to None type (Should be all [])
     read_test_exceptions(yaml_for_testing_location + "/missing_all_tags.yaml")
-    assert (
-        external_vars.known_failures == []
-    ), "known_failures was not [] in missing_all_tags.yaml"
-    assert (
-        external_vars.failing_as_unspecified == []
-    ), "failing_as_unspecified was not [] in missing_all_tags.yaml"
-    assert (
-        external_vars.unsupported == []
-    ), "unsupported was not [] in missing_all_tags.yaml"
-    assert (
-        external_vars.do_not_run == []
-    ), "do_not_run was not [] in missing_all_tags.yaml"
+    assert external_vars.known_failures == []
+    assert external_vars.failing_as_unspecified == []
+    assert external_vars.unsupported == []
+    assert external_vars.do_not_run == []
 
     # Read a yaml file where each tag has one test included
     # [core-lib/IntegrationTests/Tests/mutate_superclass_method/test.som]
     read_test_exceptions(yaml_for_testing_location + "/tests_in_each.yaml")
-    test_list = ["core-lib/IntegrationTests/Tests/mutate_superclass_method/test.som"]
-    assert (
-        external_vars.known_failures == test_list
-    ), f"known_failures was not {test_list} in missing_all_tags.yaml"
-    assert (
-        external_vars.failing_as_unspecified == test_list
-    ), f"failing_as_unspecified was not {test_list} in missing_all_tags.yaml"
-    assert (
-        external_vars.unsupported == test_list
-    ), f"unsupported was not {test_list} in missing_all_tags.yaml"
-    assert (
-        external_vars.do_not_run == test_list
-    ), f"do_not_run was not {test_list} in missing_all_tags.yaml"
+    test_list = ["./Tests/mutate_superclass_method/test.som"]
+    assert external_vars.known_failures == test_list
+    assert external_vars.failing_as_unspecified == test_list
+    assert external_vars.unsupported == test_list
+    assert external_vars.do_not_run == test_list
 
     # Reset external vars after test
     external_vars.known_failures = temp_known

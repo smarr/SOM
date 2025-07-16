@@ -17,7 +17,7 @@ import conftest as external_vars
 def test_parse_file():
     """
     Test that the test_runner can parse a file correctly.
-    Expected output should be lower case
+    Expected output should be lower-case
     """
 
     # EXAMPLE TUPLE
@@ -174,33 +174,34 @@ And a little more here
     expected = ["...", "Really***LongWord"]
 
     stdout = "Some output, as an example\nExtra Line\nReallyLongWord"
-    assert (
-        check_exp_given(stdout.split("\n"), expected)
+    assert check_exp_given(
+        stdout.split("\n"), expected
     ), "Evaluation should've been successfull"
     stdout = "Some output, as an example\nExtra Line\nReally"
-    assert (
-        check_exp_given(stdout.split("\n"), expected)
+    assert check_exp_given(
+        stdout.split("\n"), expected
     ), "Evaluation should've been successfull"
     stdout = "Some output, as an example\nExtra Line\nReallyLong"
-    assert (
-        check_exp_given(stdout.split("\n"), expected)
+    assert check_exp_given(
+        stdout.split("\n"), expected
     ), "Evaluation should've been successfull"
     stdout = "Some output, as an example\nExtra Line\nReallyLo"
-    assert (
-        check_exp_given(stdout.split("\n"), expected)
+    assert check_exp_given(
+        stdout.split("\n"), expected
     ), "Evaluation should've been successfull"
 
     # Now assert some failures to test when it should fail
     stdout = "Some output, as an example\nExtra Line\nReallyLongTestFunction"
-    assert (
-        not check_exp_given(stdout.split("\n"), expected)
+    assert not check_exp_given(
+        stdout.split("\n"), expected
     ), "Evaluation should've been successfull"
 
     # This one should fail as there is still more word than expected
     stdout = "Some output, as an example\nExtra Line\nReallyLongWordExtra"
-    assert (
-        not check_exp_given(stdout.split("\n"), expected)
+    assert not check_exp_given(
+        stdout.split("\n"), expected
     ), "Evaluation should've been successfull"
+
 
 @pytest.mark.tester
 def test_different_yaml():
@@ -209,10 +210,10 @@ def test_different_yaml():
     Or be malformed
     """
 
-    # First save the variables that will change in external_vars
+    # First, save the variables that will change in external_vars
     temp_known = external_vars.known_failures
     temp_unspecified = external_vars.failing_as_unspecified
-    temp_unsuported = external_vars.unsupported
+    temp_unsupported = external_vars.unsupported
     temp_do_not_run = external_vars.do_not_run
 
     yaml_for_testing_location = os.path.relpath(
@@ -284,5 +285,5 @@ def test_different_yaml():
     # Reset external vars after test
     external_vars.known_failures = temp_known
     external_vars.failing_as_unspecified = temp_unspecified
-    external_vars.unsupported = temp_unsuported
+    external_vars.unsupported = temp_unsupported
     external_vars.do_not_run = temp_do_not_run

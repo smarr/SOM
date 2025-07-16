@@ -7,7 +7,6 @@ import subprocess
 from pathlib import Path
 from difflib import ndiff
 import os
-import sys
 import pytest
 import yaml
 import conftest as external_vars
@@ -170,6 +169,7 @@ Case Sensitive: {case_sensitive}
 
     return error_message
 
+
 def check_partial_word(word, exp_word):
     """
     Check a partial expected String against a line
@@ -182,26 +182,25 @@ def check_partial_word(word, exp_word):
     exp_word_optional = exp_word.split("***")[1]
 
     if exp_word_needed in word:
-        where = word.find(exp_word_needed)+len(exp_word_needed)
+        where = word.find(exp_word_needed) + len(exp_word_needed)
         counter = 0
         for character in exp_word_optional:
 
-            if counter+where > len(word)-1:
+            if counter + where > len(word) - 1:
                 return True
 
-            if word[counter+where] == character:
+            if word[counter + where] == character:
                 counter += 1
                 continue
-            else:
-                return False
+            return False
     else:
         return False
-    
-    if counter+where < len(word):
+
+    if counter + where < len(word):
         return False
-    
+
     return True
-            
+
 
 def check_exp_given(given, expected):
     """
@@ -230,9 +229,7 @@ def check_exp_given(given, expected):
             partial_output = check_partial_word(g_out, expected[exp_std_inx])
             if partial_output is True:
                 exp_std_inx += 1
-                continue
-            else:
-                continue
+            continue
 
         if g_out.strip() != expected[exp_std_inx].strip():
             # Check if expected has ...
@@ -292,7 +289,7 @@ def read_test_exceptions(filename):
     """
     Read a TEST_EXCEPTIONS file and extract the core information
     Filename should be either a relative path from CWD to file
-    or an abolute path.
+    or an absolute path.
     """
     if filename:
         path = os.path.relpath(os.path.dirname(__file__))

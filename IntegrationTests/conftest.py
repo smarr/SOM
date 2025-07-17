@@ -92,7 +92,10 @@ def pytest_sessionfinish(exitstatus):
 
         if len(tests_failed_unexpectedly) != 0:
             for test in tests_failed_unexpectedly:
-                known_failures.append(str(test))
+                # Remove the part of the path that is incompatible with multiple directory running
+                known_failures.append(
+                    "Tests/" + str(test).rsplit("Tests/", maxsplit=1)[-1]
+                )
 
         # Generate a report_message to save
         report_data = {
@@ -105,8 +108,14 @@ def pytest_sessionfinish(exitstatus):
                 "note": "Totals include expected failures",
             },
             "unexpected": {
-                "passed": [str(test) for test in tests_passed_unexpectedly],
-                "failed": [str(test) for test in tests_failed_unexpectedly],
+                "passed": [
+                    "Tests/" + str(test).rsplit("Tests/", maxsplit=1)[-1]
+                    for test in tests_passed_unexpectedly
+                ],
+                "failed": [
+                    "Tests/" + str(test).rsplit("Tests/", maxsplit=1)[-1]
+                    for test in tests_failed_unexpectedly
+                ],
             },
             "environment": {
                 "virtual machine": VM,

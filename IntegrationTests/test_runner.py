@@ -60,6 +60,94 @@ def collect_tests(test_files):
     return tests
 
 
+# pylint: disable=too-many-nested-blocks
+def parse_custom_classpath(comment):
+    """
+    Based on the comment will calculate the custom_classpath
+    for the current test
+
+    Return: The custom classpath
+    """
+    comment_lines = comment.split("\n")
+    for line in comment_lines:
+        if "custom_classpath" in line:
+            classpath = line.split("custom_classpath:")[1].strip()
+
+            classpath_t = classpath
+
+            # Now check our custom classpath for any tags
+            # Tags are defined as @tag in the classpath
+            # Will then assign the EXACT value of the
+            # Environment variable to that spot
+
+            if classpath_t.find("@") >= 0:
+
+                classpath_joined = ""
+                # Does the classpath have a splitter ":"
+                if ":" in classpath_t:
+                    split_list = classpath_t.split(":")
+                    for tag in split_list:
+                        if tag.find("@") >= 0:
+                            tag = tag.replace("@", "")
+                            if tag in os.environ:
+                                classpath_joined += os.environ[tag] + ":"
+                                continue
+                            pytest.fail(f"Environment variable {tag} not set")
+                        # Add a normal classpath inside of tags
+                        classpath_joined += tag + ":"
+
+                else:
+                    classpath_t = classpath_t.replace("@", "")
+                    if classpath_t in os.environ:
+                        classpath_joined += os.environ[classpath_t]
+                    else:
+                        pytest.fail(f"Environment variable {classpath_t} not set")
+
+                # Remove the final ":"
+                classpath = classpath_joined[:-1]
+
+            return classpath
+    return None
+
+
+def parse_case_sensitive(comment):
+    """
+    Based on a comment decide whether a case_sensitive is requried
+    """
+    comment_lines = comment.split("\n")
+    for line in comment_lines:
+        if "case_sensitive" in line:
+            return bool(line.split("case_sensitive:")[1].strip().lower() == "true")
+
+    return False
+
+
+def parse_stdout(comment):
+    """
+    Based on a comment parse the expected stdout
+    """
+    std_out = comment.split("stdout:")[1]
+    if "stderr" in std_out:
+        std_err_inx = std_out.index("stderr:")
+        std_out = std_out[:std_err_inx]
+    std_err_l = std_out.split("\n")
+    std_err_l = [line.strip() for line in std_err_l if line.strip()]
+    return std_err_l
+
+
+def parse_stderr(comment):
+    """
+    Based on a comment parse the expected stderr
+    """
+    std_err = comment.split("stderr:")[1]
+    if "stdout" in std_err:
+        std_out_inx = std_err.index("stdout:")
+        std_err = std_err[:std_out_inx]
+    std_err_l = std_err.split("\n")
+    std_err_l = [line.strip() for line in std_err_l if line.strip()]
+    return std_err_l
+
+
 def parse_test_file(test_file):
     """
     parse the test file to extract the important information
@@ -78,40 +166,17 @@ def parse_test_file(test_file):
         # Make sure if using a custom test classpath that it is above
         # Stdout and Stderr
         if "custom_classpath" in comment:
-            comment_lines = comment.split("\n")
-            for line in comment_lines:
-                if "custom_classpath" in line:
-                    test_info_dict["custom_classpath"] = line.split(
-                        "custom_classpath:"
-                    )[1].strip()
-                    continue
+            test_info_dict["custom_classpath"] = parse_custom_classpath(comment)
 
         # Check if we are case sensitive (has to be toggled on)
         if "case_sensitive" in comment:
-            comment_lines = comment.split("\n")
-            for line in comment_lines:
-                if "case_sensitive" in line:
-                    test_info_dict["case_sensitive"] = bool(
-                        line.split("case_sensitive:")[1].strip().lower() == "true"
-                    )
+            test_info_dict["case_sensitive"] = parse_case_sensitive(comment)
 
         if "stdout" in comment:
-            std_out = comment.split("stdout:")[1]
-            if "stderr" in std_out:
-                std_err_inx = std_out.index("stderr:")
-                std_out = std_out[:std_err_inx]
-            std_err_l = std_out.split("\n")
-            std_err_l = [line.strip() for line in std_err_l if line.strip()]
-            test_info_dict["stdout"] = std_err_l
+            test_info_dict["stdout"] = parse_stdout(comment)
 
         if "stderr" in comment:
-            std_err = comment.split("stderr:")[1]
-            if "stdout" in std_err:
-                std_out_inx = std_err.index("stdout:")
-                std_err = std_err[:std_out_inx]
-            std_err_l = std_err.split("\n")
-            std_err_l = [line.strip() for line in std_err_l if line.strip()]
-            test_info_dict["stderr"] = std_err_l
+            test_info_dict["stderr"] = parse_stderr(comment)
 
         if test_info_dict["case_sensitive"]:
             test_tuple = (
@@ -307,6 +372,8 @@ def read_test_exceptions(filename):
             external_vars.do_not_run = yaml_file.get("do_not_run", []) or []
 
             path = os.path.relpath(os.path.dirname(__file__))
+            if path == ".":
+                path = ""
 
             external_vars.known_failures = [
                 os.path.join(path, test)
@@ -345,7 +412,7 @@ def prepare_tests():
         pytest.fail("Please set the VM environment variable")
 
     if "TEST_EXCEPTIONS" in os.environ:  # OPTIONAL
-        external_vars.TEST_EXCEPTIONS = location + "/" + os.environ["TEST_EXCEPTIONS"]
+        external_vars.TEST_EXCEPTIONS = os.environ["TEST_EXCEPTIONS"]
 
     if "GENERATE_REPORT" in os.environ:  # OPTIONAL
         external_vars.GENERATE_REPORT = os.environ["GENERATE_REPORT"]
@@ -361,10 +428,27 @@ def prepare_tests():
     return collect_tests(test_files)
 
 
+def assign_ids(tests):
+    """
+    Assign test IDs the same way as the names are treated
+    """
+    test_ids = []
+    for test in tests:
+        test_name = test[0]
+        test_t = "Tests/" + test_name.split("Tests/")[-1]
+        test_ids.append(test_t)
+
+    return test_ids
+
+
+# Stops prepare_tests() being called twice
+TEST_FILES = prepare_tests()
+
+
 @pytest.mark.parametrize(
     "name,stdout,stderr,custom_classpath,case_sensitive",
-    prepare_tests(),
-    ids=[str(test_args[0]) for test_args in prepare_tests()],
+    TEST_FILES,
+    ids=assign_ids(TEST_FILES),
 )
 # pylint: disable=too-many-branches
 def tests_runner(name, stdout, stderr, custom_classpath, case_sensitive):
@@ -374,7 +458,7 @@ def tests_runner(name, stdout, stderr, custom_classpath, case_sensitive):
     Cleanup the build directory if required
     """
 
-    # Check if a test shoudld not be ran
+    # Check if a test should not be ran
     if str(name) in external_vars.do_not_run:
         pytest.skip("Test included in do_not_run")
 

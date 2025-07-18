@@ -2,7 +2,7 @@
 VM:
     status: success
     case_sensitive: False
-    custom_classpath: one/the/outside:@AWFYtest:then/another/one
+    custom_classpath: one/the/outside:$AWFYtest:then/another/one
     stdout:
         ...
     stderr:

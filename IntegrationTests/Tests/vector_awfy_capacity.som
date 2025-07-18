@@ -1,7 +1,7 @@
 "
 VM:
     status: success
-    custom_classpath: @AWFY:@CLASSPATH
+    custom_classpath: $AWFY:$CLASSPATH
     stdout:
         50
         100

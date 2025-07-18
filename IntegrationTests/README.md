@@ -1,65 +1,68 @@
 # SOM Integration Tests
 
-Most of the tests for the integration testing come from lang_tests of [yksom](https://github.com/softdevteam/yksom/tree/master/lang_tests). Tests are identified by their path from core-lib to test.som, this ensures there can be multiple tests named test.som in different directories.
+These tests are end-to-end tests, allowing us to check elements that go
+beyond the language. For instance, we can test the parser, how fatal 
+errors are handled, and how the VM interacts with different libraries
+on the classpath.
 
-This integration test does not replace the unit tests located in TestSuite but acts as a compliment to it. These integration tests can test more than unit tests can:
-- SOM level errors that would cause the VM to exit
-- Multiple different classpaths
+Most of the tests come from lang_tests of
+[yksom](https://github.com/softdevteam/yksom/tree/master/lang_tests).
 
-## Running the Integration Tests
-The tests can be run using pytest by simply running pytest in the base directory of any SOM implementation that includes a version of the core-library with IntegrationTests. It requires multiple python modules installed and environment variables set.
+## 1. Getting Started: Running the Integration Tests
 
-### Simple Test Run
-```
-VM=./path-to-build CLASSPATH=./core-lib/Smalltalk python3 -m pytest
-```
+The tests can be run using pytest by running `pytest`.
 
-### Optionals
-A set of optionals have been created for this test suite which can be added.
+However, to run successfully, we need to set the following
+environment variables. The paths have to be set relative to the
+current working directory, which is where the tests are run from.
 
-## Environment variables
-The environment variables are split into required and optional. Some optionals may be required for different implementations of SOM.
+- `VM`: the path to the SOM executable
+- `CLASSPATH`: the claspath, e.g., `./core-lib/Smalltalk`
+- `AWFY`: the classpath for tests the use the AreWeFastYet (AWFY) 
+  library, e.g., `core-lib/Examples/AreWeFastYet/Core`
 
-#### VM
-This is the path from the current working directory to the executable VM of SOM.
-#### CLASSPATH
-The exact classpath required by SOM to find the Object class etc.
-#### TEST_EXCEPTIONS
-A yaml file which details the tags of tests. Specifically it labels tests that are expected to fail for one reason or another. **Give the whole path to the file from CWD**.
-#### GENERATE_REPORT
-Generates a yaml file which can be used as a **TEST_EXCEPTIONS** file. It will also include additional information about how many tests passed, which tests passed that were not expected to and which tests failed. **Give a full path from CWD to where it should be saved including .yaml**.
-#### ARBITRARY ENVVARS
-When setting custom_classpaths in a test environment variables can be specified to replace tags in those tests, specify those along with all the other variables being specified. Check custom_classpath for more information on runtime classpaths.
+Example run:
 
-## TEST_EXCEPTIONS (How to write a file)
-There are four tags that are currently supported by the SOM integration tests. All tags will run the tests still, other than do_not_run, but will not fail on test failure, a tagged test will cause the run to fail only when it passes unexpectedly. Check for example file IntegrationTests/test_tags.yaml.
-
-For a test to be given a tag specify it's location path like this:
-```
-known_failures:
-    core-lib/IntegrationTests/Tests/test.som
+```bash
+export VM=./som.sh
+export CLASSPATH=./core-lib/Smalltalk
+export AWFY=./core-lib/Examples/AreWeFastYet/Core
+python3 -m pytest
 ```
 
-### known_failures
-Any test located in this tag is assumed to fail, it should only be used when another more suitable tag is not available.
+At the time of writing, August 2025, most SOM implementations are
+not supporting all tests, because the yksom test for behavior that
+has not been specified yet.
 
-### failing_as_unspecified
-Any test located in this tag failed because SOM does not specify behaviour in this instance, this means that each implementation may treat this situation differently. *Example dividing by 0.*
+To successfully run the tests as regression tests, most SOM
+implementations come with a `TEST_EXPECTIONS` file that defines,
+which tests are expected to fail.
 
-### unsupported
-Any test located here has a feature which is not suppoprted in this SOM.
+A full example would look like this:
 
-### do_not_run
-This test should not be ran ever as it causes an error in the python level code. The test may also cause a SOM level error but does not have to. (*This does not include Unicode errors, they are handled at runtime*)
+```bash
+export VM=./som.sh
+export CLASSPATH=./core-lib/Smalltalk
+export AWFY=./core-lib/Examples/AreWeFastYet/Core
+TEST_EXPECTATIONS=integration-tests.yml python3 -m pytest
+```
 
-## How to write a new test
-For a test to be collected by Pytest it has to start with a comment, the comment should be structured with the expected output for either stderr or stdout.
+
+## 2. Writing Tests and Expectation Files
+
+### 2.1 Writing a Test
+
+The integration tests are valid `.som` files that can be run by any
+SOM VM.
+
+The expected results of the tests are specified in a comment at the
+top of the file, which looks like this:
 
 ```
 "
 VM:
     status: error
-    custom_classpath: @AWFY:example/classpath:@CLASSPATH
+    custom_classpath: $AWFY:example/classpath:$CLASSPATH
     case_sensitive: False
     stdout:
         1000
@@ -71,116 +74,177 @@ VM:
 "
 ```
 
-**When structuring a test all options must come before stderr and stdout**
+The expected results are specified in a YAML-like format, which
+supports the following keys:
 
-### Tags for structuring a test
-Below is a list of tags which structure how a test works.
+- `status`: the expected exit code of the VM, which can be an integer,
+  `success` or `error`
 
-#### VM: 
-This is required as the base of the test structure and what allows the tests to be identified as an integration test.
+- `custom_classpath`: a custom classpath to be used for this test,
+  which can include environment variables like `$AWFY` or `$CLASSPATH`.
+  If a required environment variable is not set, the test will be
+  marked as failure, reporting the missing variable.
 
-#### custom_classpath: 
-This allows for the specification of a custom classpath to be used. This is useful for loading different versions of classes with the same name. I.e. AWFY Vector instead of core-lib Vector. **The path to ./Smalltalk must still be specified after so that the Object class can be loaded**
+- `case_sensitive`: can be `true` or `false` to specify whether the
+  output should be checked case-sensitively or not. If not specified,
+  it defaults to `false`.
 
-Tags can be used to specify a different classpaths at runtime, this is generally recommended otherwise tests would be directory dependent. These tags can be specified with ```@tag``` where tag is the **exact** spelling and caputalisation of the environment variable that matches. Currently to run the tests ```@AWFY``` must be specified alongside ```@CLASSPATH```.
+- `stdout`: one or more lines that are the expected output of the
+  test on standard output. Each line can contain the special
+  characters `...` or `***` to specify gaps or partial word matching.
+  See below for more details on how to use these.
 
-#### case_sensitive
-By default the tests are case insensitive (All outputs and expecteds are converted to be lower case) but by specifying True in case_sensitive that test can be checked as case_sensitive.
+- `stderr`: one or more lines that are the expected output of the
+  test on standard error. As for `stdout`, each line can contain
+  the special characters `...` or `***`.
 
-#### stderr or stdout:
-This is your expected output, each new line will be a new "thing" to check for. Writing ... signifies a gap in checking, the output does not have to feature this gap but may do. Another option that is featured in stdout, stderr checking is *** which signifies an arbitrary precision "word".
+### 2.2 Omissions and Partial Matching in Tests
 
-**Please note that *** is not compatible in the same line as ...**
-```python
-# not accpeted
-... 1.11***11 ...
+Tests may not want to check for each precise bit of output.
+By using `...`, omissions can be made that will not be checked.
+Specifically, `...` can be used to indicate a gap, which may contain
+zero or more characters, in the actual output.
 
-# accpeted
-... this line ...
-Hel***lo
-... another ... line
-```
+Similarly, `***` can be used as part of a "word" or number.
+If the output contains more characters than before the `***`,
+the output has to match exactly the characters after the `***`.
 
-### Understanding how the "***" works in test_runner
-A word is loosely defined as any connected string of characters in this instance, it can be both numbers or letters. What placing the *** in the word does is as follows:
-1. All characters before the *** must be present
-2. Not all characters after the *** have to be present, but if they are present must match exactly.
-3. There cannot be more characters than the stdout specifies.
+However, currently, `***` cannot be used in the same line as `...`.
 
-This allows for different SOM implementations to pass tests on different levels of precision. But no SOM will pass on an incorrect result.
+#### 2.2.1 Omissions with "..."
 
-#### Example
-```python
-# Expected
-stdout:
-    1.111***123
+The following are a few examples of how to use `...` in tests.
 
-# Accepted outputs
+##### Example 1: Omitting a line
 
-1.111
-1.1111
-1.11112
-1.111123
+Expectation defined in the test:
 
-# Not accepted
-1.1
-1.11
-1.111124
-1.1111234
-```
-
-### Understanding how the "..." works in test_runner
-There are situations where the ... is necessary for your output. Here are some example use cases, when they may be necessary and how to write the tests for it. As a preface the check_output will check a line as a whole so writing ... allows for a gap, a more precise check can be made by including as much of the expected output as possible.
-
-#### Possible evaluations of "..."
-```
+```yaml
 stdout:
     Hello, World
     ...
     Goodbye
 ```
-This would be true for:
+
+This would correctly accept the following two outputs.
+
+Output 1:
+
 ```
 Hello, World
 Today is a Monday
 Goodbye
+```
 
-/
+Output 2:
 
+```
 Hello, World
 Goodbye
 ```
 
-Line 1 in the below expected stdout says match on a whole line which has Hello, some other text as a gap then the word sample then whatever comes after on that line. Line 2 specifies that we must end with the word line. Whilst line 3 says somewhere in this line the word little must appear.
+###### Example 2: Omitting words
 
-#### Stdout
+It can also be used in more elaborate ways, for instance, when
+omitting words. However, the given words still most be present to
+pass the test.
+
+```yaml
+stdout:
+    Hello, ... sample ...
+    ... is ... this line
+    ... little ...
 ```
-This is SOM++
+
+This would accept the following output:
+
+```
 Hello, this is some sample output
 There is some more on this line
 And a little more here
 ```
 
-#### Expected
+#### 2.2.2 Partial Matching with "***"
+
+To partially match a word or number, but be able to accept additional
+*precision*, we can use `***` in the expected output.
+
+A number or word is any connected string of alphanumeric characters.
+Using `***` in the number/word means:
+
+1. All numbers/characters before `***` must be present.
+2. The characters after `***` do not have to be present, but if they 
+   are present, they must match exactly.
+3. There cannot be more characters than specified.
+
+This is particularly useful to testing the output of floating point
+calculations. Different languages have different default levels of
+precision, which makes floating point output platform-specific.
+
+Let's assume the following expected output in a test:
+
+```yaml
+stdout:
+    1.111***123
 ```
-VM:
-    status: success
-    case_sensitive: False
-    stdout:
-        Hello, ... sample ...
-        ... is ... this line
-        ... little ...
+
+This will accept any of the following outputs:
+
+- `1.111`
+- `1.1111`
+- `1.11112`
+- `1.111123`
+
+However, it will not accept the following:
+
+- `1.1`
+- `1.11`
+- `1.111124`
+- `1.1111234`
+
+
+### 2.3 Expectation Files
+
+Expectation files are YAML files that can be used to mark tests as
+`known_failures`, `failing_as_unspecified`, `unsupported` or
+`do_not_run`.
+
+To help SOM implementers to get started, an expectation file can be
+generated based on the test results obtained during a run.
+
+By setting the `GENERATE_EXPECTATIONS_FILE` environment variable.
+Setting this environment variable will also print out how many tests
+passed, which tests passed that were not expected to and which tests
+failed.
+
+Tests are identified by their path relative to the test runner,
+i.e., from within the `IntegrationTests` directory.
+
+A minimal valid file could look like this:
+
+```yaml
+known_failures:
+  - Tests/test.som
 ```
 
-### When not to use "..."
-- When the word you are searching for is the end of the line do not do this "*word* ...".
-- When the word you are searching for is at the beginning of the line do not do this "... *word*"
+The maining of the different keys is as follows:
 
-## Developing the test_runner
-For development of the test_runner with more features in the future I have created another set of tests that can be run. These tests test the test_runner itself, they make sure parsing a test file works, output checking works and setting dynamic classpaths works as expected.
+ - `known_failures`: these tests are expected to fail
+ - `failing_as_unspecified`: these tests are expected to fail, but
+    SOM is assumed to not yet specify the expected behaviour.
+  - `unsupported`: these tests are expected to fail because the
+    relevant SOM implementation does not intend to support this 
+    feature. 
+  - `do_not_run`: these tests will not be run, and it is not known
+    whether they will fail or not.
+    
+## 3. Developing the test_runner
 
+To run the tests of the `test_runner` itself, run `pytest -m tester`.
+This will set the marker expression to `tester`, which prevents the
+tests from being deselected. By default, we do not run them and only
+run the SOM tests.
 
-#### Run this command below to execute those tests
-```
+```bash
 pytest -m tester
 ```

@@ -2,7 +2,7 @@
 VM:
     status: success
     case_sensitive: False
-    custom_classpath: @AWFYtest:@experimental:@oneWord
+    custom_classpath: $AWFYtest:$experimental:$oneWord
     stdout:
         ...
     stderr:

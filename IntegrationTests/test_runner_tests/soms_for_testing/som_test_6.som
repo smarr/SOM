@@ -2,7 +2,7 @@
 VM:
     status: success
     case_sensitive: False
-    custom_classpath: @IDontExist
+    custom_classpath: $IDontExist
     stdout:
         ...
     stderr:

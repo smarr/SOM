@@ -2,14 +2,15 @@
 VM:
   status: success
   stdout:
-    ...
-    hello_world1 = (
-        run = ( 'Hello world' println )
+    ClassB = ClassA (
+      | c d |
+      ----
+      | c4 c5 c6 |
     )
 "
 
 load_file = (
     run = (
-        (system loadFile: 'core-lib/IntegrationTests/Tests/hello_world1.som') println.
+        (system loadFile: 'TestSuite/ClassB.som') println.
     )
 )

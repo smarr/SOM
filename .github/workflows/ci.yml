@@ -97,7 +97,7 @@ jobs:
             repo: som-rs.git
             build: "cargo build --release -p som-interpreter-bc"
             som: "./target/release/som-interpreter-bc"
-            not-up-to-date: false
+            not-up-to-date: true
 
           # - name: ykSOM
           #   repo: yksom.git

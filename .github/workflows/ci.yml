@@ -3,6 +3,30 @@ name: Tests
 on: [push, pull_request]
 
 jobs:
+  python-style:
+    name: Python Checks
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Black, PyLint and PyTest
+        run: |
+          python -m pip install --upgrade pip
+          pip install black pylint pytest
+
+      - name: Run Black Check
+        run: |
+          black ./IntegrationTests --check --diff
+
+      - name: Run PyLint
+        run: |
+          pylint ./IntegrationTests
+
+      - name: Run PyTest
+        run: |
+          pytest -m tester ./IntegrationTests
+
   test_soms:
     runs-on: ubuntu-24.04 # ubuntu-latest
     continue-on-error: ${{ matrix.not-up-to-date }}
@@ -34,7 +58,12 @@ jobs:
 
           - name: PySOM
             repo: PySOM.git
-            som: "PYTHON=python SOM_INTERP=BC ./som.sh"
+            som: ./som.sh
+            build: |
+              export PYTHON=python
+              export SOM_INTERP=BC
+              echo "PYTHON=python" >> "$GITHUB_ENV"
+              echo "SOM_INTERP=BC" >> "$GITHUB_ENV"
             not-up-to-date: false
 
           - name: SOM (Java)
@@ -47,6 +76,7 @@ jobs:
             repo: TruffleSOM.git
             build: |
               export JAVA_HOME=$JAVA_HOME_17_X64
+              echo "JAVA_HOME=$JAVA_HOME_17_X64" >> "$GITHUB_ENV"
               ./som --setup mx
               export PATH=$PATH:`pwd`/../mx
               ./som --setup labsjdk
@@ -55,7 +85,8 @@ jobs:
               ./som --setup labsjdk
               mx build
 
-            som: "JAVA_HOME=$JAVA_HOME_17_X64 ./som -G"
+            som: ./som -G
+            test-expectations: integration-tests-ast.yml
             not-up-to-date: false
 
           - name: Specification Tests
@@ -66,8 +97,7 @@ jobs:
             repo: som-rs.git
             build: "cargo build --release -p som-interpreter-bc"
             som: "./target/release/som-interpreter-bc"
-            som-tests: " -c ../Smalltalk ../TestSuite -- TestHarness"
-            not-up-to-date: false
+            not-up-to-date: true
 
           # - name: ykSOM
           #   repo: yksom.git
@@ -149,14 +179,17 @@ jobs:
           cd som-vm
           git --no-pager log -n 1
 
-          echo Build ${{ matrix.repo }}
-          ${{ matrix.build }}
+          if [ ! -z "${{ matrix.build }}" ]
+          then
+            echo Build ${{ matrix.repo }}
+            ${{ matrix.build }}
+          fi
 
       - name: Run Tests on SOM VM
         if: ${{ matrix.som != 'spec' }}
         run: |
           cd som-vm
-          if [ "${{ matrix.som-tests }}" == "" ]
+          if [ -z "${{ matrix.som-tests }}" ]
           then
             # The default settings for running the test harness, supported by most SOM VMs
             export SOM_TESTS="-cp ../Smalltalk ../TestSuite/TestHarness.som"
@@ -166,6 +199,23 @@ jobs:
 
           echo "${{ matrix.som }} $SOM_TESTS"
           eval "${{ matrix.som }} $SOM_TESTS"
+
+      - name: Run Integration Tests
+        if: ${{ matrix.som != 'spec' }}
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+          export VM="som-vm/${{ matrix.som }}"
+          export CLASSPATH=Smalltalk
+
+          if [ -z "${{ matrix.test-expectations }}" ]; then
+            export TEST_EXPECTATIONS=som-vm/integration-tests.yml
+          else
+            export TEST_EXPECTATIONS=som-vm/${{ matrix.test-expectations }}
+          fi
+
+          export AWFY=Examples/AreWeFastYet/Core
+          pytest IntegrationTests
 
       # We currently test SomSom only on TruffleSOM
       - name: Test SomSom on TruffleSOM

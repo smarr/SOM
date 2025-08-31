@@ -16,9 +16,15 @@
   - Tests/array_at_put_idx_err.som
   - Tests/array_at_put_past_end_err.som
   - Tests/class_fields_overlap/test.som
-  - Tests/class_fields_overlap2.som
+  - Tests/parse_errors/class_fields_overlap2.som
   - Tests/class_var_inst_var_named/test.som
   - Tests/inst_var_at_put_subclass_bad_idx/test.som
   - Tests/inst_var_at_subclass_bad_idx/test.som
   - Tests/inst_var_named_subclass/test.som
   - Tests/inst_var_named_unknown_err.som
+3:
+  - Tests/parse_errors/duplicate_name_arg.som
+  - Tests/parse_errors/duplicate_name_arg_local.som
+  - Tests/parse_errors/duplicate_name_local.som
+  - Tests/parse_errors/duplicate_name_method.som
+  - Tests/parse_errors/instance_fields_overlap2.som

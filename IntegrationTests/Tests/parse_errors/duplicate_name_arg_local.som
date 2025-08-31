@@ -1,0 +1,19 @@
+"
+VM:
+  status: error
+  stderr:
+    ...duplicate_name_arg_local.som', line 12, column 9:
+      | arg |
+    Variable 'arg' shadows another of the same name
+"
+
+duplicate_name_arg_local = (
+    m: arg = (
+      | arg |
+      arg println
+    )
+
+    run = (
+      self m: #arg
+    )
+)

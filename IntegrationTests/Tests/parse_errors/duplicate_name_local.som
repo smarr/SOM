@@ -7,6 +7,10 @@ VM:
     Variable 'arg1' shadows another of the same name
 "
 
-call2 = (
-    m: arg1 m: arg1 = ( )
+duplicate_name_local = (
+    run = (
+      | l1 l1 |
+      l1 := #l1.
+      l1 println
+    )
 )

@@ -80,6 +80,10 @@ Object = nil (
     )
 
     unknownGlobal: name = ( ^system resolve: name )
+    
+    errorUnsupportedArgument: arg in: selector = (
+      self error: 'Method #' + selector + ' on ' + self asString + ' can not take the argument value: ' + arg asString
+    )
 
     "Reflection"
     respondsTo: aSymbol = (

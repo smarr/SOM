@@ -562,14 +562,15 @@ Universe = (
   )
 
   print: msg = (
-    system errorPrint: msg
+    system printString: msg
   )
 
   println: msg = (
-    system errorPrintln: msg
+    system printString: msg.
+    system printNewline
   )
 
   println = (
-    system errorPrintln
+    system printNewline
   )
 )

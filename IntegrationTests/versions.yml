@@ -8,3 +8,6 @@
 #
 # Tests newer than the version of a TEST_EXPECTATIONS file are skipped.
 # See README.md for details.
+1:
+  - Tests/parse_and_methods.som
+  - Tests/unknown_field_write2.som

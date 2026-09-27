@@ -1,0 +1,18 @@
+"
+VM:
+  status: success
+  stdout:
+    true
+    #gt
+    false
+"
+
+greater_than_int = (
+    gtFive: a = ( ^ a > 5 )
+
+    run = (
+      (self gtFive: 7) println.
+      (self gtFive: fallback_obj new) println.
+      (self gtFive: 1) println.
+    )
+)

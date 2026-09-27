@@ -1,0 +1,16 @@
+"
+VM:
+  status: success
+  stdout:
+    12
+    #*
+"
+
+dnu = (
+    mul: a with: b = ( ^ a * b )
+
+    run = (
+      (self mul: 3 with: 4) println.
+      (self mul: fallback_obj new with: 4) println.
+    )
+)

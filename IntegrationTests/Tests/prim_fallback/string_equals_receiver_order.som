@@ -1,0 +1,19 @@
+"
+VM:
+  status: success
+  stdout:
+    true
+    false
+    false
+"
+
+string_equals_receiver_order = (
+    strEq: a = ( ^ 'str' = a )
+
+    run = (
+      (self strEq: 'str') println.
+      "the string is the receiver, so fallback_obj>>#= must not be invoked"
+      (self strEq: fallback_obj new) println.
+      (self strEq: 'foo') println.
+    )
+)

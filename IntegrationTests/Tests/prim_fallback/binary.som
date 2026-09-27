@@ -1,0 +1,18 @@
+"
+VM:
+  status: success
+  stdout:
+    true
+    #lt
+    false
+"
+
+binary = (
+    lt: a with: b = ( ^ a < b )
+
+    run = (
+      (self lt: 1 with: 2) println.
+      (self lt: fallback_obj new with: 2) println.
+      (self lt: 3 with: 2) println.
+    )
+)

@@ -1,0 +1,22 @@
+fallback_obj = (
+    < other = (
+      other = 6 ifTrue: [ ^ true ].
+      ^ #lt )
+    > other = (
+      other = 6 ifTrue: [ ^ false ].
+      ^ #gt )
+    = other = ( ^ #eq )
+    abs     = ( ^ #abs )
+    ifTrue: t ifFalse: f = ( ^ #ifTrueIfFalse )
+
+    <= other = (
+      system printStackTrace.
+      ^ #le
+    )
+
+    doesNotUnderstand: selector arguments: args = ( ^ selector )
+
+    ----
+
+    = other = ( ^ #classEq )
+)

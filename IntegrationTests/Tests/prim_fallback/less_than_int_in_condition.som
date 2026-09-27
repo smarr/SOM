@@ -1,0 +1,18 @@
+"
+VM:
+  status: success
+  stdout:
+    #t
+    #t
+    #f
+"
+
+less_than_int_in_condition = (
+    ltSixIf: a = ( ^ a < 6 ifTrue: [ #t ] ifFalse: [ #f ] )
+
+    run = (
+      (self ltSixIf: 1) println.
+      (self ltSixIf: fallback_obj new) println.
+      (self ltSixIf: 7) println.
+    )
+)

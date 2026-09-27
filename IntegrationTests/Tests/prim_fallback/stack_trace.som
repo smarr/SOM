@@ -1,0 +1,17 @@
+"
+VM:
+  status: success
+  stdout:
+    true
+    ...
+    #le
+"
+
+stack_trace = (
+    le: a with: b = ( ^ a <= b )
+
+    run = (
+      (self le: 1 with: 2) println.
+      (self le: fallback_obj new with: 2) println.
+    )
+)

@@ -1,0 +1,18 @@
+"
+VM:
+  status: success
+  stdout:
+    true
+    #classEq
+    #classEq
+"
+
+class_equals_overridden = (
+    eq: a with: b = ( ^ a = b )
+
+    run = (
+      (self eq: Integer with: Integer) println.
+      (self eq: fallback_obj with: fallback_obj) println.
+      (self eq: fallback_obj with: Integer) println.
+    )
+)

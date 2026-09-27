@@ -1,0 +1,18 @@
+"
+VM:
+  status: success
+  stdout:
+    true
+    #lt
+    false
+"
+
+less_than_int = (
+    ltFive: a = ( ^ a < 5 )
+
+    run = (
+      (self ltFive: 1) println.
+      (self ltFive: fallback_obj new) println.
+      (self ltFive: 7) println.
+    )
+)

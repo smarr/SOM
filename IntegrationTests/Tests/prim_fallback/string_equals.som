@@ -1,0 +1,18 @@
+"
+VM:
+  status: success
+  stdout:
+    true
+    #eq
+    false
+"
+
+string_equals = (
+    eqStr: a = ( ^ a = 'str' )
+
+    run = (
+      (self eqStr: 'str') println.
+      (self eqStr: fallback_obj new) println.
+      (self eqStr: 'foo') println.
+    )
+)

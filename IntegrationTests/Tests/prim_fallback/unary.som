@@ -1,0 +1,18 @@
+"
+VM:
+  status: success
+  stdout:
+    3
+    #abs
+    4
+"
+
+unary = (
+    absOf: a = ( ^ a abs )
+
+    run = (
+      (self absOf: -3) println.
+      (self absOf: fallback_obj new) println.
+      (self absOf: -4) println.
+    )
+)

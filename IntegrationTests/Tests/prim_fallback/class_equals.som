@@ -1,0 +1,18 @@
+"
+VM:
+  status: success
+  stdout:
+    true
+    false
+    false
+"
+
+class_equals = (
+    eq: a with: b = ( ^ a = b )
+
+    run = (
+      (self eq: Integer with: Integer) println.
+      (self eq: Integer with: String) println.
+      (self eq: Integer with: 1) println.
+    )
+)

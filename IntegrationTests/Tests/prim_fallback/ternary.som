@@ -1,0 +1,18 @@
+"
+VM:
+  status: success
+  stdout:
+    1
+    #ifTrueIfFalse
+    2
+"
+
+ternary = (
+    ite: a with: t with: f = ( ^ a ifTrue: t ifFalse: f )
+
+    run = (
+      (self ite: true with: 1 with: 2) println.
+      (self ite: fallback_obj new with: 1 with: 2) println.
+      (self ite: false with: 1 with: 2) println.
+    )
+)

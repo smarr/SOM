@@ -1,0 +1,34 @@
+"
+VM:
+  status: success
+  stdout:
+    true true true true true true true true #eq true
+    true true true true true true true true #eq true
+    true true true true true true true true #eq true
+"
+
+megamorphic = (
+    eq: a with: b = ( ^ a = b )
+
+    run = (
+      | objs |
+      objs := Array new: 10.
+      objs at: 1 put: Object new.
+      objs at: 2 put: nil.
+      objs at: 3 put: (Array new: 1).
+      objs at: 4 put: [ 1 ].
+      objs at: 5 put: Set new.
+      objs at: 6 put: Vector new.
+      objs at: 7 put: Dictionary new.
+      objs at: 8 put: Pair new.
+      objs at: 9 put: fallback_obj new.
+      objs at: 10 put: Object new.
+
+      "more distinct receiver classes than a typical inline cache holds"
+      1 to: 3 do: [:i |
+        objs doIndexes: [:j |
+          j > 1 ifTrue: [ ' ' print ].
+          (self eq: (objs at: j) with: (objs at: j)) print ].
+        '' println ]
+    )
+)

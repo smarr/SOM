@@ -4,6 +4,7 @@ This is the SOM integration test runner file. Pytest automatically discovers
 this file and will find all .som test files in the below directories.
 """
 
+from os.path import isfile
 import subprocess
 from pathlib import Path
 from difflib import ndiff
@@ -425,7 +426,6 @@ def check_result(test_outputs, test):
     ) and check_output_matches(given_std_err, expected_std_err)
 
 
-# Read the test exceptions file and set the variables correctly
 # pylint: disable=too-many-branches
 def read_test_expectations(filename):
     """
@@ -433,11 +433,15 @@ def read_test_expectations(filename):
     Filename should be either a relative path from CWD to file
     or an absolute path.
     """
-    if not filename:
+    if not filename or not isfile(filename):
         return
 
-    with open(f"{filename}", "r", encoding="utf-8") as file:
-        yaml_file = yaml.safe_load(file)
+    with open(filename, "r", encoding="utf-8") as file:
+        try:
+            yaml_file = yaml.safe_load(file)
+        except yaml.YAMLError as e:
+            print(f"Error reading YAML file {filename}: {e}")
+            return
 
         if yaml_file is not None:
             REPORT_DETAILS.known_failures = yaml_file.get("known_failures", []) or []
@@ -525,7 +529,6 @@ def prepare_tests():
 
 
 def get_test_id(test):
-    print(test)
     return "Tests/" + test.name.split("Tests/")[-1]
 
 

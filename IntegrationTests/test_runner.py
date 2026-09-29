@@ -14,6 +14,17 @@ import yaml
 from conftest import REPORT_DETAILS
 
 
+class ParseError(Exception):
+    """
+    Exception raised when a test file cannot be parsed correctly.
+    This is used to fail the test in the test runner.
+    """
+
+    def __init__(self, message):
+        super().__init__(message)
+        self.message = message
+
+
 class Definition:
     def __init__(
         self,
@@ -28,7 +39,10 @@ class Definition:
         self.name = name
         if status is None:
             status = "success"
-        assert status == "success" or status == "error" or isinstance(status, int)
+        if not (status == "success" or status == "error" or isinstance(status, int)):
+            raise ParseError(
+                f"Invalid status value: {status}. Must be 'success', 'error', or an integer."
+            )
 
         self.status = status
         self.stdout = stdout
@@ -45,17 +59,6 @@ class Definition:
             f"case_sensitive={self.case_sensitive}, "
             f"definition_fail_msg={self.definition_fail_msg})"
         )
-
-
-class ParseError(Exception):
-    """
-    Exception raised when a test file cannot be parsed correctly.
-    This is used to fail the test in the test runner.
-    """
-
-    def __init__(self, message):
-        super().__init__(message)
-        self.message = message
 
 
 def discover_test_files_candidates(path, test_files):
@@ -276,6 +279,10 @@ def parse_test_file(test_file) -> Definition | None:
             return None
 
         return parse_test(contents, test_file)
+    except IndexError as e:
+        return Definition(
+            test_file, None, [], [], None, False, "Parsing test failed: " + str(e)
+        )
     except ParseError as e:
         return Definition(test_file, None, [], [], None, False, e.message)
 

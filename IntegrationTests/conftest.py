@@ -120,9 +120,9 @@ def pytest_sessionfinish(exitstatus):
                 ],
             },
             "environment": {
-                "virtual machine": os.environ["VM"],
-                "classpath": os.environ["CLASSPATH"],
-                "test_expectations": os.environ["TEST_EXPECTATIONS"],
+                "virtual machine": os.environ.get("VM", None),
+                "classpath": os.environ.get("CLASSPATH", None),
+                "test_expectations": os.environ.get("TEST_EXPECTATIONS", None),
                 "expectations_file": os.environ["GENERATE_EXPECTATIONS_FILE"],
             },
             "known_failures": REPORT_DETAILS.known_failures,
@@ -130,7 +130,5 @@ def pytest_sessionfinish(exitstatus):
             "unsupported": REPORT_DETAILS.unsupported,
             "do_not_run": REPORT_DETAILS.do_not_run,
         }
-        with open(
-            f"{os.environ["GENERATE_EXPECTATIONS_FILE"]}", "w", encoding="utf-8"
-        ) as f:
+        with open(os.environ["GENERATE_EXPECTATIONS_FILE"], "w", encoding="utf-8") as f:
             yaml.dump(report_data, f, default_flow_style=False, sort_keys=False)

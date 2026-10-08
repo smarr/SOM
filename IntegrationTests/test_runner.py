@@ -4,6 +4,7 @@ This is the SOM integration test runner file. Pytest automatically discovers
 this file and will find all .som test files in the below directories.
 """
 
+from os.path import isfile
 import subprocess
 from pathlib import Path
 from difflib import ndiff
@@ -11,6 +12,17 @@ import os
 import pytest
 import yaml
 from conftest import REPORT_DETAILS
+
+
+class ParseError(Exception):
+    """
+    Exception raised when a test file cannot be parsed correctly.
+    This is used to fail the test in the test runner.
+    """
+
+    def __init__(self, message):
+        super().__init__(message)
+        self.message = message
 
 
 class Definition:
@@ -27,7 +39,10 @@ class Definition:
         self.name = name
         if status is None:
             status = "success"
-        assert status == "success" or status == "error" or isinstance(status, int)
+        if not (status == "success" or status == "error" or isinstance(status, int)):
+            raise ParseError(
+                f"Invalid status value: {status}. Must be 'success', 'error', or an integer."
+            )
 
         self.status = status
         self.stdout = stdout
@@ -44,17 +59,6 @@ class Definition:
             f"case_sensitive={self.case_sensitive}, "
             f"definition_fail_msg={self.definition_fail_msg})"
         )
-
-
-class ParseError(Exception):
-    """
-    Exception raised when a test file cannot be parsed correctly.
-    This is used to fail the test in the test runner.
-    """
-
-    def __init__(self, message):
-        super().__init__(message)
-        self.message = message
 
 
 def discover_test_files_candidates(path, test_files):
@@ -275,6 +279,10 @@ def parse_test_file(test_file) -> Definition | None:
             return None
 
         return parse_test(contents, test_file)
+    except IndexError as e:
+        return Definition(
+            test_file, None, [], [], None, False, "Parsing test failed: " + str(e)
+        )
     except ParseError as e:
         return Definition(test_file, None, [], [], None, False, e.message)
 
@@ -425,7 +433,6 @@ def check_result(test_outputs, test):
     ) and check_output_matches(given_std_err, expected_std_err)
 
 
-# Read the test exceptions file and set the variables correctly
 # pylint: disable=too-many-branches
 def read_test_expectations(filename):
     """
@@ -433,11 +440,19 @@ def read_test_expectations(filename):
     Filename should be either a relative path from CWD to file
     or an absolute path.
     """
-    if not filename:
+    if not filename or not isfile(filename):
         return
 
-    with open(f"{filename}", "r", encoding="utf-8") as file:
-        yaml_file = yaml.safe_load(file)
+    with open(filename, "r", encoding="utf-8") as file:
+        try:
+            yaml_file = yaml.safe_load(file)
+        except yaml.YAMLError as e:
+            print(f"Error reading YAML file {filename}: {e}")
+            return
+
+        if yaml_file is not None and not isinstance(yaml_file, dict):
+            print(f"Error reading YAML file {filename}: top level is not a mapping")
+            return
 
         if yaml_file is not None:
             REPORT_DETAILS.known_failures = yaml_file.get("known_failures", []) or []
@@ -525,7 +540,6 @@ def prepare_tests():
 
 
 def get_test_id(test):
-    print(test)
     return "Tests/" + test.name.split("Tests/")[-1]
 
 

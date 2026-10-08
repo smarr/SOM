@@ -6,6 +6,7 @@ jobs:
   python-style:
     name: Python Checks
     runs-on: ubuntu-24.04
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -29,6 +30,7 @@ jobs:
 
   test_soms:
     runs-on: ubuntu-24.04 # ubuntu-latest
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     continue-on-error: ${{ matrix.not-up-to-date }}
     strategy:
       fail-fast: false # we want all jobs to run, because they may fail independently

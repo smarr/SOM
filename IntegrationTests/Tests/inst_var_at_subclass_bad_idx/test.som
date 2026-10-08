@@ -1,0 +1,12 @@
+"
+VM:
+  status: error
+"
+
+test = test_super (
+    | b c |
+
+    run = (
+        (self instVarAt: 4) println.
+    )
+)

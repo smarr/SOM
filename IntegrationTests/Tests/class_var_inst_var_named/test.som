@@ -1,0 +1,34 @@
+"
+VM:
+  status: success
+  stdout:
+    1
+    2
+    3
+    1
+    2
+    3
+"
+
+test = test_super (
+    run = (
+        test initA.
+        test initBC.
+
+        (test instVarNamed: #a) println.
+        (test instVarNamed: #b) println.
+        (test instVarNamed: #c) println.
+
+        (test instVarAt: 1) println.
+        (test instVarAt: 2) println.
+        (test instVarAt: 3) println.
+    )
+
+    ----
+    | b c |
+
+    initBC = (
+        b := 2.
+        c := 3.
+    )
+)

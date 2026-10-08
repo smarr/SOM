@@ -7,7 +7,7 @@ VM:
     Shift too big.
 "
 
-shift_right = (
+shift_right_too_big = (
     run = (
         1 >>> (1 << 100).
     )

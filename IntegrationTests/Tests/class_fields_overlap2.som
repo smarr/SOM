@@ -1,0 +1,13 @@
+"
+VM:
+  status: error
+"
+
+class_fields_overlap2 = (
+    run = (
+        'should not be reached' println.
+    )
+
+    ----
+    | a a |
+)

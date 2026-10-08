@@ -1,0 +1,13 @@
+"
+VM:
+  status: error
+"
+
+test = test_super (
+    run = (
+        'should not be reached' println.
+    )
+
+    ----
+    | a |
+)

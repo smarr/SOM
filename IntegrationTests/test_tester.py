@@ -334,6 +334,20 @@ VM:
 
 
 @pytest.mark.tester
+def test_yaml_with_list_at_top_level(tmp_path):
+    yaml_file = tmp_path / "list.yaml"
+    yaml_file.write_text("- Tests/a.som\n- Tests/b.som\n", encoding="utf-8")
+
+    temp_known = REPORT_DETAILS.known_failures
+    REPORT_DETAILS.known_failures = []
+
+    read_test_expectations(str(yaml_file))
+    assert REPORT_DETAILS.known_failures == []
+
+    REPORT_DETAILS.known_failures = temp_known
+
+
+@pytest.mark.tester
 def test_custom_classpath():
     """
     Test parsing a custom_classpath

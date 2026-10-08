@@ -450,6 +450,10 @@ def read_test_expectations(filename):
             print(f"Error reading YAML file {filename}: {e}")
             return
 
+        if yaml_file is not None and not isinstance(yaml_file, dict):
+            print(f"Error reading YAML file {filename}: top level is not a mapping")
+            return
+
         if yaml_file is not None:
             REPORT_DETAILS.known_failures = yaml_file.get("known_failures", []) or []
             REPORT_DETAILS.failing_as_unspecified = (

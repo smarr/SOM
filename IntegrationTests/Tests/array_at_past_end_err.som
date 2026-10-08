@@ -1,0 +1,14 @@
+"
+VM:
+  status: error
+"
+
+array_at_past_end_err = (
+    run = (
+        | x |
+
+        x := Array new: 3.
+        x at: 4.
+        'should not be reached' println.
+    )
+)

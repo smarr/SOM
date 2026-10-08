@@ -2,7 +2,7 @@ SOM - Simple Object Machine
 ===========================
 
 SOM is a minimal Smalltalk dialect used to teach VM construction at the [Hasso
-Plattner Institute][SOM]. It was originally built at the University of Århus
+Plattner Institute][SOM]. It was originally built at Aarhus University
 (Denmark) where it was also used for teaching.
 
 Currently, implementations exist for Java (SOM), C (CSOM), C++ (SOM++), and

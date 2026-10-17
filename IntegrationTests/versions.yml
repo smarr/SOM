@@ -13,6 +13,7 @@
   - Tests/unknown_field_write2.som
 2:
   - Tests/array_at_past_end_err.som
+  - Tests/array_at_put_idx_err.som
   - Tests/array_at_put_past_end_err.som
   - Tests/class_fields_overlap/test.som
   - Tests/class_fields_overlap2.som

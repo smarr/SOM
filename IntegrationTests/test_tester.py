@@ -243,6 +243,7 @@ def test_different_yaml():
     temp_unspecified = REPORT_DETAILS.failing_as_unspecified
     temp_unsupported = REPORT_DETAILS.unsupported
     temp_do_not_run = REPORT_DETAILS.do_not_run
+    temp_version = REPORT_DETAILS.version.expected_version
 
     yaml_for_testing_location = relpath(
         dirname(__file__) + "/test_runner_tests/yaml_for_testing"
@@ -284,12 +285,21 @@ def test_different_yaml():
     assert REPORT_DETAILS.failing_as_unspecified == test_list
     assert REPORT_DETAILS.unsupported == test_list
     assert REPORT_DETAILS.do_not_run == test_list
+    # files without a version are for version 0
+    assert REPORT_DETAILS.version.expected_version == 0
+
+    read_test_expectations(yaml_for_testing_location + "/with_version.yaml")
+    assert REPORT_DETAILS.version.expected_version == 2
+
+    with pytest.raises(ValueError):
+        read_test_expectations(yaml_for_testing_location + "/invalid_version.yaml")
 
     # Reset external vars after test
     REPORT_DETAILS.known_failures = temp_known
     REPORT_DETAILS.failing_as_unspecified = temp_unspecified
     REPORT_DETAILS.unsupported = temp_unsupported
     REPORT_DETAILS.do_not_run = temp_do_not_run
+    REPORT_DETAILS.version.expected_version = temp_version
 
 
 # ######################################### #

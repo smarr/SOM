@@ -1,0 +1,3 @@
+version: 2
+known_failures:
+  - Tests/mutate_superclass_method/test.som

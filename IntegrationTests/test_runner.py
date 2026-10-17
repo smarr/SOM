@@ -466,6 +466,8 @@ def read_test_expectations(filename):
             print(f"Error reading YAML file {filename}: top level is not a mapping")
             return
 
+        REPORT_DETAILS.version.read_expected_version(yaml_file, filename)
+
         if yaml_file is not None:
             REPORT_DETAILS.known_failures = yaml_file.get("known_failures", []) or []
             REPORT_DETAILS.failing_as_unspecified = (
@@ -545,9 +547,27 @@ def prepare_tests():
     if "TEST_EXPECTATIONS" in os.environ:
         read_test_expectations(os.environ["TEST_EXPECTATIONS"])
 
+    REPORT_DETAILS.version.read_test_versions(location + "/versions.yml")
+
     test_files = []
     discover_test_files_candidates(location + "/Tests", test_files)
     test_files = sorted(test_files)
+
+    unknown_tests = set(REPORT_DETAILS.version.test_versions) - set(test_files)
+    if unknown_tests:
+        return [
+            Definition(
+                "test-setup",
+                None,
+                [],
+                [],
+                None,
+                False,
+                "versions.yml lists tests that do not exist: "
+                + ", ".join(sorted(unknown_tests)),
+            )
+        ]
+
     return collect_tests(test_files)
 
 
@@ -558,6 +578,12 @@ def get_test_id(test):
 def run_test(test):
     if test.name in REPORT_DETAILS.do_not_run:
         pytest.skip("Test included in do_not_run")
+
+    if REPORT_DETAILS.version.is_newer(test):
+        pytest.skip(
+            f"Test added in version {REPORT_DETAILS.version.test_versions[test.name]}, "
+            f"but TEST_EXPECTATIONS is for version {REPORT_DETAILS.version.expected_version}"
+        )
 
     if test.definition_fail_msg:
         pytest.fail(test.definition_fail_msg)
@@ -599,9 +625,7 @@ def tests_runner(test, pytestconfig):
 
     if test.name in REPORT_DETAILS.known_failures and test_pass_bool:
         REPORT_DETAILS.tests_passed_unexpectedly.append(test.name)
-        pytest.fail(
-            f"Test {test.name} is in known_failures but passed", pytrace=False
-        )
+        pytest.fail(f"Test {test.name} is in known_failures but passed", pytrace=False)
 
     if test.name in REPORT_DETAILS.failing_as_unspecified and test_pass_bool:
         REPORT_DETAILS.tests_passed_unexpectedly.append(test.name)

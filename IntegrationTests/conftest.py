@@ -9,6 +9,75 @@ import os
 import yaml
 
 
+def generating_expectations():
+    """Check whether to generate an expectations file."""
+    return bool(
+        "GENERATE_EXPECTATIONS_FILE" in os.environ
+        and os.environ["GENERATE_EXPECTATIONS_FILE"]
+    )
+
+
+class TestVersioning:
+    """The tests are versioned, and we run tests up to the configured version."""
+
+    def __init__(self):
+        self.expected_version = None
+        self.test_versions = {}
+        self.latest_version = 0
+
+    def is_newer(self, test):
+        """
+        Tests added in a version newer than the one of the TEST_EXPECTATIONS file
+        have not been categorized yet, and are thus not run.
+        Without a TEST_EXPECTATIONS file, or when generating one, all tests are run.
+        """
+        if self.expected_version is None or generating_expectations():
+            return False
+        test_version = self.test_versions.get(test.name, 0)
+        return test_version > self.expected_version
+
+    def read_expected_version(self, yaml_file, filename):
+        """Old expectation files may not have a version, those default to 0."""
+        version = 0
+        if yaml_file is not None:
+            version = yaml_file.get("version", 0) or 0
+        if not isinstance(version, int) or version < 0:
+            raise ValueError(
+                f"{filename}: version must be a non-negative integer, but was {version}"
+            )
+        self.expected_version = version
+
+    def read_test_versions(self, filename):
+        """
+        Read the versions.yml file, which maps each version to the tests added in it.
+        Tests not listed are part of version 0.
+        """
+        with open(filename, "r", encoding="utf-8") as file:
+            yaml_file = yaml.safe_load(file) or {}
+
+        path = os.path.relpath(os.path.dirname(__file__))
+        if path == ".":
+            path = ""
+
+        test_versions = {}
+        for version, tests in yaml_file.items():
+            if not isinstance(version, int) or version < 1:
+                raise ValueError(
+                    f"{filename}: versions must be positive integers, but found {version}"
+                )
+            for test in tests or []:
+                test_path = os.path.join(path, test)
+                if test_path in test_versions:
+                    raise ValueError(
+                        f"{filename}: {test} is listed for version "
+                        f"{test_versions[test_path]} and {version}"
+                    )
+                test_versions[test_path] = version
+
+        self.test_versions = test_versions
+        self.latest_version = max(test_versions.values(), default=0)
+
+
 class ReportDetails:  # pylint: disable=too-few-public-methods,too-many-instance-attributes
     """
     Holds info about passing and failing tests.
@@ -26,6 +95,7 @@ class ReportDetails:  # pylint: disable=too-few-public-methods,too-many-instance
         self.failing_as_unspecified = []
         self.unsupported = []
         self.do_not_run = []
+        self.version = TestVersioning()
 
 
 REPORT_DETAILS = ReportDetails()
@@ -77,10 +147,7 @@ def pytest_sessionfinish(exitstatus):
     """
     Run after all tests completed. Generate a report of failing and passing tests.
     """
-    if (
-        "GENERATE_EXPECTATIONS_FILE" in os.environ
-        and os.environ["GENERATE_EXPECTATIONS_FILE"]
-    ):
+    if generating_expectations():
         # Add the tests which have failed--unexpectedly to known_failures.
         # Remove those that have passed from any of those lists.
         for test_path in REPORT_DETAILS.tests_passed_unexpectedly:
@@ -101,6 +168,7 @@ def pytest_sessionfinish(exitstatus):
 
         # Generate a report_message to save
         report_data = {
+            "version": REPORT_DETAILS.version.latest_version,
             "summary": {
                 "tests_total": REPORT_DETAILS.total_tests,
                 "tests_passed": REPORT_DETAILS.tests_passed,

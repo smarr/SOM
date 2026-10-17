@@ -227,17 +227,40 @@ known_failures:
   - Tests/test.som
 ```
 
-The maining of the different keys is as follows:
+The meaning of the different keys is as follows:
 
  - `known_failures`: these tests are expected to fail
  - `failing_as_unspecified`: these tests are expected to fail, but
-    SOM is assumed to not yet specify the expected behaviour.
+    SOM is assumed to not yet specify the expected behavior.
   - `unsupported`: these tests are expected to fail because the
     relevant SOM implementation does not intend to support this 
     feature. 
   - `do_not_run`: these tests will not be run, and it is not known
     whether they will fail or not.
-    
+
+### 2.4 Test Versions
+
+When we add new tests, they are likely not supported by a number of SOM implementations.
+To be able to ignore them without having to explicitly update the corresponding
+SOM implementation, we introduced versions.
+
+Newly added tests will be listed in `versions.yml`, and are mapped to a specific version.
+Expectation files have now a `version:` key, which defaults to 0.
+All tests not listed in the `versions.yml` are assumed to be in version 0.
+
+The `versions.yml` looks roughly like this, where the keys are the versions:
+
+```yaml
+1:
+  - Tests/new_test.som
+2:
+  - Tests/another_test.som
+  - Tests/yet_another_test.som
+```
+
+**Adding tests:** when adding new tests, list them in `versions.yml`
+under a new version, i.e., one higher than the current highest version.
+
 ## 3. Developing the test_runner
 
 To run the tests of the `test_runner` itself, run `pytest -m tester`.

@@ -1,0 +1,13 @@
+"
+VM:
+  status: error
+"
+
+test = test_super (
+    | b c |
+
+    run = (
+        self instVarAt: 4 put: 4.
+        'should not be reached' println.
+    )
+)

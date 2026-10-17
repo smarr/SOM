@@ -11,3 +11,14 @@
 1:
   - Tests/parse_and_methods.som
   - Tests/unknown_field_write2.som
+2:
+  - Tests/array_at_past_end_err.som
+  - Tests/array_at_put_idx_err.som
+  - Tests/array_at_put_past_end_err.som
+  - Tests/class_fields_overlap/test.som
+  - Tests/class_fields_overlap2.som
+  - Tests/class_var_inst_var_named/test.som
+  - Tests/inst_var_at_put_subclass_bad_idx/test.som
+  - Tests/inst_var_at_subclass_bad_idx/test.som
+  - Tests/inst_var_named_subclass/test.som
+  - Tests/inst_var_named_unknown_err.som

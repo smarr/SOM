@@ -1,0 +1,14 @@
+"
+VM:
+  status: error
+"
+
+inst_var_named_unknown_err = (
+    | x |
+
+    run = (
+        x := 5.
+        (self instVarNamed: #y) println.
+        'should not be reached' println.
+    )
+)

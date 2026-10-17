@@ -287,20 +287,28 @@ def parse_test_file(test_file) -> Definition | None:
         return Definition(test_file, None, [], [], None, False, e.message)
 
 
-def make_a_diff(expected, given):
+DIFF_COLORS = {"+": "\033[32m", "-": "\033[31m", "?": "\033[33m"}
+RESET_COLOR = "\033[0m"
+
+
+def make_a_diff(expected, given, use_color=False):
     """
     Creates a string that represents the difference between two
     lists of Strings.
     """
     diff_string = ""
     for diff in ndiff(expected, given):
-        diff_string += f"\n{str(diff)}"
+        line = str(diff).rstrip("\n")
+        color = DIFF_COLORS.get(line[:1]) if use_color else None
+        if color:
+            line = f"{color}{line}{RESET_COLOR}"
+        diff_string += f"\n{line}"
 
     return diff_string
 
 
-def build_error_message(result, test, command):
-    error_message = f"""\n
+def build_error_message(result, test, command, use_color=False):
+    error_message = f"""
 Command: {command}
 Status: {test.status}
 Case Sensitive: {test.case_sensitive}
@@ -308,12 +316,16 @@ Case Sensitive: {test.case_sensitive}
 
     if result.stdout.strip() != "":
         error_message += "\nstdout diff with stdout expected\n"
-        error_message += make_a_diff(test.stdout, result.stdout.strip().split("\n"))
+        error_message += make_a_diff(
+            test.stdout, result.stdout.strip().split("\n"), use_color
+        )
         error_message += "\n"
 
     if result.stderr.strip() != "":
         error_message += "\nstderr diff with stderr expected\n"
-        error_message += make_a_diff(test.stderr, result.stderr.strip().split("\n"))
+        error_message += make_a_diff(
+            test.stderr, result.stderr.strip().split("\n"), use_color
+        )
         error_message += "\n"
 
     if result.returncode != 0:
@@ -573,7 +585,7 @@ def run_test(test):
     ids=get_test_id,
 )
 # pylint: disable=too-many-branches
-def tests_runner(test):
+def tests_runner(test, pytestconfig):
     command, result = run_test(test)
 
     # lower-case comparisons unless specified otherwise
@@ -581,20 +593,25 @@ def tests_runner(test):
         result.stdout = str(result.stdout).lower()
         result.stderr = str(result.stderr).lower()
 
-    error_message = build_error_message(result, test, command)
+    use_color = pytestconfig.get_terminal_writer().hasmarkup
+    error_message = build_error_message(result, test, command, use_color)
     test_pass_bool = check_result(result, test)
 
     if test.name in REPORT_DETAILS.known_failures and test_pass_bool:
         REPORT_DETAILS.tests_passed_unexpectedly.append(test.name)
-        assert False, f"Test {test.name} is in known_failures but passed"
+        pytest.fail(
+            f"Test {test.name} is in known_failures but passed", pytrace=False
+        )
 
     if test.name in REPORT_DETAILS.failing_as_unspecified and test_pass_bool:
         REPORT_DETAILS.tests_passed_unexpectedly.append(test.name)
-        assert False, f"Test {test.name} is in failing_as_unspecified but passed"
+        pytest.fail(
+            f"Test {test.name} is in failing_as_unspecified but passed", pytrace=False
+        )
 
     if test.name in REPORT_DETAILS.unsupported and test_pass_bool:
         REPORT_DETAILS.tests_passed_unexpectedly.append(test.name)
-        assert False, f"Test {test.name} is in unsupported but passed"
+        pytest.fail(f"Test {test.name} is in unsupported but passed", pytrace=False)
 
     if (
         test.name not in REPORT_DETAILS.unsupported
@@ -603,6 +620,7 @@ def tests_runner(test):
     ):
         if not test_pass_bool:
             REPORT_DETAILS.tests_failed_unexpectedly.append(test.name)
-        assert (
-            test_pass_bool
-        ), f"Error on test, {test.name} expected to pass: {error_message}"
+            pytest.fail(
+                f"Error on test, {test.name} expected to pass:\n{error_message}",
+                pytrace=False,
+            )

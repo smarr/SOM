@@ -1,0 +1,10 @@
+# Lists the tests added with each version of the integration tests.
+# Tests not listed here are part of version 0.
+#
+# When adding new tests, add them under a new version, e.g.:
+#
+# 1:
+#   - Tests/new_test.som
+#
+# Tests newer than the version of a TEST_EXPECTATIONS file are skipped.
+# See README.md for details.

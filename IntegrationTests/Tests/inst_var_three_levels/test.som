@@ -1,0 +1,42 @@
+"
+VM:
+  status: success
+  stdout:
+    1
+    2
+    3
+    4
+    5
+    6
+    1
+    2
+    3
+    4
+    5
+    6
+"
+
+test = test_b (
+    | e f |
+
+    run = (
+        self setA: 1 b: 2.
+        self setC: 3 d: 4.
+        e := 5.
+        f := 6.
+
+        (self instVarAt: 1) println.
+        (self instVarAt: 2) println.
+        (self instVarAt: 3) println.
+        (self instVarAt: 4) println.
+        (self instVarAt: 5) println.
+        (self instVarAt: 6) println.
+
+        (self instVarNamed: #a) println.
+        (self instVarNamed: #b) println.
+        (self instVarNamed: #c) println.
+        (self instVarNamed: #d) println.
+        (self instVarNamed: #e) println.
+        (self instVarNamed: #f) println.
+    )
+)

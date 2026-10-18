@@ -1,0 +1,47 @@
+"
+VM:
+  status: success
+  stdout:
+    1
+    2
+    3
+    4
+    5
+    6
+    1
+    2
+    3
+    4
+    5
+    6
+"
+
+test = test_b (
+    run = (
+        test setA: 1 b: 2.
+        test setC: 3 d: 4.
+        test setE: 5 f: 6.
+
+        (test instVarAt: 1) println.
+        (test instVarAt: 2) println.
+        (test instVarAt: 3) println.
+        (test instVarAt: 4) println.
+        (test instVarAt: 5) println.
+        (test instVarAt: 6) println.
+
+        (test instVarNamed: #a) println.
+        (test instVarNamed: #b) println.
+        (test instVarNamed: #c) println.
+        (test instVarNamed: #d) println.
+        (test instVarNamed: #e) println.
+        (test instVarNamed: #f) println.
+    )
+
+    ----
+    | e f |
+
+    setE: x f: y = (
+        e := x.
+        f := y.
+    )
+)

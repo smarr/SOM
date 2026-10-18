@@ -1,0 +1,8 @@
+test_b = test_a (
+    | c d |
+
+    setC: x d: y = (
+        c := x.
+        d := y.
+    )
+)

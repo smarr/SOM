@@ -1,0 +1,16 @@
+"
+VM:
+  status: error
+  stderr:
+    ...duplicate_name_local.som', line 12, column 12:
+      | l1 l1 |
+    Variable 'l1' shadows another of the same name
+"
+
+duplicate_name_local = (
+    run = (
+      | l1 l1 |
+      l1 := #l1.
+      l1 println
+    )
+)

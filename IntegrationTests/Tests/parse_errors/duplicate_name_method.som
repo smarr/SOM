@@ -1,0 +1,18 @@
+"
+VM:
+  status: error
+  stderr:
+    ...duplicate_name_method.som', line 15, column 5:
+      run = (
+    Method 'run' has already been defined in this class.
+"
+
+duplicate_name_method = (
+    run = (
+      #run1 println
+    )
+
+    run = (
+      #run2 println
+    )
+)

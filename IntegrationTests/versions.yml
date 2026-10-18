@@ -28,3 +28,5 @@
   - Tests/parse_errors/duplicate_name_local.som
   - Tests/parse_errors/duplicate_name_method.som
   - Tests/parse_errors/instance_fields_overlap2.som
+4:
+  - Tests/round.som

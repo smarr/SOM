@@ -2,25 +2,46 @@
 VM:
   status: success
   stdout:
-    0
-    0
-    1
-    0
-    0
-    -1
-    18446744073709551616
-    -18446744073709551616
+    0.1: 0
+    0.9: 0
+    1.1: 1
+    -0.1: 0
+    -0.9: 0
+    -1.1: -1
+    2^64: 18446744073709551616
+    -2^64: -18446744073709551616
+    2^52 - 0.5: 4503599627370495
+    -2^52 + 0.5: -4503599627370495
+    max double < 2^63: 9223372036854774784
+    2^63 - 1 parses as 2^63: 9223372036854775808
+    -2^63: -9223372036854775808
+    max double < -2^63: -9223372036854777856
+    10^23 (inexact): 99999999999999991611392
+    -10^23 (inexact): -99999999999999991611392
 "
 
 double_asinteger = (
     run = (
-        0.1 asInteger println.
-        0.9 asInteger println.
-        1.1 asInteger println.
-        -0.1 asInteger println.
-        -0.9 asInteger println.
-        -1.1 asInteger println.
-        18446744073709551616.0 asInteger println.
-        -18446744073709551616.0 asInteger println.
+        self desc: '0.1' value: 0.1 asInteger.
+        self desc: '0.9' value: 0.9 asInteger.
+        self desc: '1.1' value: 1.1 asInteger.
+        self desc: '-0.1' value: -0.1 asInteger.
+        self desc: '-0.9' value: -0.9 asInteger.
+        self desc: '-1.1' value: -1.1 asInteger.
+        self desc: '2^64' value: 18446744073709551616.0 asInteger.
+        self desc: '-2^64' value: -18446744073709551616.0 asInteger.
+        self desc: '2^52 - 0.5' value: 4503599627370495.5 asInteger.
+        self desc: '-2^52 + 0.5' value: -4503599627370495.5 asInteger.
+        self desc: 'max double < 2^63' value: 9223372036854774784.0 asInteger.
+        self desc: '2^63 - 1 parses as 2^63' value: 9223372036854775807.0 asInteger.
+        self desc: '-2^63' value: -9223372036854775808.0 asInteger.
+        self desc: 'max double < -2^63' value: -9223372036854777856.0 asInteger.
+        self desc: '10^23 (inexact)' value: 100000000000000000000000.0 asInteger.
+        self desc: '-10^23 (inexact)' value: -100000000000000000000000.0 asInteger.
+    )
+
+    desc: desc value: value = (
+        (desc + ': ') print.
+        value println
     )
 )

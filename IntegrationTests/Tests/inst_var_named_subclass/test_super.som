@@ -1,7 +1,0 @@
-test_super = (
-    | a |
-
-    initA = (
-        a := 1.
-    )
-)

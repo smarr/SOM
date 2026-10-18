@@ -17,7 +17,7 @@ environment variables. The paths have to be set relative to the
 current working directory, which is where the tests are run from.
 
 - `VM`: the path to the SOM executable
-- `CLASSPATH`: the claspath, e.g., `./core-lib/Smalltalk`
+- `CLASSPATH`: the classpath, e.g., `./core-lib/Smalltalk`
 - `AWFY`: the classpath for tests the use the AreWeFastYet (AWFY) 
   library, e.g., `core-lib/Examples/AreWeFastYet/Core`
 
@@ -35,7 +35,7 @@ not supporting all tests, because the yksom test for behavior that
 has not been specified yet.
 
 To successfully run the tests as regression tests, most SOM
-implementations come with a `TEST_EXPECTIONS` file that defines,
+implementations come with a `TEST_EXPECTATIONS` file that defines,
 which tests are expected to fail.
 
 A full example would look like this:

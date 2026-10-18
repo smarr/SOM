@@ -503,6 +503,11 @@ Universe = (
     "Load the system class"
     result := self loadClass: systemClass name into: systemClass.
 
+    result ifNil: [
+      system errorPrintln: 'Can not load system class: ' + systemClass name string.
+      system exit: 1.
+    ].
+
     "Load primitives if necessary"
     result hasPrimitives ifTrue: [
       result loadPrimitives ].
@@ -557,14 +562,15 @@ Universe = (
   )
 
   print: msg = (
-    system errorPrint: msg
+    system printString: msg
   )
 
   println: msg = (
-    system errorPrintln: msg
+    system printString: msg.
+    system printNewline
   )
 
   println = (
-    system errorPrintln
+    system printNewline
   )
 )
